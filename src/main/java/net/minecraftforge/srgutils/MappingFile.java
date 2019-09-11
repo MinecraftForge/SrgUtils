@@ -78,6 +78,13 @@ class MappingFile implements IMappingFile {
     }
 
     @Override
+    public String remapPackage(String pkg) {
+        //TODO: Package bulk moves? Issue: moving default package will move EVERYTHING, it's what its meant to do but we shouldn't.
+        Package ipkg = packages.get(pkg);
+        return ipkg == null ? pkg : ipkg.getMapped();
+    }
+
+    @Override
     public String remapClass(String cls) {
         String ret = cache.get(cls);
         if (ret == null) {
@@ -127,6 +134,53 @@ class MappingFile implements IMappingFile {
                 writer.write('\n');
             }
         }
+    }
+
+    @Override
+    public MappingFile reverse() {
+        MappingFile ret = new MappingFile();
+        getPackages().stream().forEach(e -> addPackage(e.getMapped(), e.getOriginal()));
+        getClasses().stream().forEach(cls -> {
+            Cls c = addClass(cls.getMapped(), cls.getOriginal());
+            cls.getFields().stream().forEach(fld -> c.addField(fld.getMapped(), fld.getOriginal(), fld.getMappedDescriptor()));
+            cls.getMethods().stream().forEach(mtd -> c.addMethod(mtd.getMapped(), mtd.getMappedDescriptor(), mtd.getOriginal(), mtd.start, mtd.end));
+        });
+        return ret;
+    }
+
+    @Override
+    public MappingFile rename(IRenamer renamer) {
+        MappingFile ret = new MappingFile();
+        getPackages().stream().forEach(e -> addPackage(e.getOriginal(), renamer.rename(e)));
+        getClasses().stream().forEach(cls -> {
+            Cls c = addClass(cls.getOriginal(), renamer.rename(cls));
+            cls.getFields().stream().forEach(fld -> c.addField(fld.getOriginal(), renamer.rename(fld), fld.getDescriptor()));
+            cls.getMethods().stream().forEach(mtd -> c.addMethod(mtd.getOriginal(), mtd.getDescriptor(), renamer.rename(mtd), mtd.start, mtd.end));
+        });
+        return ret;
+    }
+
+    @Override
+    public MappingFile chain(final IMappingFile link) {
+        return rename(new IRenamer() {
+            public String rename(IPackage value) {
+                return link.remapPackage(value.getMapped());
+            }
+
+            public String rename(IClass value) {
+                return link.remapClass(value.getMapped());
+            }
+
+            public String rename(IField value) {
+                IClass cls = link.getClass(value.getMapped());
+                return cls == null ? value.getMapped() : cls.remapField(value.getMapped());
+            }
+
+            public String rename(IMethod value) {
+                IClass cls = link.getClass(value.getMapped());
+                return cls == null ? value.getMapped() : cls.remapMethod(value.getMapped(), value.getMappedDescriptor());
+            }
+        });
     }
 
     abstract class Node implements INode {
@@ -296,6 +350,11 @@ class MappingFile implements IMappingFile {
             public String toString() {
                 return this.write(Format.SRG, false);
             }
+
+            @Override
+            public Cls getParent() {
+                return Cls.this;
+            }
         }
 
         class Method extends Node implements IMethod {
@@ -344,6 +403,11 @@ class MappingFile implements IMappingFile {
             @Override
             public String toString() {
                 return this.write(Format.SRG, false);
+            }
+
+            @Override
+            public Cls getParent() {
+                return Cls.this;
             }
         }
     }

@@ -72,10 +72,15 @@ public interface IMappingFile {
     Collection<? extends IClass> getClasses();
     IClass getClass(String original);
 
+    String remapPackage(String pkg);
     String remapClass(String desc);
     String remapDescriptor(String desc);
 
     void write(Path path, Format format, boolean reversed) throws IOException;
+
+    IMappingFile reverse();
+    IMappingFile rename(IRenamer renamer);
+    IMappingFile chain(IMappingFile other);
 
     public interface INode {
         String getOriginal();
@@ -93,14 +98,18 @@ public interface IMappingFile {
         String remapMethod(String name, String desc);
     }
 
-    public interface IField extends INode {
+    public interface IOwnedNode<T> extends INode {
+        T getParent();
+    }
+
+    public interface IField extends IOwnedNode<IClass> {
         @Nullable
         String getDescriptor();
         @Nullable
         String getMappedDescriptor();
     }
 
-    public interface IMethod extends INode {
+    public interface IMethod extends IOwnedNode<IClass> {
         String getDescriptor();
         String getMappedDescriptor();
     }
