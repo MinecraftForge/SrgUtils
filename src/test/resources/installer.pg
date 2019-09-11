@@ -1,0 +1,1999 @@
+com.google.gson.DefaultDateTypeAdapter -> a:
+    java.lang.Class dateType -> a
+    java.util.List dateFormats -> a
+    void <init>(java.lang.Class,java.lang.String) -> <init>
+    void <init>(java.lang.Class,int,int) -> <init>
+    java.lang.Class verifyDateType(java.lang.Class) -> a
+    void write(com.google.gson.stream.JsonWriter,java.util.Date) -> a
+    java.util.Date read(com.google.gson.stream.JsonReader) -> a
+    java.util.Date deserializeToDate(java.lang.String) -> a
+    java.lang.String toString() -> toString
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+com.google.gson.ExclusionStrategy -> b:
+    boolean shouldSkipField(com.google.gson.FieldAttributes) -> a
+    boolean shouldSkipClass(java.lang.Class) -> a
+com.google.gson.FieldAttributes -> c:
+    java.lang.reflect.Field field -> a
+    void <init>(java.lang.reflect.Field) -> <init>
+com.google.gson.FieldNamingPolicy -> d:
+    com.google.gson.FieldNamingPolicy IDENTITY -> a
+    com.google.gson.FieldNamingPolicy UPPER_CAMEL_CASE -> b
+    com.google.gson.FieldNamingPolicy UPPER_CAMEL_CASE_WITH_SPACES -> c
+    com.google.gson.FieldNamingPolicy LOWER_CASE_WITH_UNDERSCORES -> d
+    com.google.gson.FieldNamingPolicy LOWER_CASE_WITH_DASHES -> e
+    com.google.gson.FieldNamingPolicy LOWER_CASE_WITH_DOTS -> f
+    com.google.gson.FieldNamingPolicy[] $VALUES -> a
+    void <init>(java.lang.String,int) -> <init>
+    java.lang.String separateCamelCase(java.lang.String,java.lang.String) -> a
+    java.lang.String upperCaseFirstLetter(java.lang.String) -> a
+    java.lang.String modifyString(char,java.lang.String,int) -> a
+    void <init>(java.lang.String,int,com.google.gson.FieldNamingPolicy$1) -> <init>
+    void <clinit>() -> <clinit>
+com.google.gson.FieldNamingPolicy$1 -> e:
+    void <init>(java.lang.String,int) -> <init>
+    java.lang.String translateName(java.lang.reflect.Field) -> a
+com.google.gson.FieldNamingPolicy$2 -> f:
+    void <init>(java.lang.String,int) -> <init>
+    java.lang.String translateName(java.lang.reflect.Field) -> a
+com.google.gson.FieldNamingPolicy$3 -> g:
+    void <init>(java.lang.String,int) -> <init>
+    java.lang.String translateName(java.lang.reflect.Field) -> a
+com.google.gson.FieldNamingPolicy$4 -> h:
+    void <init>(java.lang.String,int) -> <init>
+    java.lang.String translateName(java.lang.reflect.Field) -> a
+com.google.gson.FieldNamingPolicy$5 -> i:
+    void <init>(java.lang.String,int) -> <init>
+    java.lang.String translateName(java.lang.reflect.Field) -> a
+com.google.gson.FieldNamingPolicy$6 -> j:
+    void <init>(java.lang.String,int) -> <init>
+    java.lang.String translateName(java.lang.reflect.Field) -> a
+com.google.gson.FieldNamingStrategy -> k:
+    java.lang.String translateName(java.lang.reflect.Field) -> a
+com.google.gson.Gson -> l:
+    com.google.gson.reflect.TypeToken NULL_KEY_SURROGATE -> a
+    java.lang.ThreadLocal calls -> a
+    java.util.Map typeTokenCache -> b
+    com.google.gson.internal.ConstructorConstructor constructorConstructor -> a
+    com.google.gson.internal.bind.JsonAdapterAnnotationTypeAdapterFactory jsonAdapterFactory -> a
+    java.util.List factories -> a
+    com.google.gson.internal.Excluder excluder -> a
+    com.google.gson.FieldNamingStrategy fieldNamingStrategy -> a
+    java.util.Map instanceCreators -> a
+    boolean serializeNulls -> a
+    boolean complexMapKeySerialization -> b
+    boolean generateNonExecutableJson -> c
+    boolean htmlSafe -> d
+    boolean prettyPrinting -> e
+    boolean lenient -> f
+    boolean serializeSpecialFloatingPointValues -> g
+    java.lang.String datePattern -> a
+    int dateStyle -> a
+    int timeStyle -> b
+    com.google.gson.LongSerializationPolicy longSerializationPolicy -> a
+    java.util.List builderFactories -> b
+    java.util.List builderHierarchyFactories -> c
+    void <init>() -> <init>
+    void <init>(com.google.gson.internal.Excluder,com.google.gson.FieldNamingStrategy,java.util.Map,boolean,boolean,boolean,boolean,boolean,boolean,boolean,com.google.gson.LongSerializationPolicy,java.lang.String,int,int,java.util.List,java.util.List,java.util.List) -> <init>
+    com.google.gson.TypeAdapter doubleAdapter(boolean) -> a
+    com.google.gson.TypeAdapter floatAdapter(boolean) -> b
+    void checkValidFloatingPoint(double) -> a
+    com.google.gson.TypeAdapter longAdapter(com.google.gson.LongSerializationPolicy) -> a
+    com.google.gson.TypeAdapter atomicLongAdapter(com.google.gson.TypeAdapter) -> a
+    com.google.gson.TypeAdapter atomicLongArrayAdapter(com.google.gson.TypeAdapter) -> b
+    com.google.gson.TypeAdapter getAdapter(com.google.gson.reflect.TypeToken) -> a
+    com.google.gson.TypeAdapter getDelegateAdapter(com.google.gson.TypeAdapterFactory,com.google.gson.reflect.TypeToken) -> a
+    com.google.gson.TypeAdapter getAdapter(java.lang.Class) -> a
+    java.lang.String toJson(com.google.gson.JsonElement) -> a
+    void toJson(com.google.gson.JsonElement,java.lang.Appendable) -> a
+    com.google.gson.stream.JsonWriter newJsonWriter(java.io.Writer) -> a
+    com.google.gson.stream.JsonReader newJsonReader(java.io.Reader) -> a
+    void toJson(com.google.gson.JsonElement,com.google.gson.stream.JsonWriter) -> a
+    java.lang.Object fromJson(java.io.Reader,java.lang.Class) -> a
+    void assertFullConsumption(java.lang.Object,com.google.gson.stream.JsonReader) -> a
+    java.lang.Object fromJson(com.google.gson.stream.JsonReader,java.lang.reflect.Type) -> a
+    java.lang.String toString() -> toString
+    void <clinit>() -> <clinit>
+com.google.gson.Gson$1 -> m:
+    com.google.gson.Gson this$0 -> a
+    void <init>(com.google.gson.Gson) -> <init>
+    java.lang.Double read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Number) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+com.google.gson.Gson$2 -> n:
+    com.google.gson.Gson this$0 -> a
+    void <init>(com.google.gson.Gson) -> <init>
+    java.lang.Float read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Number) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+com.google.gson.Gson$3 -> o:
+    void <init>() -> <init>
+    java.lang.Number read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Number) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+com.google.gson.Gson$4 -> p:
+    com.google.gson.TypeAdapter val$longAdapter -> a
+    void <init>(com.google.gson.TypeAdapter) -> <init>
+    void write(com.google.gson.stream.JsonWriter,java.util.concurrent.atomic.AtomicLong) -> a
+    java.util.concurrent.atomic.AtomicLong read(com.google.gson.stream.JsonReader) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+com.google.gson.Gson$5 -> q:
+    com.google.gson.TypeAdapter val$longAdapter -> a
+    void <init>(com.google.gson.TypeAdapter) -> <init>
+    void write(com.google.gson.stream.JsonWriter,java.util.concurrent.atomic.AtomicLongArray) -> a
+    java.util.concurrent.atomic.AtomicLongArray read(com.google.gson.stream.JsonReader) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+com.google.gson.Gson$FutureTypeAdapter -> r:
+    com.google.gson.TypeAdapter delegate -> a
+    void <init>() -> <init>
+    void setDelegate(com.google.gson.TypeAdapter) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+com.google.gson.GsonBuilder -> s:
+    com.google.gson.internal.Excluder excluder -> a
+    com.google.gson.LongSerializationPolicy longSerializationPolicy -> a
+    com.google.gson.FieldNamingStrategy fieldNamingPolicy -> a
+    java.util.Map instanceCreators -> a
+    java.util.List factories -> a
+    java.util.List hierarchyFactories -> b
+    boolean serializeNulls -> a
+    java.lang.String datePattern -> a
+    int dateStyle -> a
+    int timeStyle -> b
+    boolean complexMapKeySerialization -> b
+    boolean serializeSpecialFloatingPointValues -> c
+    boolean escapeHtmlChars -> d
+    boolean prettyPrinting -> e
+    boolean generateNonExecutableJson -> f
+    boolean lenient -> g
+    void <init>() -> <init>
+    com.google.gson.GsonBuilder setPrettyPrinting() -> a
+    com.google.gson.GsonBuilder registerTypeAdapter(java.lang.reflect.Type,java.lang.Object) -> a
+    com.google.gson.Gson create() -> a
+    void addTypeAdaptersForDate(java.lang.String,int,int,java.util.List) -> a
+com.google.gson.InstanceCreator -> t:
+    java.lang.Object createInstance(java.lang.reflect.Type) -> a
+com.google.gson.JsonArray -> u:
+    java.util.List elements -> a
+    void <init>() -> <init>
+    void add(com.google.gson.JsonElement) -> a
+    java.util.Iterator iterator() -> iterator
+    java.lang.Number getAsNumber() -> a
+    java.lang.String getAsString() -> a
+    double getAsDouble() -> a
+    long getAsLong() -> a
+    int getAsInt() -> a
+    boolean getAsBoolean() -> a
+    boolean equals(java.lang.Object) -> equals
+    int hashCode() -> hashCode
+com.google.gson.JsonDeserializationContext -> v:
+com.google.gson.JsonDeserializer -> w:
+    java.lang.Object deserialize(com.google.gson.JsonElement,java.lang.reflect.Type,com.google.gson.JsonDeserializationContext) -> a
+com.google.gson.JsonElement -> x:
+    void <init>() -> <init>
+    boolean isJsonArray() -> b
+    boolean isJsonObject() -> c
+    boolean isJsonPrimitive() -> d
+    boolean isJsonNull() -> e
+    com.google.gson.JsonObject getAsJsonObject() -> a
+    com.google.gson.JsonArray getAsJsonArray() -> a
+    com.google.gson.JsonPrimitive getAsJsonPrimitive() -> a
+    boolean getAsBoolean() -> a
+    java.lang.Boolean getAsBooleanWrapper() -> a
+    java.lang.Number getAsNumber() -> a
+    java.lang.String getAsString() -> a
+    double getAsDouble() -> a
+    long getAsLong() -> a
+    int getAsInt() -> a
+    java.lang.String toString() -> toString
+com.google.gson.JsonIOException -> y:
+    void <init>(java.lang.String) -> <init>
+    void <init>(java.lang.String,java.lang.Throwable) -> <init>
+    void <init>(java.lang.Throwable) -> <init>
+com.google.gson.JsonNull -> z:
+    com.google.gson.JsonNull INSTANCE -> a
+    void <init>() -> <init>
+    int hashCode() -> hashCode
+    boolean equals(java.lang.Object) -> equals
+    void <clinit>() -> <clinit>
+com.google.gson.JsonObject -> A:
+    com.google.gson.internal.LinkedTreeMap members -> a
+    void <init>() -> <init>
+    void add(java.lang.String,com.google.gson.JsonElement) -> a
+    void addProperty(java.lang.String,java.lang.String) -> a
+    com.google.gson.JsonElement createJsonElement(java.lang.Object) -> a
+    java.util.Set entrySet() -> a
+    com.google.gson.JsonObject getAsJsonObject(java.lang.String) -> a
+    boolean equals(java.lang.Object) -> equals
+    int hashCode() -> hashCode
+com.google.gson.JsonParseException -> B:
+    void <init>(java.lang.String) -> <init>
+    void <init>(java.lang.String,java.lang.Throwable) -> <init>
+    void <init>(java.lang.Throwable) -> <init>
+com.google.gson.JsonParser -> C:
+    void <init>() -> <init>
+    com.google.gson.JsonElement parse(java.io.Reader) -> a
+    com.google.gson.JsonElement parse(com.google.gson.stream.JsonReader) -> a
+com.google.gson.JsonPrimitive -> D:
+    java.lang.Class[] PRIMITIVE_TYPES -> a
+    java.lang.Object value -> a
+    void <init>(java.lang.Boolean) -> <init>
+    void <init>(java.lang.Number) -> <init>
+    void <init>(java.lang.String) -> <init>
+    void <init>(java.lang.Object) -> <init>
+    void setValue(java.lang.Object) -> a
+    boolean isBoolean() -> f
+    java.lang.Boolean getAsBooleanWrapper() -> a
+    boolean getAsBoolean() -> a
+    boolean isNumber() -> g
+    java.lang.Number getAsNumber() -> a
+    boolean isString() -> h
+    java.lang.String getAsString() -> a
+    double getAsDouble() -> a
+    long getAsLong() -> a
+    int getAsInt() -> a
+    boolean isPrimitiveOrString(java.lang.Object) -> a
+    int hashCode() -> hashCode
+    boolean equals(java.lang.Object) -> equals
+    boolean isIntegral(com.google.gson.JsonPrimitive) -> a
+    void <clinit>() -> <clinit>
+com.google.gson.JsonSerializationContext -> E:
+com.google.gson.JsonSerializer -> F:
+    com.google.gson.JsonElement serialize(java.lang.Object,java.lang.reflect.Type,com.google.gson.JsonSerializationContext) -> a
+com.google.gson.JsonSyntaxException -> G:
+    void <init>(java.lang.String) -> <init>
+    void <init>(java.lang.String,java.lang.Throwable) -> <init>
+    void <init>(java.lang.Throwable) -> <init>
+com.google.gson.LongSerializationPolicy -> H:
+    com.google.gson.LongSerializationPolicy DEFAULT -> a
+    com.google.gson.LongSerializationPolicy STRING -> b
+    com.google.gson.LongSerializationPolicy[] $VALUES -> a
+    void <init>(java.lang.String,int) -> <init>
+    void <init>(java.lang.String,int,com.google.gson.LongSerializationPolicy$1) -> <init>
+    void <clinit>() -> <clinit>
+com.google.gson.LongSerializationPolicy$1 -> I:
+    void <init>(java.lang.String,int) -> <init>
+com.google.gson.LongSerializationPolicy$2 -> J:
+    void <init>(java.lang.String,int) -> <init>
+com.google.gson.TypeAdapter -> K:
+    void <init>() -> <init>
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+    com.google.gson.TypeAdapter nullSafe() -> a
+    com.google.gson.JsonElement toJsonTree(java.lang.Object) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+com.google.gson.TypeAdapter$1 -> L:
+    com.google.gson.TypeAdapter this$0 -> a
+    void <init>(com.google.gson.TypeAdapter) -> <init>
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+com.google.gson.TypeAdapterFactory -> M:
+    com.google.gson.TypeAdapter create(com.google.gson.Gson,com.google.gson.reflect.TypeToken) -> a
+com.google.gson.annotations.Expose -> N:
+    boolean serialize() -> a
+    boolean deserialize() -> b
+com.google.gson.annotations.JsonAdapter -> O:
+    java.lang.Class value() -> a
+    boolean nullSafe() -> a
+com.google.gson.annotations.SerializedName -> P:
+    java.lang.String value() -> a
+    java.lang.String[] alternate() -> a
+com.google.gson.annotations.Since -> Q:
+    double value() -> a
+com.google.gson.annotations.Until -> R:
+    double value() -> a
+com.google.gson.internal.$Gson$Preconditions -> S:
+    java.lang.Object checkNotNull(java.lang.Object) -> a
+    void checkArgument(boolean) -> a
+com.google.gson.internal.$Gson$Types -> T:
+    java.lang.reflect.Type[] EMPTY_TYPE_ARRAY -> a
+    java.lang.reflect.ParameterizedType newParameterizedTypeWithOwner(java.lang.reflect.Type,java.lang.reflect.Type,java.lang.reflect.Type[]) -> a
+    java.lang.reflect.GenericArrayType arrayOf(java.lang.reflect.Type) -> a
+    java.lang.reflect.WildcardType subtypeOf(java.lang.reflect.Type) -> a
+    java.lang.reflect.WildcardType supertypeOf(java.lang.reflect.Type) -> b
+    java.lang.reflect.Type canonicalize(java.lang.reflect.Type) -> a
+    java.lang.Class getRawType(java.lang.reflect.Type) -> a
+    boolean equal(java.lang.Object,java.lang.Object) -> a
+    boolean equals(java.lang.reflect.Type,java.lang.reflect.Type) -> a
+    int hashCodeOrZero(java.lang.Object) -> a
+    java.lang.String typeToString(java.lang.reflect.Type) -> a
+    java.lang.reflect.Type getGenericSupertype(java.lang.reflect.Type,java.lang.Class,java.lang.Class) -> a
+    java.lang.reflect.Type getSupertype(java.lang.reflect.Type,java.lang.Class,java.lang.Class) -> b
+    java.lang.reflect.Type getArrayComponentType(java.lang.reflect.Type) -> b
+    java.lang.reflect.Type getCollectionElementType(java.lang.reflect.Type,java.lang.Class) -> a
+    java.lang.reflect.Type[] getMapKeyAndValueTypes(java.lang.reflect.Type,java.lang.Class) -> a
+    java.lang.reflect.Type resolve(java.lang.reflect.Type,java.lang.Class,java.lang.reflect.Type) -> a
+    java.lang.reflect.Type resolve(java.lang.reflect.Type,java.lang.Class,java.lang.reflect.Type,java.util.Collection) -> a
+    java.lang.reflect.Type resolveTypeVariable(java.lang.reflect.Type,java.lang.Class,java.lang.reflect.TypeVariable) -> a
+    int indexOf(java.lang.Object[],java.lang.Object) -> a
+    java.lang.Class declaringClassOf(java.lang.reflect.TypeVariable) -> a
+    void checkNotPrimitive(java.lang.reflect.Type) -> a
+    void <clinit>() -> <clinit>
+com.google.gson.internal.$Gson$Types$GenericArrayTypeImpl -> U:
+    java.lang.reflect.Type componentType -> a
+    void <init>(java.lang.reflect.Type) -> <init>
+    java.lang.reflect.Type getGenericComponentType() -> getGenericComponentType
+    boolean equals(java.lang.Object) -> equals
+    int hashCode() -> hashCode
+    java.lang.String toString() -> toString
+com.google.gson.internal.$Gson$Types$ParameterizedTypeImpl -> V:
+    java.lang.reflect.Type ownerType -> a
+    java.lang.reflect.Type rawType -> b
+    java.lang.reflect.Type[] typeArguments -> a
+    void <init>(java.lang.reflect.Type,java.lang.reflect.Type,java.lang.reflect.Type[]) -> <init>
+    java.lang.reflect.Type[] getActualTypeArguments() -> getActualTypeArguments
+    java.lang.reflect.Type getRawType() -> getRawType
+    java.lang.reflect.Type getOwnerType() -> getOwnerType
+    boolean equals(java.lang.Object) -> equals
+    int hashCode() -> hashCode
+    java.lang.String toString() -> toString
+com.google.gson.internal.$Gson$Types$WildcardTypeImpl -> W:
+    java.lang.reflect.Type upperBound -> a
+    java.lang.reflect.Type lowerBound -> b
+    void <init>(java.lang.reflect.Type[],java.lang.reflect.Type[]) -> <init>
+    java.lang.reflect.Type[] getUpperBounds() -> getUpperBounds
+    java.lang.reflect.Type[] getLowerBounds() -> getLowerBounds
+    boolean equals(java.lang.Object) -> equals
+    int hashCode() -> hashCode
+    java.lang.String toString() -> toString
+com.google.gson.internal.ConstructorConstructor -> X:
+    java.util.Map instanceCreators -> a
+    com.google.gson.internal.reflect.ReflectionAccessor accessor -> a
+    void <init>(java.util.Map) -> <init>
+    com.google.gson.internal.ObjectConstructor get(com.google.gson.reflect.TypeToken) -> a
+    com.google.gson.internal.ObjectConstructor newDefaultConstructor(java.lang.Class) -> a
+    com.google.gson.internal.ObjectConstructor newDefaultImplementationConstructor(java.lang.reflect.Type,java.lang.Class) -> a
+    com.google.gson.internal.ObjectConstructor newUnsafeAllocator(java.lang.reflect.Type,java.lang.Class) -> b
+    java.lang.String toString() -> toString
+com.google.gson.internal.ConstructorConstructor$1 -> Y:
+    com.google.gson.InstanceCreator val$typeCreator -> a
+    java.lang.reflect.Type val$type -> a
+    com.google.gson.internal.ConstructorConstructor this$0 -> a
+    void <init>(com.google.gson.internal.ConstructorConstructor,com.google.gson.InstanceCreator,java.lang.reflect.Type) -> <init>
+    java.lang.Object construct() -> a
+com.google.gson.internal.ConstructorConstructor$10 -> Z:
+    com.google.gson.internal.ConstructorConstructor this$0 -> a
+    void <init>(com.google.gson.internal.ConstructorConstructor) -> <init>
+    java.lang.Object construct() -> a
+com.google.gson.internal.ConstructorConstructor$11 -> aa:
+    com.google.gson.internal.ConstructorConstructor this$0 -> a
+    void <init>(com.google.gson.internal.ConstructorConstructor) -> <init>
+    java.lang.Object construct() -> a
+com.google.gson.internal.ConstructorConstructor$12 -> ab:
+    com.google.gson.internal.ConstructorConstructor this$0 -> a
+    void <init>(com.google.gson.internal.ConstructorConstructor) -> <init>
+    java.lang.Object construct() -> a
+com.google.gson.internal.ConstructorConstructor$13 -> ac:
+    com.google.gson.internal.ConstructorConstructor this$0 -> a
+    void <init>(com.google.gson.internal.ConstructorConstructor) -> <init>
+    java.lang.Object construct() -> a
+com.google.gson.internal.ConstructorConstructor$14 -> ad:
+    com.google.gson.internal.UnsafeAllocator unsafeAllocator -> a
+    java.lang.Class val$rawType -> a
+    java.lang.reflect.Type val$type -> a
+    com.google.gson.internal.ConstructorConstructor this$0 -> a
+    void <init>(com.google.gson.internal.ConstructorConstructor,java.lang.Class,java.lang.reflect.Type) -> <init>
+    java.lang.Object construct() -> a
+com.google.gson.internal.ConstructorConstructor$2 -> ae:
+    com.google.gson.InstanceCreator val$rawTypeCreator -> a
+    java.lang.reflect.Type val$type -> a
+    com.google.gson.internal.ConstructorConstructor this$0 -> a
+    void <init>(com.google.gson.internal.ConstructorConstructor,com.google.gson.InstanceCreator,java.lang.reflect.Type) -> <init>
+    java.lang.Object construct() -> a
+com.google.gson.internal.ConstructorConstructor$3 -> af:
+    java.lang.reflect.Constructor val$constructor -> a
+    com.google.gson.internal.ConstructorConstructor this$0 -> a
+    void <init>(com.google.gson.internal.ConstructorConstructor,java.lang.reflect.Constructor) -> <init>
+    java.lang.Object construct() -> a
+com.google.gson.internal.ConstructorConstructor$4 -> ag:
+    com.google.gson.internal.ConstructorConstructor this$0 -> a
+    void <init>(com.google.gson.internal.ConstructorConstructor) -> <init>
+    java.lang.Object construct() -> a
+com.google.gson.internal.ConstructorConstructor$5 -> ah:
+    java.lang.reflect.Type val$type -> a
+    com.google.gson.internal.ConstructorConstructor this$0 -> a
+    void <init>(com.google.gson.internal.ConstructorConstructor,java.lang.reflect.Type) -> <init>
+    java.lang.Object construct() -> a
+com.google.gson.internal.ConstructorConstructor$6 -> ai:
+    com.google.gson.internal.ConstructorConstructor this$0 -> a
+    void <init>(com.google.gson.internal.ConstructorConstructor) -> <init>
+    java.lang.Object construct() -> a
+com.google.gson.internal.ConstructorConstructor$7 -> aj:
+    com.google.gson.internal.ConstructorConstructor this$0 -> a
+    void <init>(com.google.gson.internal.ConstructorConstructor) -> <init>
+    java.lang.Object construct() -> a
+com.google.gson.internal.ConstructorConstructor$8 -> ak:
+    com.google.gson.internal.ConstructorConstructor this$0 -> a
+    void <init>(com.google.gson.internal.ConstructorConstructor) -> <init>
+    java.lang.Object construct() -> a
+com.google.gson.internal.ConstructorConstructor$9 -> al:
+    com.google.gson.internal.ConstructorConstructor this$0 -> a
+    void <init>(com.google.gson.internal.ConstructorConstructor) -> <init>
+    java.lang.Object construct() -> a
+com.google.gson.internal.Excluder -> am:
+    com.google.gson.internal.Excluder DEFAULT -> a
+    double version -> a
+    int modifiers -> a
+    boolean serializeInnerClasses -> a
+    boolean requireExpose -> b
+    java.util.List serializationStrategies -> a
+    java.util.List deserializationStrategies -> b
+    void <init>() -> <init>
+    com.google.gson.internal.Excluder clone() -> a
+    com.google.gson.TypeAdapter create(com.google.gson.Gson,com.google.gson.reflect.TypeToken) -> a
+    boolean excludeField(java.lang.reflect.Field,boolean) -> a
+    boolean excludeClassChecks(java.lang.Class) -> a
+    boolean excludeClass(java.lang.Class,boolean) -> a
+    boolean excludeClassInStrategy(java.lang.Class,boolean) -> b
+    boolean isAnonymousOrLocal(java.lang.Class) -> b
+    boolean isInnerClass(java.lang.Class) -> c
+    boolean isStatic(java.lang.Class) -> d
+    boolean isValidVersion(com.google.gson.annotations.Since,com.google.gson.annotations.Until) -> a
+    boolean isValidSince(com.google.gson.annotations.Since) -> a
+    boolean isValidUntil(com.google.gson.annotations.Until) -> a
+    java.lang.Object clone() -> clone
+    void <clinit>() -> <clinit>
+com.google.gson.internal.Excluder$1 -> an:
+    com.google.gson.TypeAdapter delegate -> a
+    boolean val$skipDeserialize -> a
+    boolean val$skipSerialize -> b
+    com.google.gson.Gson val$gson -> a
+    com.google.gson.reflect.TypeToken val$type -> a
+    com.google.gson.internal.Excluder this$0 -> a
+    void <init>(com.google.gson.internal.Excluder,boolean,boolean,com.google.gson.Gson,com.google.gson.reflect.TypeToken) -> <init>
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+    com.google.gson.TypeAdapter delegate() -> b
+com.google.gson.internal.JavaVersion -> ao:
+    int majorJavaVersion -> a
+    int determineMajorJavaVersion() -> b
+    int getMajorJavaVersion(java.lang.String) -> a
+    int parseDotted(java.lang.String) -> b
+    int extractBeginningInt(java.lang.String) -> c
+    int getMajorJavaVersion() -> a
+    boolean isJava9OrLater() -> a
+    void <clinit>() -> <clinit>
+com.google.gson.internal.JsonReaderInternalAccess -> ap:
+    com.google.gson.internal.JsonReaderInternalAccess INSTANCE -> a
+    void <init>() -> <init>
+    void promoteNameToValue(com.google.gson.stream.JsonReader) -> a
+com.google.gson.internal.LazilyParsedNumber -> aq:
+    java.lang.String value -> a
+    void <init>(java.lang.String) -> <init>
+    int intValue() -> intValue
+    long longValue() -> longValue
+    float floatValue() -> floatValue
+    double doubleValue() -> doubleValue
+    java.lang.String toString() -> toString
+    int hashCode() -> hashCode
+    boolean equals(java.lang.Object) -> equals
+com.google.gson.internal.LinkedTreeMap -> ar:
+    java.util.Comparator NATURAL_ORDER -> b
+    java.util.Comparator comparator -> a
+    com.google.gson.internal.LinkedTreeMap$Node root -> a
+    int size -> a
+    int modCount -> b
+    com.google.gson.internal.LinkedTreeMap$Node header -> b
+    com.google.gson.internal.LinkedTreeMap$EntrySet entrySet -> a
+    com.google.gson.internal.LinkedTreeMap$KeySet keySet -> a
+    boolean $assertionsDisabled -> a
+    void <init>() -> <init>
+    void <init>(java.util.Comparator) -> <init>
+    int size() -> size
+    java.lang.Object get(java.lang.Object) -> get
+    boolean containsKey(java.lang.Object) -> containsKey
+    java.lang.Object put(java.lang.Object,java.lang.Object) -> put
+    void clear() -> clear
+    java.lang.Object remove(java.lang.Object) -> remove
+    com.google.gson.internal.LinkedTreeMap$Node find(java.lang.Object,boolean) -> a
+    com.google.gson.internal.LinkedTreeMap$Node findByObject(java.lang.Object) -> a
+    com.google.gson.internal.LinkedTreeMap$Node findByEntry(java.util.Map$Entry) -> a
+    boolean equal(java.lang.Object,java.lang.Object) -> a
+    void removeInternal(com.google.gson.internal.LinkedTreeMap$Node,boolean) -> a
+    com.google.gson.internal.LinkedTreeMap$Node removeInternalByKey(java.lang.Object) -> b
+    void replaceInParent(com.google.gson.internal.LinkedTreeMap$Node,com.google.gson.internal.LinkedTreeMap$Node) -> a
+    void rebalance(com.google.gson.internal.LinkedTreeMap$Node,boolean) -> b
+    void rotateLeft(com.google.gson.internal.LinkedTreeMap$Node) -> a
+    void rotateRight(com.google.gson.internal.LinkedTreeMap$Node) -> b
+    java.util.Set entrySet() -> entrySet
+    java.util.Set keySet() -> keySet
+    void <clinit>() -> <clinit>
+com.google.gson.internal.LinkedTreeMap$1 -> as:
+    void <init>() -> <init>
+    int compare(java.lang.Comparable,java.lang.Comparable) -> a
+    int compare(java.lang.Object,java.lang.Object) -> compare
+com.google.gson.internal.LinkedTreeMap$EntrySet -> at:
+    com.google.gson.internal.LinkedTreeMap this$0 -> a
+    void <init>(com.google.gson.internal.LinkedTreeMap) -> <init>
+    int size() -> size
+    java.util.Iterator iterator() -> iterator
+    boolean contains(java.lang.Object) -> contains
+    boolean remove(java.lang.Object) -> remove
+    void clear() -> clear
+com.google.gson.internal.LinkedTreeMap$EntrySet$1 -> au:
+    com.google.gson.internal.LinkedTreeMap$EntrySet this$1 -> a
+    void <init>(com.google.gson.internal.LinkedTreeMap$EntrySet) -> <init>
+    java.util.Map$Entry next() -> a
+    java.lang.Object next() -> next
+com.google.gson.internal.LinkedTreeMap$KeySet -> av:
+    com.google.gson.internal.LinkedTreeMap this$0 -> a
+    void <init>(com.google.gson.internal.LinkedTreeMap) -> <init>
+    int size() -> size
+    java.util.Iterator iterator() -> iterator
+    boolean contains(java.lang.Object) -> contains
+    boolean remove(java.lang.Object) -> remove
+    void clear() -> clear
+com.google.gson.internal.LinkedTreeMap$KeySet$1 -> aw:
+    com.google.gson.internal.LinkedTreeMap$KeySet this$1 -> a
+    void <init>(com.google.gson.internal.LinkedTreeMap$KeySet) -> <init>
+    java.lang.Object next() -> next
+com.google.gson.internal.LinkedTreeMap$LinkedTreeMapIterator -> ax:
+    com.google.gson.internal.LinkedTreeMap$Node next -> a
+    com.google.gson.internal.LinkedTreeMap$Node lastReturned -> b
+    int expectedModCount -> a
+    com.google.gson.internal.LinkedTreeMap this$0 -> a
+    void <init>(com.google.gson.internal.LinkedTreeMap) -> <init>
+    boolean hasNext() -> hasNext
+    com.google.gson.internal.LinkedTreeMap$Node nextNode() -> a
+    void remove() -> remove
+com.google.gson.internal.LinkedTreeMap$Node -> ay:
+    com.google.gson.internal.LinkedTreeMap$Node parent -> a
+    com.google.gson.internal.LinkedTreeMap$Node left -> b
+    com.google.gson.internal.LinkedTreeMap$Node right -> c
+    com.google.gson.internal.LinkedTreeMap$Node next -> d
+    com.google.gson.internal.LinkedTreeMap$Node prev -> e
+    java.lang.Object key -> a
+    java.lang.Object value -> b
+    int height -> a
+    void <init>() -> <init>
+    void <init>(com.google.gson.internal.LinkedTreeMap$Node,java.lang.Object,com.google.gson.internal.LinkedTreeMap$Node,com.google.gson.internal.LinkedTreeMap$Node) -> <init>
+    java.lang.Object getKey() -> getKey
+    java.lang.Object getValue() -> getValue
+    java.lang.Object setValue(java.lang.Object) -> setValue
+    boolean equals(java.lang.Object) -> equals
+    int hashCode() -> hashCode
+    java.lang.String toString() -> toString
+    com.google.gson.internal.LinkedTreeMap$Node first() -> a
+    com.google.gson.internal.LinkedTreeMap$Node last() -> b
+com.google.gson.internal.ObjectConstructor -> az:
+    java.lang.Object construct() -> a
+com.google.gson.internal.PreJava9DateFormatProvider -> aA:
+    java.text.DateFormat getUSDateTimeFormat(int,int) -> a
+    java.lang.String getDatePartOfDateTimePattern(int) -> a
+    java.lang.String getTimePartOfDateTimePattern(int) -> b
+com.google.gson.internal.Primitives -> aB:
+    java.util.Map PRIMITIVE_TO_WRAPPER_TYPE -> a
+    java.util.Map WRAPPER_TO_PRIMITIVE_TYPE -> b
+    void add(java.util.Map,java.util.Map,java.lang.Class,java.lang.Class) -> a
+    boolean isPrimitive(java.lang.reflect.Type) -> a
+    java.lang.Class wrap(java.lang.Class) -> a
+    void <clinit>() -> <clinit>
+com.google.gson.internal.Streams -> aC:
+    com.google.gson.JsonElement parse(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.JsonElement,com.google.gson.stream.JsonWriter) -> a
+    java.io.Writer writerForAppendable(java.lang.Appendable) -> a
+com.google.gson.internal.Streams$AppendableWriter -> aD:
+    java.lang.Appendable appendable -> a
+    com.google.gson.internal.Streams$AppendableWriter$CurrentWrite currentWrite -> a
+    void <init>(java.lang.Appendable) -> <init>
+    void write(char[],int,int) -> write
+    void write(int) -> write
+    void flush() -> flush
+    void close() -> close
+com.google.gson.internal.Streams$AppendableWriter$CurrentWrite -> aE:
+    char[] chars -> a
+    void <init>() -> <init>
+    int length() -> length
+    char charAt(int) -> charAt
+    java.lang.CharSequence subSequence(int,int) -> subSequence
+com.google.gson.internal.UnsafeAllocator -> aF:
+    void <init>() -> <init>
+    java.lang.Object newInstance(java.lang.Class) -> a
+    com.google.gson.internal.UnsafeAllocator create() -> a
+    void assertInstantiable(java.lang.Class) -> a
+com.google.gson.internal.UnsafeAllocator$1 -> aG:
+    java.lang.reflect.Method val$allocateInstance -> a
+    java.lang.Object val$unsafe -> a
+    void <init>(java.lang.reflect.Method,java.lang.Object) -> <init>
+    java.lang.Object newInstance(java.lang.Class) -> a
+com.google.gson.internal.UnsafeAllocator$2 -> aH:
+    java.lang.reflect.Method val$newInstance -> a
+    int val$constructorId -> a
+    void <init>(java.lang.reflect.Method,int) -> <init>
+    java.lang.Object newInstance(java.lang.Class) -> a
+com.google.gson.internal.UnsafeAllocator$3 -> aI:
+    java.lang.reflect.Method val$newInstance -> a
+    void <init>(java.lang.reflect.Method) -> <init>
+    java.lang.Object newInstance(java.lang.Class) -> a
+com.google.gson.internal.UnsafeAllocator$4 -> aJ:
+    void <init>() -> <init>
+    java.lang.Object newInstance(java.lang.Class) -> a
+com.google.gson.internal.bind.ArrayTypeAdapter -> aK:
+    com.google.gson.TypeAdapterFactory FACTORY -> a
+    java.lang.Class componentType -> a
+    com.google.gson.TypeAdapter componentTypeAdapter -> a
+    void <init>(com.google.gson.Gson,com.google.gson.TypeAdapter,java.lang.Class) -> <init>
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+    void <clinit>() -> <clinit>
+com.google.gson.internal.bind.ArrayTypeAdapter$1 -> aL:
+    void <init>() -> <init>
+    com.google.gson.TypeAdapter create(com.google.gson.Gson,com.google.gson.reflect.TypeToken) -> a
+com.google.gson.internal.bind.CollectionTypeAdapterFactory -> aM:
+    com.google.gson.internal.ConstructorConstructor constructorConstructor -> a
+    void <init>(com.google.gson.internal.ConstructorConstructor) -> <init>
+    com.google.gson.TypeAdapter create(com.google.gson.Gson,com.google.gson.reflect.TypeToken) -> a
+com.google.gson.internal.bind.CollectionTypeAdapterFactory$Adapter -> aN:
+    com.google.gson.TypeAdapter elementTypeAdapter -> a
+    com.google.gson.internal.ObjectConstructor constructor -> a
+    void <init>(com.google.gson.Gson,java.lang.reflect.Type,com.google.gson.TypeAdapter,com.google.gson.internal.ObjectConstructor) -> <init>
+    java.util.Collection read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.util.Collection) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+com.google.gson.internal.bind.DateTypeAdapter -> aO:
+    com.google.gson.TypeAdapterFactory FACTORY -> a
+    java.util.List dateFormats -> a
+    void <init>() -> <init>
+    java.util.Date read(com.google.gson.stream.JsonReader) -> a
+    java.util.Date deserializeToDate(java.lang.String) -> a
+    void write(com.google.gson.stream.JsonWriter,java.util.Date) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+    void <clinit>() -> <clinit>
+com.google.gson.internal.bind.DateTypeAdapter$1 -> aP:
+    void <init>() -> <init>
+    com.google.gson.TypeAdapter create(com.google.gson.Gson,com.google.gson.reflect.TypeToken) -> a
+com.google.gson.internal.bind.JsonAdapterAnnotationTypeAdapterFactory -> aQ:
+    com.google.gson.internal.ConstructorConstructor constructorConstructor -> a
+    void <init>(com.google.gson.internal.ConstructorConstructor) -> <init>
+    com.google.gson.TypeAdapter create(com.google.gson.Gson,com.google.gson.reflect.TypeToken) -> a
+    com.google.gson.TypeAdapter getTypeAdapter(com.google.gson.internal.ConstructorConstructor,com.google.gson.Gson,com.google.gson.reflect.TypeToken,com.google.gson.annotations.JsonAdapter) -> a
+com.google.gson.internal.bind.JsonTreeReader -> aR:
+    java.io.Reader UNREADABLE_READER -> a
+    java.lang.Object SENTINEL_CLOSED -> a
+    java.lang.Object[] stack -> a
+    int stackSize -> b
+    java.lang.String[] pathNames -> a
+    int[] pathIndices -> a
+    void beginArray() -> a
+    void endArray() -> b
+    void beginObject() -> c
+    void endObject() -> d
+    boolean hasNext() -> a
+    com.google.gson.stream.JsonToken peek() -> a
+    java.lang.Object peekStack() -> a
+    java.lang.Object popStack() -> b
+    void expect(com.google.gson.stream.JsonToken) -> a
+    java.lang.String nextName() -> a
+    java.lang.String nextString() -> b
+    boolean nextBoolean() -> b
+    void nextNull() -> e
+    double nextDouble() -> a
+    long nextLong() -> a
+    int nextInt() -> a
+    void close() -> close
+    void skipValue() -> f
+    java.lang.String toString() -> toString
+    void promoteNameToValue() -> g
+    void push(java.lang.Object) -> a
+    java.lang.String getPath() -> c
+    java.lang.String locationString() -> e
+    void <clinit>() -> <clinit>
+com.google.gson.internal.bind.JsonTreeReader$1 -> aS:
+    void <init>() -> <init>
+    int read(char[],int,int) -> read
+    void close() -> close
+com.google.gson.internal.bind.JsonTreeWriter -> aT:
+    java.io.Writer UNWRITABLE_WRITER -> a
+    com.google.gson.JsonPrimitive SENTINEL_CLOSED -> a
+    java.util.List stack -> a
+    java.lang.String pendingName -> a
+    com.google.gson.JsonElement product -> a
+    void <init>() -> <init>
+    com.google.gson.JsonElement get() -> a
+    com.google.gson.JsonElement peek() -> b
+    void put(com.google.gson.JsonElement) -> a
+    com.google.gson.stream.JsonWriter beginArray() -> a
+    com.google.gson.stream.JsonWriter endArray() -> b
+    com.google.gson.stream.JsonWriter beginObject() -> c
+    com.google.gson.stream.JsonWriter endObject() -> d
+    com.google.gson.stream.JsonWriter name(java.lang.String) -> a
+    com.google.gson.stream.JsonWriter value(java.lang.String) -> b
+    com.google.gson.stream.JsonWriter nullValue() -> e
+    com.google.gson.stream.JsonWriter value(boolean) -> a
+    com.google.gson.stream.JsonWriter value(java.lang.Boolean) -> a
+    com.google.gson.stream.JsonWriter value(long) -> a
+    com.google.gson.stream.JsonWriter value(java.lang.Number) -> a
+    void flush() -> flush
+    void close() -> close
+    void <clinit>() -> <clinit>
+com.google.gson.internal.bind.JsonTreeWriter$1 -> aU:
+    void <init>() -> <init>
+    void write(char[],int,int) -> write
+    void flush() -> flush
+    void close() -> close
+com.google.gson.internal.bind.MapTypeAdapterFactory -> aV:
+    com.google.gson.internal.ConstructorConstructor constructorConstructor -> a
+    boolean complexMapKeySerialization -> a
+    void <init>(com.google.gson.internal.ConstructorConstructor,boolean) -> <init>
+    com.google.gson.TypeAdapter create(com.google.gson.Gson,com.google.gson.reflect.TypeToken) -> a
+    com.google.gson.TypeAdapter getKeyAdapter(com.google.gson.Gson,java.lang.reflect.Type) -> a
+com.google.gson.internal.bind.MapTypeAdapterFactory$Adapter -> aW:
+    com.google.gson.TypeAdapter keyTypeAdapter -> a
+    com.google.gson.TypeAdapter valueTypeAdapter -> b
+    com.google.gson.internal.ObjectConstructor constructor -> a
+    com.google.gson.internal.bind.MapTypeAdapterFactory this$0 -> a
+    void <init>(com.google.gson.internal.bind.MapTypeAdapterFactory,com.google.gson.Gson,java.lang.reflect.Type,com.google.gson.TypeAdapter,java.lang.reflect.Type,com.google.gson.TypeAdapter,com.google.gson.internal.ObjectConstructor) -> <init>
+    java.util.Map read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.util.Map) -> a
+    java.lang.String keyToString(com.google.gson.JsonElement) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+com.google.gson.internal.bind.ObjectTypeAdapter -> aX:
+    com.google.gson.TypeAdapterFactory FACTORY -> a
+    com.google.gson.Gson gson -> a
+    void <init>(com.google.gson.Gson) -> <init>
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+    void <clinit>() -> <clinit>
+com.google.gson.internal.bind.ObjectTypeAdapter$1 -> aY:
+    void <init>() -> <init>
+    com.google.gson.TypeAdapter create(com.google.gson.Gson,com.google.gson.reflect.TypeToken) -> a
+com.google.gson.internal.bind.ObjectTypeAdapter$2 -> aZ:
+    int[] $SwitchMap$com$google$gson$stream$JsonToken -> a
+    void <clinit>() -> <clinit>
+com.google.gson.internal.bind.ReflectiveTypeAdapterFactory -> ba:
+    com.google.gson.internal.ConstructorConstructor constructorConstructor -> a
+    com.google.gson.FieldNamingStrategy fieldNamingPolicy -> a
+    com.google.gson.internal.Excluder excluder -> a
+    com.google.gson.internal.bind.JsonAdapterAnnotationTypeAdapterFactory jsonAdapterFactory -> a
+    com.google.gson.internal.reflect.ReflectionAccessor accessor -> a
+    void <init>(com.google.gson.internal.ConstructorConstructor,com.google.gson.FieldNamingStrategy,com.google.gson.internal.Excluder,com.google.gson.internal.bind.JsonAdapterAnnotationTypeAdapterFactory) -> <init>
+    boolean excludeField(java.lang.reflect.Field,boolean) -> a
+    boolean excludeField(java.lang.reflect.Field,boolean,com.google.gson.internal.Excluder) -> a
+    java.util.List getFieldNames(java.lang.reflect.Field) -> a
+    com.google.gson.TypeAdapter create(com.google.gson.Gson,com.google.gson.reflect.TypeToken) -> a
+    com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$BoundField createBoundField(com.google.gson.Gson,java.lang.reflect.Field,java.lang.String,com.google.gson.reflect.TypeToken,boolean,boolean) -> a
+    java.util.Map getBoundFields(com.google.gson.Gson,com.google.gson.reflect.TypeToken,java.lang.Class) -> a
+com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$1 -> bb:
+    java.lang.reflect.Field val$field -> a
+    boolean val$jsonAdapterPresent -> a
+    com.google.gson.TypeAdapter val$typeAdapter -> a
+    com.google.gson.Gson val$context -> a
+    com.google.gson.reflect.TypeToken val$fieldType -> a
+    boolean val$isPrimitive -> b
+    com.google.gson.internal.bind.ReflectiveTypeAdapterFactory this$0 -> a
+    void <init>(com.google.gson.internal.bind.ReflectiveTypeAdapterFactory,java.lang.String,boolean,boolean,java.lang.reflect.Field,boolean,com.google.gson.TypeAdapter,com.google.gson.Gson,com.google.gson.reflect.TypeToken,boolean) -> <init>
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+    void read(com.google.gson.stream.JsonReader,java.lang.Object) -> a
+    boolean writeField(java.lang.Object) -> a
+com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$Adapter -> bc:
+    com.google.gson.internal.ObjectConstructor constructor -> a
+    java.util.Map boundFields -> a
+    void <init>(com.google.gson.internal.ObjectConstructor,java.util.Map) -> <init>
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$BoundField -> bd:
+    java.lang.String name -> a
+    boolean serialized -> c
+    boolean deserialized -> d
+    void <init>(java.lang.String,boolean,boolean) -> <init>
+    boolean writeField(java.lang.Object) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+    void read(com.google.gson.stream.JsonReader,java.lang.Object) -> a
+com.google.gson.internal.bind.SqlDateTypeAdapter -> be:
+    com.google.gson.TypeAdapterFactory FACTORY -> a
+    java.text.DateFormat format -> a
+    void <init>() -> <init>
+    java.sql.Date read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.sql.Date) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+    void <clinit>() -> <clinit>
+com.google.gson.internal.bind.SqlDateTypeAdapter$1 -> bf:
+    void <init>() -> <init>
+    com.google.gson.TypeAdapter create(com.google.gson.Gson,com.google.gson.reflect.TypeToken) -> a
+com.google.gson.internal.bind.TimeTypeAdapter -> bg:
+    com.google.gson.TypeAdapterFactory FACTORY -> a
+    java.text.DateFormat format -> a
+    void <init>() -> <init>
+    java.sql.Time read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.sql.Time) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+    void <clinit>() -> <clinit>
+com.google.gson.internal.bind.TimeTypeAdapter$1 -> bh:
+    void <init>() -> <init>
+    com.google.gson.TypeAdapter create(com.google.gson.Gson,com.google.gson.reflect.TypeToken) -> a
+com.google.gson.internal.bind.TreeTypeAdapter -> bi:
+    com.google.gson.JsonSerializer serializer -> a
+    com.google.gson.JsonDeserializer deserializer -> a
+    com.google.gson.Gson gson -> a
+    com.google.gson.reflect.TypeToken typeToken -> a
+    com.google.gson.TypeAdapterFactory skipPast -> a
+    com.google.gson.internal.bind.TreeTypeAdapter$GsonContextImpl context -> a
+    com.google.gson.TypeAdapter delegate -> a
+    void <init>(com.google.gson.JsonSerializer,com.google.gson.JsonDeserializer,com.google.gson.Gson,com.google.gson.reflect.TypeToken,com.google.gson.TypeAdapterFactory) -> <init>
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+    com.google.gson.TypeAdapter delegate() -> b
+    com.google.gson.TypeAdapterFactory newFactoryWithMatchRawType(com.google.gson.reflect.TypeToken,java.lang.Object) -> a
+com.google.gson.internal.bind.TreeTypeAdapter$1 -> bj:
+com.google.gson.internal.bind.TreeTypeAdapter$GsonContextImpl -> bk:
+    com.google.gson.internal.bind.TreeTypeAdapter this$0 -> a
+    void <init>(com.google.gson.internal.bind.TreeTypeAdapter) -> <init>
+    void <init>(com.google.gson.internal.bind.TreeTypeAdapter,com.google.gson.internal.bind.TreeTypeAdapter$1) -> <init>
+com.google.gson.internal.bind.TreeTypeAdapter$SingleTypeFactory -> bl:
+    com.google.gson.reflect.TypeToken exactType -> a
+    boolean matchRawType -> a
+    java.lang.Class hierarchyType -> a
+    com.google.gson.JsonSerializer serializer -> a
+    com.google.gson.JsonDeserializer deserializer -> a
+    void <init>(java.lang.Object,com.google.gson.reflect.TypeToken,boolean,java.lang.Class) -> <init>
+    com.google.gson.TypeAdapter create(com.google.gson.Gson,com.google.gson.reflect.TypeToken) -> a
+com.google.gson.internal.bind.TypeAdapterRuntimeTypeWrapper -> bm:
+    com.google.gson.Gson context -> a
+    com.google.gson.TypeAdapter delegate -> a
+    java.lang.reflect.Type type -> a
+    void <init>(com.google.gson.Gson,com.google.gson.TypeAdapter,java.lang.reflect.Type) -> <init>
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+    java.lang.reflect.Type getRuntimeTypeIfMoreSpecific(java.lang.reflect.Type,java.lang.Object) -> a
+com.google.gson.internal.bind.TypeAdapters -> bn:
+    com.google.gson.TypeAdapter CLASS -> a
+    com.google.gson.TypeAdapterFactory CLASS_FACTORY -> a
+    com.google.gson.TypeAdapter BIT_SET -> b
+    com.google.gson.TypeAdapterFactory BIT_SET_FACTORY -> b
+    com.google.gson.TypeAdapter BOOLEAN -> c
+    com.google.gson.TypeAdapter BOOLEAN_AS_STRING -> d
+    com.google.gson.TypeAdapterFactory BOOLEAN_FACTORY -> c
+    com.google.gson.TypeAdapter BYTE -> e
+    com.google.gson.TypeAdapterFactory BYTE_FACTORY -> d
+    com.google.gson.TypeAdapter SHORT -> f
+    com.google.gson.TypeAdapterFactory SHORT_FACTORY -> e
+    com.google.gson.TypeAdapter INTEGER -> g
+    com.google.gson.TypeAdapterFactory INTEGER_FACTORY -> f
+    com.google.gson.TypeAdapter ATOMIC_INTEGER -> h
+    com.google.gson.TypeAdapterFactory ATOMIC_INTEGER_FACTORY -> g
+    com.google.gson.TypeAdapter ATOMIC_BOOLEAN -> i
+    com.google.gson.TypeAdapterFactory ATOMIC_BOOLEAN_FACTORY -> h
+    com.google.gson.TypeAdapter ATOMIC_INTEGER_ARRAY -> j
+    com.google.gson.TypeAdapterFactory ATOMIC_INTEGER_ARRAY_FACTORY -> i
+    com.google.gson.TypeAdapter LONG -> k
+    com.google.gson.TypeAdapter FLOAT -> l
+    com.google.gson.TypeAdapter DOUBLE -> m
+    com.google.gson.TypeAdapter NUMBER -> n
+    com.google.gson.TypeAdapterFactory NUMBER_FACTORY -> j
+    com.google.gson.TypeAdapter CHARACTER -> o
+    com.google.gson.TypeAdapterFactory CHARACTER_FACTORY -> k
+    com.google.gson.TypeAdapter STRING -> p
+    com.google.gson.TypeAdapter BIG_DECIMAL -> q
+    com.google.gson.TypeAdapter BIG_INTEGER -> r
+    com.google.gson.TypeAdapterFactory STRING_FACTORY -> l
+    com.google.gson.TypeAdapter STRING_BUILDER -> s
+    com.google.gson.TypeAdapterFactory STRING_BUILDER_FACTORY -> m
+    com.google.gson.TypeAdapter STRING_BUFFER -> t
+    com.google.gson.TypeAdapterFactory STRING_BUFFER_FACTORY -> n
+    com.google.gson.TypeAdapter URL -> u
+    com.google.gson.TypeAdapterFactory URL_FACTORY -> o
+    com.google.gson.TypeAdapter URI -> v
+    com.google.gson.TypeAdapterFactory URI_FACTORY -> p
+    com.google.gson.TypeAdapter INET_ADDRESS -> w
+    com.google.gson.TypeAdapterFactory INET_ADDRESS_FACTORY -> q
+    com.google.gson.TypeAdapter UUID -> x
+    com.google.gson.TypeAdapterFactory UUID_FACTORY -> r
+    com.google.gson.TypeAdapter CURRENCY -> y
+    com.google.gson.TypeAdapterFactory CURRENCY_FACTORY -> s
+    com.google.gson.TypeAdapterFactory TIMESTAMP_FACTORY -> t
+    com.google.gson.TypeAdapter CALENDAR -> z
+    com.google.gson.TypeAdapterFactory CALENDAR_FACTORY -> u
+    com.google.gson.TypeAdapter LOCALE -> A
+    com.google.gson.TypeAdapterFactory LOCALE_FACTORY -> v
+    com.google.gson.TypeAdapter JSON_ELEMENT -> B
+    com.google.gson.TypeAdapterFactory JSON_ELEMENT_FACTORY -> w
+    com.google.gson.TypeAdapterFactory ENUM_FACTORY -> x
+    com.google.gson.TypeAdapterFactory newFactory(com.google.gson.reflect.TypeToken,com.google.gson.TypeAdapter) -> a
+    com.google.gson.TypeAdapterFactory newFactory(java.lang.Class,com.google.gson.TypeAdapter) -> a
+    com.google.gson.TypeAdapterFactory newFactory(java.lang.Class,java.lang.Class,com.google.gson.TypeAdapter) -> a
+    com.google.gson.TypeAdapterFactory newFactoryForMultipleTypes(java.lang.Class,java.lang.Class,com.google.gson.TypeAdapter) -> b
+    com.google.gson.TypeAdapterFactory newTypeHierarchyFactory(java.lang.Class,com.google.gson.TypeAdapter) -> b
+    void <clinit>() -> <clinit>
+com.google.gson.internal.bind.TypeAdapters$1 -> bo:
+    void <init>() -> <init>
+    void write(com.google.gson.stream.JsonWriter,java.lang.Class) -> a
+    java.lang.Class read(com.google.gson.stream.JsonReader) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+com.google.gson.internal.bind.TypeAdapters$10 -> bp:
+    void <init>() -> <init>
+    java.util.concurrent.atomic.AtomicIntegerArray read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.util.concurrent.atomic.AtomicIntegerArray) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+com.google.gson.internal.bind.TypeAdapters$11 -> bq:
+    void <init>() -> <init>
+    java.lang.Number read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Number) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+com.google.gson.internal.bind.TypeAdapters$12 -> br:
+    void <init>() -> <init>
+    java.lang.Number read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Number) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+com.google.gson.internal.bind.TypeAdapters$13 -> bs:
+    void <init>() -> <init>
+    java.lang.Number read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Number) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+com.google.gson.internal.bind.TypeAdapters$14 -> bt:
+    void <init>() -> <init>
+    java.lang.Number read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Number) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+com.google.gson.internal.bind.TypeAdapters$15 -> bu:
+    void <init>() -> <init>
+    java.lang.Character read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Character) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+com.google.gson.internal.bind.TypeAdapters$16 -> bv:
+    void <init>() -> <init>
+    java.lang.String read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.String) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+com.google.gson.internal.bind.TypeAdapters$17 -> bw:
+    void <init>() -> <init>
+    java.math.BigDecimal read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.math.BigDecimal) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+com.google.gson.internal.bind.TypeAdapters$18 -> bx:
+    void <init>() -> <init>
+    java.math.BigInteger read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.math.BigInteger) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+com.google.gson.internal.bind.TypeAdapters$19 -> by:
+    void <init>() -> <init>
+    java.lang.StringBuilder read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.StringBuilder) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+com.google.gson.internal.bind.TypeAdapters$2 -> bz:
+    void <init>() -> <init>
+    java.util.BitSet read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.util.BitSet) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+com.google.gson.internal.bind.TypeAdapters$20 -> bA:
+    void <init>() -> <init>
+    java.lang.StringBuffer read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.StringBuffer) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+com.google.gson.internal.bind.TypeAdapters$21 -> bB:
+    void <init>() -> <init>
+    java.net.URL read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.net.URL) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+com.google.gson.internal.bind.TypeAdapters$22 -> bC:
+    void <init>() -> <init>
+    java.net.URI read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.net.URI) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+com.google.gson.internal.bind.TypeAdapters$23 -> bD:
+    void <init>() -> <init>
+    java.net.InetAddress read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.net.InetAddress) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+com.google.gson.internal.bind.TypeAdapters$24 -> bE:
+    void <init>() -> <init>
+    java.util.UUID read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.util.UUID) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+com.google.gson.internal.bind.TypeAdapters$25 -> bF:
+    void <init>() -> <init>
+    java.util.Currency read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.util.Currency) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+com.google.gson.internal.bind.TypeAdapters$26 -> bG:
+    void <init>() -> <init>
+    com.google.gson.TypeAdapter create(com.google.gson.Gson,com.google.gson.reflect.TypeToken) -> a
+com.google.gson.internal.bind.TypeAdapters$26$1 -> bH:
+    com.google.gson.TypeAdapter val$dateTypeAdapter -> a
+    com.google.gson.internal.bind.TypeAdapters$26 this$0 -> a
+    void <init>(com.google.gson.internal.bind.TypeAdapters$26,com.google.gson.TypeAdapter) -> <init>
+    java.sql.Timestamp read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.sql.Timestamp) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+com.google.gson.internal.bind.TypeAdapters$27 -> bI:
+    void <init>() -> <init>
+    java.util.Calendar read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.util.Calendar) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+com.google.gson.internal.bind.TypeAdapters$28 -> bJ:
+    void <init>() -> <init>
+    java.util.Locale read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.util.Locale) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+com.google.gson.internal.bind.TypeAdapters$29 -> bK:
+    void <init>() -> <init>
+    com.google.gson.JsonElement read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,com.google.gson.JsonElement) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+com.google.gson.internal.bind.TypeAdapters$3 -> bL:
+    void <init>() -> <init>
+    java.lang.Boolean read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Boolean) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+com.google.gson.internal.bind.TypeAdapters$30 -> bM:
+    void <init>() -> <init>
+    com.google.gson.TypeAdapter create(com.google.gson.Gson,com.google.gson.reflect.TypeToken) -> a
+com.google.gson.internal.bind.TypeAdapters$31 -> bN:
+    com.google.gson.reflect.TypeToken val$type -> a
+    com.google.gson.TypeAdapter val$typeAdapter -> a
+    void <init>(com.google.gson.reflect.TypeToken,com.google.gson.TypeAdapter) -> <init>
+    com.google.gson.TypeAdapter create(com.google.gson.Gson,com.google.gson.reflect.TypeToken) -> a
+com.google.gson.internal.bind.TypeAdapters$32 -> bO:
+    java.lang.Class val$type -> a
+    com.google.gson.TypeAdapter val$typeAdapter -> a
+    void <init>(java.lang.Class,com.google.gson.TypeAdapter) -> <init>
+    com.google.gson.TypeAdapter create(com.google.gson.Gson,com.google.gson.reflect.TypeToken) -> a
+    java.lang.String toString() -> toString
+com.google.gson.internal.bind.TypeAdapters$33 -> bP:
+    java.lang.Class val$unboxed -> a
+    java.lang.Class val$boxed -> b
+    com.google.gson.TypeAdapter val$typeAdapter -> a
+    void <init>(java.lang.Class,java.lang.Class,com.google.gson.TypeAdapter) -> <init>
+    com.google.gson.TypeAdapter create(com.google.gson.Gson,com.google.gson.reflect.TypeToken) -> a
+    java.lang.String toString() -> toString
+com.google.gson.internal.bind.TypeAdapters$34 -> bQ:
+    java.lang.Class val$base -> a
+    java.lang.Class val$sub -> b
+    com.google.gson.TypeAdapter val$typeAdapter -> a
+    void <init>(java.lang.Class,java.lang.Class,com.google.gson.TypeAdapter) -> <init>
+    com.google.gson.TypeAdapter create(com.google.gson.Gson,com.google.gson.reflect.TypeToken) -> a
+    java.lang.String toString() -> toString
+com.google.gson.internal.bind.TypeAdapters$35 -> bR:
+    java.lang.Class val$clazz -> a
+    com.google.gson.TypeAdapter val$typeAdapter -> a
+    void <init>(java.lang.Class,com.google.gson.TypeAdapter) -> <init>
+    com.google.gson.TypeAdapter create(com.google.gson.Gson,com.google.gson.reflect.TypeToken) -> a
+    java.lang.String toString() -> toString
+com.google.gson.internal.bind.TypeAdapters$35$1 -> bS:
+    java.lang.Class val$requestedType -> a
+    com.google.gson.internal.bind.TypeAdapters$35 this$0 -> a
+    void <init>(com.google.gson.internal.bind.TypeAdapters$35,java.lang.Class) -> <init>
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+com.google.gson.internal.bind.TypeAdapters$36 -> bT:
+    int[] $SwitchMap$com$google$gson$stream$JsonToken -> a
+    void <clinit>() -> <clinit>
+com.google.gson.internal.bind.TypeAdapters$4 -> bU:
+    void <init>() -> <init>
+    java.lang.Boolean read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Boolean) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+com.google.gson.internal.bind.TypeAdapters$5 -> bV:
+    void <init>() -> <init>
+    java.lang.Number read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Number) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+com.google.gson.internal.bind.TypeAdapters$6 -> bW:
+    void <init>() -> <init>
+    java.lang.Number read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Number) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+com.google.gson.internal.bind.TypeAdapters$7 -> bX:
+    void <init>() -> <init>
+    java.lang.Number read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Number) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+com.google.gson.internal.bind.TypeAdapters$8 -> bY:
+    void <init>() -> <init>
+    java.util.concurrent.atomic.AtomicInteger read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.util.concurrent.atomic.AtomicInteger) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+com.google.gson.internal.bind.TypeAdapters$9 -> bZ:
+    void <init>() -> <init>
+    java.util.concurrent.atomic.AtomicBoolean read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.util.concurrent.atomic.AtomicBoolean) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+com.google.gson.internal.bind.TypeAdapters$EnumTypeAdapter -> ca:
+    java.util.Map nameToConstant -> a
+    java.util.Map constantToName -> b
+    void <init>(java.lang.Class) -> <init>
+    java.lang.Enum read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Enum) -> a
+    java.lang.Object read(com.google.gson.stream.JsonReader) -> a
+    void write(com.google.gson.stream.JsonWriter,java.lang.Object) -> a
+com.google.gson.internal.bind.util.ISO8601Utils -> cb:
+    java.util.TimeZone TIMEZONE_UTC -> a
+    java.util.Date parse(java.lang.String,java.text.ParsePosition) -> a
+    boolean checkOffset(java.lang.String,int,char) -> a
+    int parseInt(java.lang.String,int,int) -> a
+    int indexOfNonDigit(java.lang.String,int) -> a
+    void <clinit>() -> <clinit>
+com.google.gson.internal.reflect.PreJava9ReflectionAccessor -> cc:
+    void <init>() -> <init>
+    void makeAccessible(java.lang.reflect.AccessibleObject) -> a
+com.google.gson.internal.reflect.ReflectionAccessor -> cd:
+    com.google.gson.internal.reflect.ReflectionAccessor instance -> a
+    void <init>() -> <init>
+    void makeAccessible(java.lang.reflect.AccessibleObject) -> a
+    com.google.gson.internal.reflect.ReflectionAccessor getInstance() -> a
+    void <clinit>() -> <clinit>
+com.google.gson.internal.reflect.UnsafeReflectionAccessor -> ce:
+    java.lang.Class unsafeClass -> a
+    java.lang.Object theUnsafe -> a
+    java.lang.reflect.Field overrideField -> a
+    void <init>() -> <init>
+    void makeAccessible(java.lang.reflect.AccessibleObject) -> a
+    boolean makeAccessibleWithUnsafe(java.lang.reflect.AccessibleObject) -> a
+    java.lang.Object getUnsafeInstance() -> a
+    java.lang.reflect.Field getOverrideField() -> a
+com.google.gson.reflect.TypeToken -> cf:
+    java.lang.Class rawType -> a
+    java.lang.reflect.Type type -> a
+    int hashCode -> a
+    void <init>() -> <init>
+    void <init>(java.lang.reflect.Type) -> <init>
+    java.lang.reflect.Type getSuperclassTypeParameter(java.lang.Class) -> a
+    java.lang.Class getRawType() -> a
+    java.lang.reflect.Type getType() -> a
+    int hashCode() -> hashCode
+    boolean equals(java.lang.Object) -> equals
+    java.lang.String toString() -> toString
+    com.google.gson.reflect.TypeToken get(java.lang.reflect.Type) -> a
+    com.google.gson.reflect.TypeToken get(java.lang.Class) -> a
+com.google.gson.stream.JsonReader -> cg:
+    char[] NON_EXECUTE_PREFIX -> a
+    java.io.Reader in -> a
+    boolean lenient -> a
+    char[] buffer -> b
+    int pos -> b
+    int limit -> c
+    int lineNumber -> d
+    int lineStart -> e
+    int peeked -> a
+    long peekedLong -> a
+    int peekedNumberLength -> f
+    java.lang.String peekedString -> a
+    int[] stack -> a
+    int stackSize -> g
+    java.lang.String[] pathNames -> a
+    int[] pathIndices -> b
+    void <init>(java.io.Reader) -> <init>
+    void setLenient(boolean) -> a
+    boolean isLenient() -> c
+    void beginArray() -> a
+    void endArray() -> b
+    void beginObject() -> c
+    void endObject() -> d
+    boolean hasNext() -> a
+    com.google.gson.stream.JsonToken peek() -> a
+    int doPeek() -> b
+    int peekKeyword() -> c
+    int peekNumber() -> d
+    boolean isLiteral(char) -> a
+    java.lang.String nextName() -> a
+    java.lang.String nextString() -> b
+    boolean nextBoolean() -> b
+    void nextNull() -> e
+    double nextDouble() -> a
+    long nextLong() -> a
+    java.lang.String nextQuotedValue(char) -> a
+    java.lang.String nextUnquotedValue() -> e
+    void skipQuotedValue(char) -> a
+    void skipUnquotedValue() -> g
+    int nextInt() -> a
+    void close() -> close
+    void skipValue() -> f
+    void push(int) -> a
+    boolean fillBuffer(int) -> a
+    int nextNonWhitespace(boolean) -> a
+    void checkLenient() -> h
+    void skipToEndOfLine() -> i
+    boolean skipTo(java.lang.String) -> a
+    java.lang.String toString() -> toString
+    java.lang.String locationString() -> d
+    java.lang.String getPath() -> c
+    char readEscapeCharacter() -> a
+    java.io.IOException syntaxError(java.lang.String) -> a
+    void consumeNonExecutePrefix() -> j
+    void <clinit>() -> <clinit>
+com.google.gson.stream.JsonReader$1 -> ch:
+    void <init>() -> <init>
+    void promoteNameToValue(com.google.gson.stream.JsonReader) -> a
+com.google.gson.stream.JsonToken -> ci:
+    com.google.gson.stream.JsonToken BEGIN_ARRAY -> a
+    com.google.gson.stream.JsonToken END_ARRAY -> b
+    com.google.gson.stream.JsonToken BEGIN_OBJECT -> c
+    com.google.gson.stream.JsonToken END_OBJECT -> d
+    com.google.gson.stream.JsonToken NAME -> e
+    com.google.gson.stream.JsonToken STRING -> f
+    com.google.gson.stream.JsonToken NUMBER -> g
+    com.google.gson.stream.JsonToken BOOLEAN -> h
+    com.google.gson.stream.JsonToken NULL -> i
+    com.google.gson.stream.JsonToken END_DOCUMENT -> j
+    com.google.gson.stream.JsonToken[] $VALUES -> a
+    com.google.gson.stream.JsonToken[] values() -> a
+    void <init>(java.lang.String,int) -> <init>
+    void <clinit>() -> <clinit>
+com.google.gson.stream.JsonWriter -> cj:
+    java.lang.String[] REPLACEMENT_CHARS -> a
+    java.lang.String[] HTML_SAFE_REPLACEMENT_CHARS -> b
+    java.io.Writer out -> a
+    int[] stack -> a
+    int stackSize -> a
+    java.lang.String indent -> a
+    java.lang.String separator -> b
+    boolean lenient -> a
+    boolean htmlSafe -> b
+    java.lang.String deferredName -> c
+    boolean serializeNulls -> c
+    void <init>(java.io.Writer) -> <init>
+    void setIndent(java.lang.String) -> a
+    void setLenient(boolean) -> a
+    boolean isLenient() -> a
+    void setHtmlSafe(boolean) -> b
+    boolean isHtmlSafe() -> b
+    void setSerializeNulls(boolean) -> c
+    boolean getSerializeNulls() -> c
+    com.google.gson.stream.JsonWriter beginArray() -> a
+    com.google.gson.stream.JsonWriter endArray() -> b
+    com.google.gson.stream.JsonWriter beginObject() -> c
+    com.google.gson.stream.JsonWriter endObject() -> d
+    com.google.gson.stream.JsonWriter open(int,java.lang.String) -> a
+    com.google.gson.stream.JsonWriter close(int,int,java.lang.String) -> a
+    void push(int) -> a
+    int peek() -> a
+    void replaceTop(int) -> b
+    com.google.gson.stream.JsonWriter name(java.lang.String) -> a
+    void writeDeferredName() -> a
+    com.google.gson.stream.JsonWriter value(java.lang.String) -> b
+    com.google.gson.stream.JsonWriter nullValue() -> e
+    com.google.gson.stream.JsonWriter value(boolean) -> a
+    com.google.gson.stream.JsonWriter value(java.lang.Boolean) -> a
+    com.google.gson.stream.JsonWriter value(long) -> a
+    com.google.gson.stream.JsonWriter value(java.lang.Number) -> a
+    void flush() -> flush
+    void close() -> close
+    void string(java.lang.String) -> b
+    void newline() -> b
+    void beforeName() -> c
+    void beforeValue() -> d
+    void <clinit>() -> <clinit>
+com.google.gson.stream.MalformedJsonException -> ck:
+    void <init>(java.lang.String) -> <init>
+joptsimple.AbstractOptionSpec -> cl:
+    java.util.List options -> a
+    java.lang.String description -> a
+    boolean forHelp -> a
+    void <init>(java.util.List,java.lang.String) -> <init>
+    java.util.List options() -> a
+    java.lang.String description() -> a
+    boolean isForHelp() -> a
+    boolean representsNonOptions() -> b
+    java.lang.Object convert(java.lang.String) -> a
+    java.lang.Object convertWith(joptsimple.ValueConverter,java.lang.String) -> a
+    java.lang.String argumentTypeIndicatorFrom(joptsimple.ValueConverter) -> a
+    void handleOption(joptsimple.OptionParser,joptsimple.ArgumentList,joptsimple.OptionSet,java.lang.String) -> a
+    void arrangeOptions(java.util.List) -> a
+    boolean equals(java.lang.Object) -> equals
+    int hashCode() -> hashCode
+    java.lang.String toString() -> toString
+joptsimple.ArgumentAcceptingOptionSpec -> cm:
+    boolean argumentRequired -> a
+    java.util.List defaultValues -> a
+    boolean optionRequired -> b
+    joptsimple.ValueConverter converter -> a
+    java.lang.String argumentDescription -> a
+    java.lang.String valueSeparator -> b
+    void <init>(java.util.List,boolean,java.lang.String) -> <init>
+    joptsimple.ArgumentAcceptingOptionSpec ofType(java.lang.Class) -> a
+    joptsimple.ArgumentAcceptingOptionSpec withValuesConvertedBy(joptsimple.ValueConverter) -> a
+    joptsimple.ArgumentAcceptingOptionSpec defaultsTo(java.lang.Object,java.lang.Object[]) -> a
+    joptsimple.ArgumentAcceptingOptionSpec defaultsTo(java.lang.Object[]) -> a
+    boolean isRequired() -> c
+    void addDefaultValue(java.lang.Object) -> a
+    void handleOption(joptsimple.OptionParser,joptsimple.ArgumentList,joptsimple.OptionSet,java.lang.String) -> a
+    void addArguments(joptsimple.OptionSet,java.lang.String) -> a
+    void detectOptionArgument(joptsimple.OptionParser,joptsimple.ArgumentList,joptsimple.OptionSet) -> a
+    java.lang.Object convert(java.lang.String) -> a
+    boolean canConvertArgument(java.lang.String) -> a
+    boolean isArgumentOfNumberType() -> d
+    boolean acceptsArguments() -> e
+    boolean requiresArgument() -> f
+    java.lang.String argumentDescription() -> b
+    java.lang.String argumentTypeIndicator() -> c
+    java.util.List defaultValues() -> b
+    boolean equals(java.lang.Object) -> equals
+    int hashCode() -> hashCode
+joptsimple.ArgumentList -> cn:
+    java.lang.String[] arguments -> a
+    int currentIndex -> a
+    void <init>(java.lang.String[]) -> <init>
+    boolean hasMore() -> a
+    java.lang.String next() -> a
+    java.lang.String peek() -> b
+joptsimple.BuiltinHelpFormatter -> co:
+    joptsimple.internal.Rows nonOptionRows -> a
+    joptsimple.internal.Rows optionRows -> b
+    void <init>() -> <init>
+    void <init>(int,int) -> <init>
+    java.lang.String format(java.util.Map) -> a
+    void addOptionRow(java.lang.String) -> a
+    void addOptionRow(java.lang.String,java.lang.String) -> a
+    void addNonOptionRow(java.lang.String) -> b
+    void fitRowsToWidth() -> a
+    java.lang.String nonOptionOutput() -> a
+    java.lang.String optionOutput() -> b
+    java.lang.String formattedHelpOutput() -> c
+    void addRows(java.util.Collection) -> a
+    void addNonOptionsDescription(java.util.Collection) -> b
+    boolean shouldShowNonOptionArgumentDisplay(joptsimple.OptionDescriptor) -> a
+    java.lang.String createNonOptionArgumentsDisplay(joptsimple.OptionDescriptor) -> a
+    void maybeAppendNonOptionsDescription(java.lang.StringBuilder,joptsimple.OptionDescriptor) -> a
+    joptsimple.OptionDescriptor findAndRemoveNonOptionsSpec(java.util.Collection) -> a
+    void addHeaders(java.util.Collection) -> c
+    boolean hasRequiredOption(java.util.Collection) -> a
+    void addOptions(java.util.Collection) -> d
+    java.lang.String createOptionDisplay(joptsimple.OptionDescriptor) -> b
+    java.lang.String optionLeader(java.lang.String) -> a
+    void maybeAppendOptionInfo(java.lang.StringBuilder,joptsimple.OptionDescriptor) -> b
+    java.lang.String extractTypeIndicator(joptsimple.OptionDescriptor) -> c
+    void appendOptionHelp(java.lang.StringBuilder,java.lang.String,java.lang.String,boolean) -> a
+    void appendTypeIndicator(java.lang.StringBuilder,java.lang.String,java.lang.String,char,char) -> a
+    java.lang.String createDescriptionDisplay(joptsimple.OptionDescriptor) -> d
+    java.lang.String createDefaultValuesDisplay(java.util.List) -> a
+    java.lang.String message(java.lang.String,java.lang.Object[]) -> a
+joptsimple.BuiltinHelpFormatter$1 -> cp:
+    joptsimple.BuiltinHelpFormatter this$0 -> a
+    void <init>(joptsimple.BuiltinHelpFormatter) -> <init>
+    int compare(joptsimple.OptionDescriptor,joptsimple.OptionDescriptor) -> a
+    int compare(java.lang.Object,java.lang.Object) -> compare
+joptsimple.HelpFormatter -> cq:
+    java.lang.String format(java.util.Map) -> a
+joptsimple.IllegalOptionSpecificationException -> cr:
+    void <init>(java.lang.String) -> <init>
+    java.lang.Object[] messageArguments() -> a
+joptsimple.MissingRequiredOptionsException -> cs:
+    void <init>(java.util.List) -> <init>
+    java.lang.Object[] messageArguments() -> a
+joptsimple.MultipleArgumentsForOptionException -> ct:
+    void <init>(joptsimple.OptionSpec) -> <init>
+    java.lang.Object[] messageArguments() -> a
+joptsimple.NoArgumentOptionSpec -> cu:
+    void <init>(java.util.List,java.lang.String) -> <init>
+    void handleOption(joptsimple.OptionParser,joptsimple.ArgumentList,joptsimple.OptionSet,java.lang.String) -> a
+    boolean acceptsArguments() -> e
+    boolean requiresArgument() -> f
+    boolean isRequired() -> c
+    java.lang.String argumentDescription() -> b
+    java.lang.String argumentTypeIndicator() -> c
+    java.lang.Void convert(java.lang.String) -> a
+    java.util.List defaultValues() -> b
+    java.lang.Object convert(java.lang.String) -> a
+joptsimple.NonOptionArgumentSpec -> cv:
+    joptsimple.ValueConverter converter -> a
+    java.lang.String argumentDescription -> a
+    void <init>() -> <init>
+    void <init>(java.lang.String) -> <init>
+    java.lang.Object convert(java.lang.String) -> a
+    void handleOption(joptsimple.OptionParser,joptsimple.ArgumentList,joptsimple.OptionSet,java.lang.String) -> a
+    java.util.List defaultValues() -> b
+    boolean isRequired() -> c
+    boolean acceptsArguments() -> e
+    boolean requiresArgument() -> f
+    java.lang.String argumentDescription() -> b
+    java.lang.String argumentTypeIndicator() -> c
+    boolean representsNonOptions() -> b
+joptsimple.OptionArgumentConversionException -> cw:
+    java.lang.String argument -> a
+    void <init>(joptsimple.OptionSpec,java.lang.String,java.lang.Throwable) -> <init>
+    java.lang.Object[] messageArguments() -> a
+joptsimple.OptionDescriptor -> cx:
+    java.util.List options() -> a
+    java.lang.String description() -> a
+    java.util.List defaultValues() -> b
+    boolean isRequired() -> c
+    boolean acceptsArguments() -> e
+    boolean requiresArgument() -> f
+    java.lang.String argumentDescription() -> b
+    java.lang.String argumentTypeIndicator() -> c
+    boolean representsNonOptions() -> b
+joptsimple.OptionException -> cy:
+    java.util.List options -> a
+    void <init>(java.util.List) -> <init>
+    void <init>(java.util.Collection) -> <init>
+    void <init>(java.util.Collection,java.lang.Throwable) -> <init>
+    java.util.List specsToStrings(java.util.Collection) -> a
+    java.lang.String specToString(joptsimple.OptionSpec) -> a
+    java.lang.String singleOptionString() -> a
+    java.lang.String singleOptionString(java.lang.String) -> a
+    java.lang.String multipleOptionString() -> b
+    joptsimple.OptionException unrecognizedOption(java.lang.String) -> a
+    java.lang.String getMessage() -> getMessage
+    java.lang.String localizedMessage(java.util.Locale) -> a
+    java.lang.String formattedMessage(java.util.Locale) -> b
+    java.lang.Object[] messageArguments() -> a
+joptsimple.OptionParser -> cz:
+    joptsimple.internal.OptionNameMap recognizedOptions -> a
+    java.util.ArrayList trainingOrder -> a
+    java.util.Map requiredIf -> a
+    java.util.Map requiredUnless -> b
+    java.util.Map availableIf -> c
+    java.util.Map availableUnless -> d
+    joptsimple.OptionParserState state -> a
+    boolean posixlyCorrect -> a
+    boolean allowsUnrecognizedOptions -> b
+    joptsimple.HelpFormatter helpFormatter -> a
+    void <init>() -> <init>
+    void <init>(boolean) -> <init>
+    joptsimple.OptionSpecBuilder accepts(java.lang.String,java.lang.String) -> a
+    joptsimple.OptionSpecBuilder acceptsAll(java.util.List,java.lang.String) -> a
+    boolean posixlyCorrect() -> a
+    boolean doesAllowsUnrecognizedOptions() -> b
+    void recognize(joptsimple.AbstractOptionSpec) -> a
+    void printHelpOn(java.io.OutputStream) -> a
+    void printHelpOn(java.io.Writer) -> a
+    java.util.Map _recognizedOptions() -> a
+    joptsimple.OptionSet parse(java.lang.String[]) -> a
+    void ensureRequiredOptions(joptsimple.OptionSet) -> a
+    void ensureAllowedOptions(joptsimple.OptionSet) -> b
+    java.util.List missingRequiredOptions(joptsimple.OptionSet) -> a
+    java.util.List unavailableOptions(joptsimple.OptionSet) -> b
+    boolean optionsHasAnyOf(joptsimple.OptionSet,java.util.Collection) -> a
+    boolean isHelpOptionPresent(joptsimple.OptionSet) -> a
+    void handleLongOptionToken(java.lang.String,joptsimple.ArgumentList,joptsimple.OptionSet) -> a
+    void handleShortOptionToken(java.lang.String,joptsimple.ArgumentList,joptsimple.OptionSet) -> b
+    void handleShortOptionCluster(java.lang.String,joptsimple.ArgumentList,joptsimple.OptionSet) -> d
+    void handleNonOptionArgument(java.lang.String,joptsimple.ArgumentList,joptsimple.OptionSet) -> c
+    void noMoreOptions() -> a
+    boolean looksLikeAnOption(java.lang.String) -> a
+    boolean isRecognized(java.lang.String) -> b
+    joptsimple.AbstractOptionSpec specFor(char) -> a
+    joptsimple.AbstractOptionSpec specFor(java.lang.String) -> a
+    void reset() -> b
+    char[] extractShortOptionsFrom(java.lang.String) -> a
+    void validateOptionCharacters(char[]) -> a
+    joptsimple.util.KeyValuePair parseLongOptionWithArgument(java.lang.String) -> a
+    joptsimple.util.KeyValuePair parseShortOptionWithArgument(java.lang.String) -> b
+joptsimple.OptionParserState -> cA:
+    void <init>() -> <init>
+    joptsimple.OptionParserState noMoreOptions() -> a
+    joptsimple.OptionParserState moreOptions(boolean) -> a
+    void handleArgument(joptsimple.OptionParser,joptsimple.ArgumentList,joptsimple.OptionSet) -> a
+joptsimple.OptionParserState$1 -> cB:
+    void <init>() -> <init>
+    void handleArgument(joptsimple.OptionParser,joptsimple.ArgumentList,joptsimple.OptionSet) -> a
+joptsimple.OptionParserState$2 -> cC:
+    boolean val$posixlyCorrect -> a
+    void <init>(boolean) -> <init>
+    void handleArgument(joptsimple.OptionParser,joptsimple.ArgumentList,joptsimple.OptionSet) -> a
+joptsimple.OptionSet -> cD:
+    java.util.List detectedSpecs -> a
+    java.util.Map detectedOptions -> a
+    java.util.Map optionsToArguments -> b
+    java.util.Map recognizedSpecs -> c
+    java.util.Map defaultValues -> d
+    void <init>(java.util.Map) -> <init>
+    boolean has(joptsimple.OptionSpec) -> a
+    java.lang.Object valueOf(joptsimple.OptionSpec) -> a
+    java.util.List valuesOf(joptsimple.OptionSpec) -> a
+    java.util.List specs() -> a
+    void add(joptsimple.AbstractOptionSpec) -> a
+    void addWithArgument(joptsimple.AbstractOptionSpec,java.lang.String) -> a
+    boolean equals(java.lang.Object) -> equals
+    int hashCode() -> hashCode
+    java.util.List defaultValuesFor(java.lang.String) -> a
+    java.util.List defaultValueFor(joptsimple.OptionSpec) -> b
+    java.util.Map defaultValues(java.util.Map) -> a
+joptsimple.OptionSpec -> cE:
+    java.util.List options() -> a
+joptsimple.OptionSpecBuilder -> cF:
+    joptsimple.OptionParser parser -> a
+    void <init>(joptsimple.OptionParser,java.util.List,java.lang.String) -> <init>
+    void attachToParser() -> a
+    joptsimple.ArgumentAcceptingOptionSpec withOptionalArg() -> a
+    java.util.List defaultValues() -> b
+    java.lang.String argumentTypeIndicator() -> c
+    java.lang.String argumentDescription() -> b
+    boolean isRequired() -> c
+    boolean requiresArgument() -> f
+    boolean acceptsArguments() -> e
+joptsimple.OptionalArgumentOptionSpec -> cG:
+    void <init>(java.util.List,java.lang.String) -> <init>
+    void detectOptionArgument(joptsimple.OptionParser,joptsimple.ArgumentList,joptsimple.OptionSet) -> a
+    void handleOptionArgument(joptsimple.OptionParser,joptsimple.OptionSet,joptsimple.ArgumentList) -> a
+joptsimple.ParserRules -> cH:
+    java.lang.String HYPHEN -> a
+    boolean isShortOptionToken(java.lang.String) -> a
+    boolean isLongOptionToken(java.lang.String) -> b
+    boolean isOptionTerminator(java.lang.String) -> c
+    void ensureLegalOption(java.lang.String) -> a
+    void ensureLegalOptions(java.util.List) -> a
+    void ensureLegalOptionCharacter(char) -> a
+    boolean isAllowedPunctuation(char) -> a
+    void <clinit>() -> <clinit>
+joptsimple.UnavailableOptionException -> cI:
+    void <init>(java.util.List) -> <init>
+    java.lang.Object[] messageArguments() -> a
+joptsimple.UnrecognizedOptionException -> cJ:
+    void <init>(java.lang.String) -> <init>
+    java.lang.Object[] messageArguments() -> a
+joptsimple.ValueConversionException -> cK:
+joptsimple.ValueConverter -> cL:
+    java.lang.Object convert(java.lang.String) -> a
+    java.lang.Class valueType() -> a
+    java.lang.String valuePattern() -> a
+joptsimple.internal.AbbreviationMap -> cM:
+    java.util.Map children -> a
+    java.lang.String key -> a
+    java.lang.Object value -> a
+    int keysBeyond -> a
+    void <init>() -> <init>
+    boolean contains(java.lang.String) -> a
+    java.lang.Object get(java.lang.String) -> a
+    void put(java.lang.String,java.lang.Object) -> a
+    void putAll(java.lang.Iterable,java.lang.Object) -> a
+    boolean add(char[],java.lang.Object,int,int) -> a
+    java.util.Map toJavaUtilMap() -> a
+    void addToMappings(java.util.Map) -> a
+    char[] charsOf(java.lang.String) -> a
+joptsimple.internal.Classes -> cN:
+    java.util.Map WRAPPERS -> a
+    java.lang.String shortNameOf(java.lang.String) -> a
+    java.lang.Class wrapperOf(java.lang.Class) -> a
+    void <clinit>() -> <clinit>
+joptsimple.internal.Columns -> cO:
+    int optionWidth -> a
+    int descriptionWidth -> b
+    void <init>(int,int) -> <init>
+    java.util.List fit(joptsimple.internal.Row) -> a
+    java.lang.String itemOrEmpty(java.util.List,int) -> a
+    java.util.List piecesOf(java.lang.String,int) -> a
+    java.util.List piecesOfEmbeddedLine(java.lang.String,int) -> b
+    java.lang.StringBuilder processNextWord(java.lang.String,java.lang.StringBuilder,int,int,int,java.util.List) -> a
+joptsimple.internal.ConstructorInvokingValueConverter -> cP:
+    java.lang.reflect.Constructor ctor -> a
+    void <init>(java.lang.reflect.Constructor) -> <init>
+    java.lang.Object convert(java.lang.String) -> a
+    java.lang.Class valueType() -> a
+    java.lang.String valuePattern() -> a
+joptsimple.internal.Messages -> cQ:
+    java.lang.String message(java.util.Locale,java.lang.String,java.lang.Class,java.lang.String,java.lang.Object[]) -> a
+joptsimple.internal.MethodInvokingValueConverter -> cR:
+    java.lang.reflect.Method method -> a
+    java.lang.Class clazz -> a
+    void <init>(java.lang.reflect.Method,java.lang.Class) -> <init>
+    java.lang.Object convert(java.lang.String) -> a
+    java.lang.Class valueType() -> a
+    java.lang.String valuePattern() -> a
+joptsimple.internal.OptionNameMap -> cS:
+    boolean contains(java.lang.String) -> a
+    java.lang.Object get(java.lang.String) -> a
+    void putAll(java.lang.Iterable,java.lang.Object) -> a
+    java.util.Map toJavaUtilMap() -> a
+joptsimple.internal.Reflection -> cT:
+    joptsimple.ValueConverter findConverter(java.lang.Class) -> a
+    joptsimple.ValueConverter valueOfConverter(java.lang.Class) -> b
+    joptsimple.ValueConverter constructorConverter(java.lang.Class) -> c
+    java.lang.Object instantiate(java.lang.reflect.Constructor,java.lang.Object[]) -> a
+    java.lang.Object invoke(java.lang.reflect.Method,java.lang.Object[]) -> a
+    java.lang.Object convertWith(joptsimple.ValueConverter,java.lang.String) -> a
+    boolean meetsConverterRequirements(java.lang.reflect.Method,java.lang.Class) -> a
+    java.lang.RuntimeException reflectionException(java.lang.Exception) -> a
+joptsimple.internal.ReflectionException -> cU:
+    void <init>(java.lang.Throwable) -> <init>
+joptsimple.internal.Row -> cV:
+    java.lang.String option -> a
+    java.lang.String description -> b
+    void <init>(java.lang.String,java.lang.String) -> <init>
+    boolean equals(java.lang.Object) -> equals
+    int hashCode() -> hashCode
+joptsimple.internal.Rows -> cW:
+    int overallWidth -> a
+    int columnSeparatorWidth -> b
+    java.util.List rows -> a
+    int widthOfWidestOption -> c
+    int widthOfWidestDescription -> d
+    void <init>(int,int) -> <init>
+    void add(java.lang.String,java.lang.String) -> a
+    void add(joptsimple.internal.Row) -> a
+    void reset() -> a
+    void fitToWidth() -> b
+    java.lang.String render() -> a
+    int optionWidth() -> a
+    int descriptionWidth() -> b
+    java.lang.StringBuilder pad(java.lang.StringBuilder,java.lang.String,int) -> a
+joptsimple.internal.SimpleOptionNameMap -> cX:
+    java.util.Map map -> a
+    void <init>() -> <init>
+    boolean contains(java.lang.String) -> a
+    java.lang.Object get(java.lang.String) -> a
+    void putAll(java.lang.Iterable,java.lang.Object) -> a
+    java.util.Map toJavaUtilMap() -> a
+joptsimple.internal.Strings -> cY:
+    java.lang.String LINE_SEPARATOR -> a
+    java.lang.String repeat(char,int) -> a
+    boolean isNullOrEmpty(java.lang.String) -> a
+    java.lang.String surround(java.lang.String,char,char) -> a
+    java.lang.String join(java.lang.Iterable,java.lang.String) -> a
+    void <clinit>() -> <clinit>
+joptsimple.util.KeyValuePair -> cZ:
+    java.lang.String key -> a
+    java.lang.String value -> b
+    void <init>(java.lang.String,java.lang.String) -> <init>
+    joptsimple.util.KeyValuePair valueOf(java.lang.String) -> a
+    boolean equals(java.lang.Object) -> equals
+    int hashCode() -> hashCode
+    java.lang.String toString() -> toString
+net.minecraftforge.installer.DownloadUtils -> da:
+    boolean OFFLINE_MODE -> a
+    void <init>() -> <init>
+    boolean downloadLibrary(net.minecraftforge.installer.actions.ProgressCallback,net.minecraftforge.installer.json.Mirror,net.minecraftforge.installer.json.Version$Library,java.io.File,java.util.function.Predicate,java.util.List) -> a
+    boolean download(net.minecraftforge.installer.actions.ProgressCallback,net.minecraftforge.installer.json.Mirror,net.minecraftforge.installer.json.Version$LibraryDownload,java.io.File) -> a
+    boolean download(net.minecraftforge.installer.actions.ProgressCallback,net.minecraftforge.installer.json.Mirror,net.minecraftforge.installer.json.Version$Download,java.io.File) -> a
+    boolean download(net.minecraftforge.installer.actions.ProgressCallback,net.minecraftforge.installer.json.Mirror,net.minecraftforge.installer.json.Version$Download,java.io.File,java.lang.String) -> a
+    java.lang.String getSha1(java.io.File) -> a
+    boolean checksumValid(java.io.File,java.lang.String) -> b
+    java.net.URLConnection getConnection(java.lang.String) -> a
+    net.minecraftforge.installer.json.Mirror[] downloadMirrors(java.lang.String) -> a
+    net.minecraftforge.installer.json.Manifest downloadManifest() -> a
+    boolean downloadFile(java.io.File,java.lang.String) -> a
+    boolean extractFile(net.minecraftforge.installer.json.Artifact,java.io.File,java.lang.String) -> a
+    boolean extractFile(java.lang.String,java.io.File) -> a
+    void $closeResource(java.lang.Throwable,java.lang.AutoCloseable) -> a
+    void <clinit>() -> <clinit>
+net.minecraftforge.installer.HashFunction -> db:
+    net.minecraftforge.installer.HashFunction MD5 -> a
+    net.minecraftforge.installer.HashFunction SHA1 -> b
+    net.minecraftforge.installer.HashFunction SHA256 -> c
+    java.lang.String algo -> a
+    java.lang.String pad -> b
+    net.minecraftforge.installer.HashFunction[] $VALUES -> a
+    void <init>(java.lang.String,int,java.lang.String,int) -> <init>
+    java.security.MessageDigest get() -> a
+    java.lang.String hash(byte[]) -> a
+    java.lang.String pad(java.lang.String) -> a
+    void <clinit>() -> <clinit>
+net.minecraftforge.installer.InstallerPanel -> dc:
+    java.io.File targetDir -> a
+    javax.swing.ButtonGroup choiceButtonGroup -> a
+    javax.swing.JTextField selectedDirText -> a
+    javax.swing.JLabel infoLabel -> a
+    javax.swing.JButton sponsorButton -> a
+    javax.swing.JDialog dialog -> a
+    javax.swing.JPanel sponsorPanel -> a
+    javax.swing.JPanel fileEntryPanel -> b
+    java.util.List optionals -> a
+    net.minecraftforge.installer.json.Install profile -> a
+    java.util.Map actions -> a
+    byte[] hexToByteArray(java.lang.String) -> a
+    java.awt.image.BufferedImage getImage(java.lang.String,java.lang.String) -> a
+    void <init>(java.io.File,net.minecraftforge.installer.json.Install) -> <init>
+    void updateFilePath() -> a
+    void run(net.minecraftforge.installer.actions.ProgressCallback) -> a
+    void openURL(java.lang.String) -> a
+    boolean lambda$run$3(java.lang.String) -> a
+    boolean lambda$run$2(java.lang.String,net.minecraftforge.installer.InstallerPanel$OptionalListEntry) -> a
+    net.minecraftforge.installer.actions.Action lambda$new$1(net.minecraftforge.installer.actions.Actions,net.minecraftforge.installer.json.Install,net.minecraftforge.installer.actions.ProgressCallback) -> a
+    void lambda$new$0(java.awt.event.ActionEvent) -> a
+    java.io.File access$000(net.minecraftforge.installer.InstallerPanel) -> a
+    java.io.File access$002(net.minecraftforge.installer.InstallerPanel,java.io.File) -> a
+    void access$100(net.minecraftforge.installer.InstallerPanel) -> a
+    javax.swing.JDialog access$400(net.minecraftforge.installer.InstallerPanel) -> a
+net.minecraftforge.installer.InstallerPanel$1 -> dd:
+    net.minecraftforge.installer.InstallerPanel this$0 -> a
+    void <init>(net.minecraftforge.installer.InstallerPanel) -> <init>
+    void run() -> run
+net.minecraftforge.installer.InstallerPanel$FileSelectAction -> de:
+    net.minecraftforge.installer.InstallerPanel this$0 -> a
+    void <init>(net.minecraftforge.installer.InstallerPanel) -> <init>
+    void actionPerformed(java.awt.event.ActionEvent) -> actionPerformed
+    void <init>(net.minecraftforge.installer.InstallerPanel,net.minecraftforge.installer.InstallerPanel$1) -> <init>
+net.minecraftforge.installer.InstallerPanel$OptionalListEntry -> df:
+    net.minecraftforge.installer.json.OptionalLibrary lib -> a
+    boolean enabled -> a
+    boolean isEnabled() -> a
+net.minecraftforge.installer.InstallerPanel$SelectButtonAction -> dg:
+    net.minecraftforge.installer.InstallerPanel this$0 -> a
+    void <init>(net.minecraftforge.installer.InstallerPanel) -> <init>
+    void actionPerformed(java.awt.event.ActionEvent) -> actionPerformed
+    void <init>(net.minecraftforge.installer.InstallerPanel,net.minecraftforge.installer.InstallerPanel$1) -> <init>
+net.minecraftforge.installer.ProgressFrame -> dh:
+    net.minecraftforge.installer.actions.ProgressCallback parent -> b
+    javax.swing.JPanel panel -> a
+    javax.swing.JLabel progressText -> a
+    javax.swing.JProgressBar progressBar -> a
+    javax.swing.JTextArea consoleArea -> a
+    void <init>(net.minecraftforge.installer.actions.ProgressCallback,java.lang.String,java.lang.Runnable) -> <init>
+    void start(java.lang.String) -> a
+    void progress(double) -> a
+    void stage(java.lang.String) -> b
+    void message(java.lang.String,net.minecraftforge.installer.actions.ProgressCallback$MessagePriority) -> a
+    void lambda$new$0(java.lang.Runnable,java.awt.event.ActionEvent) -> a
+net.minecraftforge.installer.SimpleInstaller -> net.minecraftforge.installer.SimpleInstaller:
+    boolean headless -> a
+    void <init>() -> <init>
+    void main(java.lang.String[]) -> main
+    java.io.File getMCDir() -> a
+    void launchGui(net.minecraftforge.installer.actions.ProgressCallback) -> b
+    java.io.OutputStream getLog() -> a
+    void hookStdOut(net.minecraftforge.installer.actions.ProgressCallback) -> a
+    boolean lambda$main$0(java.lang.String) -> a
+    void <clinit>() -> <clinit>
+net.minecraftforge.installer.SimpleInstaller$1 -> di:
+    java.util.regex.Pattern val$endingWhitespace -> a
+    net.minecraftforge.installer.actions.ProgressCallback val$monitor -> a
+    void <init>(java.util.regex.Pattern,net.minecraftforge.installer.actions.ProgressCallback) -> <init>
+    void write(byte[],int,int) -> write
+    void write(byte[]) -> write
+    void write(int) -> write
+net.minecraftforge.installer.actions.Action -> dj:
+    net.minecraftforge.installer.json.Install profile -> a
+    net.minecraftforge.installer.actions.ProgressCallback monitor -> a
+    net.minecraftforge.installer.actions.PostProcessors processors -> a
+    net.minecraftforge.installer.json.Version version -> a
+    java.util.List grabbed -> a
+    void <init>(net.minecraftforge.installer.json.Install,net.minecraftforge.installer.actions.ProgressCallback,boolean) -> <init>
+    void error(java.lang.String) -> a
+    boolean run(java.io.File,java.util.function.Predicate) -> a
+    boolean isPathValid(java.io.File) -> a
+    java.lang.String getFileError(java.io.File) -> a
+    java.lang.String getSuccessMessage() -> a
+    java.lang.String getSponsorMessage() -> b
+    boolean downloadLibraries(java.io.File,java.util.function.Predicate) -> b
+    int downlaodedCount() -> a
+    void checkCancel() -> a
+net.minecraftforge.installer.actions.ActionCanceledException -> dk:
+    void <init>(java.lang.Exception) -> <init>
+net.minecraftforge.installer.actions.Actions -> dl:
+    net.minecraftforge.installer.actions.Actions CLIENT -> a
+    net.minecraftforge.installer.actions.Actions SERVER -> b
+    net.minecraftforge.installer.actions.Actions EXTRACT -> c
+    java.lang.String label -> a
+    java.lang.String tooltip -> b
+    java.util.function.BiFunction action -> a
+    java.util.function.Function success -> a
+    net.minecraftforge.installer.actions.Actions[] $VALUES -> a
+    net.minecraftforge.installer.actions.Actions[] values() -> a
+    void <init>(java.lang.String,int,java.lang.String,java.lang.String,java.util.function.BiFunction,java.util.function.Function) -> <init>
+    java.lang.String getButtonLabel() -> a
+    java.lang.String getTooltip() -> b
+    java.lang.String getSuccess(java.lang.String) -> a
+    net.minecraftforge.installer.actions.Action getAction(net.minecraftforge.installer.json.Install,net.minecraftforge.installer.actions.ProgressCallback) -> a
+    java.lang.String lambda$static$2(java.lang.String) -> b
+    java.lang.String lambda$static$1(java.lang.String) -> c
+    java.lang.String lambda$static$0(java.lang.String) -> d
+    void <clinit>() -> <clinit>
+net.minecraftforge.installer.actions.ClientInstall -> dm:
+    void <init>(net.minecraftforge.installer.json.Install,net.minecraftforge.installer.actions.ProgressCallback) -> <init>
+    boolean run(java.io.File,java.util.function.Predicate) -> a
+    boolean injectProfile(java.io.File) -> b
+    boolean isPathValid(java.io.File) -> a
+    java.lang.String getFileError(java.io.File) -> a
+    java.lang.String getSuccessMessage() -> a
+    void $closeResource(java.lang.Throwable,java.lang.AutoCloseable) -> a
+net.minecraftforge.installer.actions.ExtractAction -> dn:
+    void <init>(net.minecraftforge.installer.json.Install,net.minecraftforge.installer.actions.ProgressCallback) -> <init>
+    boolean run(java.io.File,java.util.function.Predicate) -> a
+    boolean isPathValid(java.io.File) -> a
+    java.lang.String getFileError(java.io.File) -> a
+    java.lang.String getSuccessMessage() -> a
+net.minecraftforge.installer.actions.PostProcessors -> do:
+    net.minecraftforge.installer.json.Install profile -> a
+    boolean isClient -> a
+    net.minecraftforge.installer.actions.ProgressCallback monitor -> a
+    boolean hasTasks -> b
+    java.util.Map data -> a
+    java.util.List processors -> a
+    boolean clChecked -> c
+    java.lang.ClassLoader parentClassLoader -> a
+    void <init>(net.minecraftforge.installer.json.Install,boolean,net.minecraftforge.installer.actions.ProgressCallback) -> <init>
+    net.minecraftforge.installer.json.Version$Library[] getLibraries() -> a
+    boolean process(java.io.File,java.io.File) -> a
+    void error(java.lang.String) -> a
+    void log(java.lang.String) -> b
+    java.lang.ClassLoader getParentClassloader() -> a
+    java.lang.String lambda$process$0(java.lang.String) -> a
+    void <clinit>() -> <clinit>
+net.minecraftforge.installer.actions.ProgressCallback -> dp:
+    net.minecraftforge.installer.actions.ProgressCallback TO_STD_OUT -> a
+    void start(java.lang.String) -> a
+    void stage(java.lang.String) -> b
+    void message(java.lang.String) -> c
+    void message(java.lang.String,net.minecraftforge.installer.actions.ProgressCallback$MessagePriority) -> a
+    void progress(double) -> a
+    net.minecraftforge.installer.actions.ProgressCallback withOutputs(java.io.OutputStream[]) -> a
+    void <clinit>() -> <clinit>
+net.minecraftforge.installer.actions.ProgressCallback$1 -> dq:
+    void <init>() -> <init>
+    void message(java.lang.String,net.minecraftforge.installer.actions.ProgressCallback$MessagePriority) -> a
+net.minecraftforge.installer.actions.ProgressCallback$2 -> dr:
+    java.io.OutputStream[] val$streams -> a
+    void <init>(java.io.OutputStream[]) -> <init>
+    void message(java.lang.String,net.minecraftforge.installer.actions.ProgressCallback$MessagePriority) -> a
+net.minecraftforge.installer.actions.ProgressCallback$MessagePriority -> ds:
+    net.minecraftforge.installer.actions.ProgressCallback$MessagePriority LOW -> a
+    net.minecraftforge.installer.actions.ProgressCallback$MessagePriority NORMAL -> b
+    net.minecraftforge.installer.actions.ProgressCallback$MessagePriority HIGH -> c
+    net.minecraftforge.installer.actions.ProgressCallback$MessagePriority[] $VALUES -> a
+    void <init>(java.lang.String,int) -> <init>
+    void <clinit>() -> <clinit>
+net.minecraftforge.installer.actions.ServerInstall -> dt:
+    java.util.List grabbed -> a
+    void <init>(net.minecraftforge.installer.json.Install,net.minecraftforge.installer.actions.ProgressCallback) -> <init>
+    boolean run(java.io.File,java.util.function.Predicate) -> a
+    boolean isPathValid(java.io.File) -> a
+    java.lang.String getFileError(java.io.File) -> a
+    java.lang.String getSuccessMessage() -> a
+net.minecraftforge.installer.json.Artifact -> du:
+    java.lang.String domain -> a
+    java.lang.String name -> b
+    java.lang.String version -> c
+    java.lang.String classifier -> d
+    java.lang.String ext -> e
+    java.lang.String path -> f
+    java.lang.String file -> g
+    java.lang.String descriptor -> h
+    void <init>() -> <init>
+    net.minecraftforge.installer.json.Artifact from(java.lang.String) -> a
+    java.io.File getLocalPath(java.io.File) -> a
+    java.lang.String getDescriptor() -> a
+    java.lang.String getPath() -> b
+    java.lang.String getName() -> c
+    java.lang.String getFilename() -> d
+    java.lang.String toString() -> toString
+net.minecraftforge.installer.json.Artifact$Adapter -> dv:
+    void <init>() -> <init>
+    com.google.gson.JsonElement serialize(net.minecraftforge.installer.json.Artifact,java.lang.reflect.Type,com.google.gson.JsonSerializationContext) -> a
+    net.minecraftforge.installer.json.Artifact deserialize(com.google.gson.JsonElement,java.lang.reflect.Type,com.google.gson.JsonDeserializationContext) -> a
+    java.lang.Object deserialize(com.google.gson.JsonElement,java.lang.reflect.Type,com.google.gson.JsonDeserializationContext) -> a
+    com.google.gson.JsonElement serialize(java.lang.Object,java.lang.reflect.Type,com.google.gson.JsonSerializationContext) -> a
+net.minecraftforge.installer.json.Install -> dw:
+    int spec -> a
+    java.lang.String profile -> a
+    java.lang.String version -> b
+    java.lang.String minecraft -> c
+    java.lang.String json -> d
+    java.lang.String logo -> e
+    net.minecraftforge.installer.json.Artifact path -> a
+    java.lang.String welcome -> f
+    java.lang.String mirrorList -> g
+    boolean hideClient -> a
+    boolean hideServer -> b
+    boolean hideExtract -> c
+    net.minecraftforge.installer.json.Version$Library[] libraries -> a
+    java.util.List processors -> a
+    java.util.Map data -> a
+    net.minecraftforge.installer.json.Mirror mirror -> a
+    boolean triedMirrors -> d
+    void <init>() -> <init>
+    int getSpec() -> a
+    java.lang.String getProfile() -> a
+    java.lang.String getVersion() -> b
+    java.lang.String getMinecraft() -> c
+    java.lang.String getJson() -> d
+    java.lang.String getLogo() -> e
+    net.minecraftforge.installer.json.Artifact getPath() -> a
+    java.lang.String getWelcome() -> f
+    java.lang.String getMirrorList() -> g
+    net.minecraftforge.installer.json.Mirror getMirror() -> a
+    boolean hideClient() -> a
+    boolean hideServer() -> b
+    boolean hideExtract() -> c
+    net.minecraftforge.installer.json.Version$Library[] getLibraries() -> a
+    java.util.List getProcessors(java.lang.String) -> a
+    java.util.Map getData(boolean) -> a
+    java.lang.String lambda$getData$1(boolean,java.util.Map$Entry) -> a
+    boolean lambda$getProcessors$0(java.lang.String,net.minecraftforge.installer.json.Install$Processor) -> a
+net.minecraftforge.installer.json.Install$DataFile -> dx:
+    java.lang.String client -> a
+    java.lang.String server -> b
+    void <init>() -> <init>
+    java.lang.String access$000(net.minecraftforge.installer.json.Install$DataFile) -> a
+    java.lang.String access$100(net.minecraftforge.installer.json.Install$DataFile) -> b
+net.minecraftforge.installer.json.Install$Processor -> dy:
+    java.util.List sides -> a
+    net.minecraftforge.installer.json.Artifact jar -> a
+    net.minecraftforge.installer.json.Artifact[] classpath -> a
+    java.lang.String[] args -> a
+    java.util.Map outputs -> a
+    void <init>() -> <init>
+    boolean isSide(java.lang.String) -> a
+    net.minecraftforge.installer.json.Artifact getJar() -> a
+    net.minecraftforge.installer.json.Artifact[] getClasspath() -> a
+    java.lang.String[] getArgs() -> a
+    java.util.Map getOutputs() -> a
+net.minecraftforge.installer.json.Manifest -> dz:
+    java.util.List versions -> a
+    void <init>() -> <init>
+    java.lang.String getUrl(java.lang.String) -> a
+    boolean lambda$getUrl$0(java.lang.String,net.minecraftforge.installer.json.Manifest$Info) -> a
+net.minecraftforge.installer.json.Manifest$Info -> dA:
+    java.lang.String id -> a
+    java.lang.String url -> b
+    java.lang.String getId() -> a
+    java.lang.String getUrl() -> b
+net.minecraftforge.installer.json.Mirror -> dB:
+    java.lang.String name -> a
+    java.lang.String image -> b
+    java.lang.String homepage -> c
+    java.lang.String url -> d
+    boolean triedImage -> a
+    javax.swing.Icon _image_ -> a
+    void <init>() -> <init>
+    javax.swing.Icon getImage() -> a
+    java.lang.String getName() -> a
+    java.lang.String getImageAddress() -> b
+    java.lang.String getHomepage() -> c
+    java.lang.String getUrl() -> d
+net.minecraftforge.installer.json.OptionalLibrary -> dC:
+    java.lang.String artifact -> a
+    java.lang.String getArtifact() -> a
+net.minecraftforge.installer.json.Util -> dD:
+    com.google.gson.Gson GSON -> a
+    void <init>() -> <init>
+    net.minecraftforge.installer.json.Install loadInstallProfile() -> a
+    net.minecraftforge.installer.json.Mirror[] loadMirriorList(java.io.InputStream) -> a
+    net.minecraftforge.installer.json.Manifest loadManifest(java.io.InputStream) -> a
+    net.minecraftforge.installer.json.Version loadVersion(net.minecraftforge.installer.json.Install) -> a
+    net.minecraftforge.installer.json.Version getVanillaVersion(java.lang.String,java.io.File) -> a
+    void $closeResource(java.lang.Throwable,java.lang.AutoCloseable) -> a
+    void <clinit>() -> <clinit>
+net.minecraftforge.installer.json.Version -> dE:
+    java.util.Map downloads -> a
+    net.minecraftforge.installer.json.Version$Library[] libraries -> a
+    void <init>() -> <init>
+    net.minecraftforge.installer.json.Version$Download getDownload(java.lang.String) -> a
+    net.minecraftforge.installer.json.Version$Library[] getLibraries() -> a
+net.minecraftforge.installer.json.Version$Download -> dF:
+    java.lang.String sha1 -> a
+    java.lang.String url -> b
+    boolean provided -> a
+    void <init>() -> <init>
+    java.lang.String getSha1() -> a
+    java.lang.String getUrl() -> b
+net.minecraftforge.installer.json.Version$Downloads -> dG:
+    net.minecraftforge.installer.json.Version$LibraryDownload artifact -> a
+    net.minecraftforge.installer.json.Version$LibraryDownload getArtifact() -> a
+net.minecraftforge.installer.json.Version$Library -> dH:
+    net.minecraftforge.installer.json.Artifact name -> a
+    net.minecraftforge.installer.json.Version$Downloads downloads -> a
+    void <init>() -> <init>
+    net.minecraftforge.installer.json.Artifact getName() -> a
+    net.minecraftforge.installer.json.Version$Downloads getDownloads() -> a
+net.minecraftforge.installer.json.Version$LibraryDownload -> dI:
+    java.lang.String path -> a
+    void <init>() -> <init>
+    java.lang.String getPath() -> c
+    void setPath(java.lang.String) -> a

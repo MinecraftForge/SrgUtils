@@ -1,0 +1,127 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        maven { url = 'https://files.minecraftforge.net/maven' }
+        jcenter()
+        mavenCentral()
+    }
+}
+
+plugins {
+    id 'java'
+    id 'eclipse'
+    id 'maven-publish'
+    id 'net.minecrell.licenser' version '0.4.1'
+    id 'org.ajoberstar.grgit' version '3.1.1'
+    id 'com.github.ben-manes.versions' version '0.24.0'
+}
+
+group 'net.minecraftforge'
+version = gitVersion()
+targetCompatibility = sourceCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
+def gitVersion() {
+    def raw = grgit.describe(longDescr: true, tags:true)
+    def desc = (raw == null ? 'unknown-offset-hash' : raw).split('-') as List
+    def hash = desc.remove(desc.size() - 1)
+    def offset = desc.remove(desc.size() - 1)
+    def tag = desc.join('-')
+    def branch = grgit.branch.current().name
+    project.ext.SPEC_VERSION = tag
+    return "${tag}.${offset}${t -> if (branch != 'master') t << '-' + branch}"
+}
+
+ext {
+    CHANGELOG = rootProject.file('build/changelog.txt')
+}
+
+repositories {
+    mavenLocal()
+    maven { url = 'https://files.minecraftforge.net/maven' }
+    jcenter()
+    mavenCentral()
+}
+
+test {
+    useJUnitPlatform()
+}
+
+license {
+    header = file('LICENSE-header.txt')
+    ext {
+        project = 'SRG Utils'
+    }
+}
+
+dependencies {
+    testImplementation('org.junit.jupiter:junit-jupiter:5.5.+')
+    testImplementation('org.powermock:powermock-core:2.0+')
+    compile('com.google.code.findbugs:jsr305:3.0.2')
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            if (CHANGELOG.exists()) {
+                artifact(CHANGELOG) {
+                    classifier = 'changelog'
+                }
+            }
+            artifact jar
+            pom {
+                name = 'SRG Utils'
+                description = 'Library for managing java obfusication mappings in various formats.'
+                url = 'https://github.com/MinecraftForge/SrgUtils'
+                scm {
+                    url = 'https://github.com/MinecraftForge/SrgUtils'
+                    connection = 'scm:git:git://github.com/MinecraftForge/SrgUtils.git'
+                    developerConnection = 'scm:git:git@github.com:MinecraftForge/SrgUtils.git'
+                }
+                issueManagement {
+                    system = 'github'
+                    url = 'https://github.com/MinecraftForge/SrgUtils/issues'
+                }
+
+                licenses {
+                    license {
+                        name = 'LGPLv2.1'
+                        url = 'https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'LexManos'
+                        name = 'LexManos'
+                    }
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            if (project.hasProperty('forgeMavenPassword')) {
+                credentials {
+                    username project.properties.forgeMavenUser
+                    password project.properties.forgeMavenPassword
+                }
+                url 'https://files.minecraftforge.net/maven/manage/upload'
+            } else {
+                url 'file://' + rootProject.file('repo').getAbsolutePath()
+            }
+        }
+    }
+}
+
+dependencyUpdates.resolutionStrategy {
+    componentSelection { rules ->
+        rules.all { ComponentSelection selection ->
+            boolean rejected = ['alpha', 'beta', 'rc', 'cr', 'm', 'preview'].any { qualifier ->
+                selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
+            }
+            if (rejected) {
+                selection.reject('Release candidate')
+            }
+        }
+    }
+}
+
