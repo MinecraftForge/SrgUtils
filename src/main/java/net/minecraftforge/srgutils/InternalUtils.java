@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 class InternalUtils {
     static IMappingFile load(InputStream in) throws IOException {
         List<String> lines = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8)).lines()
-            .map(line -> (line + '#').split("#")[0].replaceFirst("\\s++$", "")) //Remove comments
+            .map(InternalUtils::stripComment)
             .filter(l -> !l.isEmpty()) //Remove Empty lines
             .collect(Collectors.toList());
 
@@ -66,12 +66,12 @@ class InternalUtils {
                 }
             }
 
-            String cls = null;
+            MappingFile.Cls cls = null;
             for (String line : lines) {
                 line = line.replace('.', '/');
                 if (!line.startsWith("    ") && line.endsWith(":")) {
                     //Classes we already did this in the first pass
-                    cls = line.split(" -> ")[0];
+                    cls = ret.getClass(line.split(" -> ")[0]);
                 } else if (line.contains("(") && line.contains(")")) {
                     if (cls == null)
                         throw new IOException("Invalid PG line, missing class: " + line);
@@ -105,10 +105,12 @@ class InternalUtils {
                         ; // We don't care about initializers, they keep their name by virtue of the JVM spec.
                     else
                     */
-                        ret.getClass(cls).addMethod(name, desc.toString(), obf, start, end);
+                        cls.addMethod(name, desc.toString(), obf, start, end);
                 } else {
+                    if (cls == null)
+                        throw new IOException("Invalid PG line, missing class: " + line);
                     String[] pts = line.trim().split(" ");
-                    ret.getClass(cls).addField(pts[1], pts[3], toDesc(pts[0]));
+                    cls.addField(pts[1], pts[3], toDesc(pts[0]));
                 }
             }
         } else { // TSRG/CSRG
@@ -122,7 +124,7 @@ class InternalUtils {
                     ret.addClass(pts[0], pts[1]);
             });
 
-            String cls = null;
+            MappingFile.Cls cls = null;
             for (String line : lines) {
                 String[] pts = line.split(" ");
                 if (pts[0].charAt(0) == '\t') {
@@ -130,15 +132,15 @@ class InternalUtils {
                         throw new IOException("Invalid TSRG line, missing class: " + line);
                     pts[0] = pts[0].substring(1);
                     if (pts.length == 2)
-                        ret.getClass(cls).addField(pts[0], pts[1]);
+                        cls.addField(pts[0], pts[1]);
                     else if (pts.length == 3)
-                        ret.getClass(cls).addMethod(pts[0], pts[1], pts[2]);
+                        cls.addMethod(pts[0], pts[1], pts[2]);
                     else
                         throw new IOException("Invalid TSRG line, to many parts: " + line);
                 } else {
                     if (pts.length == 2) {
                         if (!pts[0].endsWith("/"))
-                            cls = pts[0];
+                            cls = ret.getClass(pts[0]);
                     }
                     else if (pts.length == 3)
                         ret.getClass(pts[0]).addField(pts[1], pts[2]);
@@ -274,5 +276,17 @@ class InternalUtils {
             }
         }
         return Integer.compare(t[0].length, t[1].length);
+    }
+
+    public static String stripComment(String str) {
+        int idx = str.indexOf('#');
+        if (idx == 0)
+            return "";
+        if (idx != -1)
+            str = str.substring(0, idx - 1);
+        int end = str.length();
+        while (end > 1 && str.charAt(end - 1) == ' ')
+            end--;
+        return end == 0 ? "" : str.substring(0, end);
     }
 }

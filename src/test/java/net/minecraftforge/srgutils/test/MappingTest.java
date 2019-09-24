@@ -39,8 +39,10 @@ public class MappingTest {
     @Test
     void test() throws IOException {
         IMappingFile pg = IMappingFile.load(getStream("./installer.pg"));
+        IMappingFile reverse = pg.reverse();
         for (Format f : Format.values()) {
             pg.write(Paths.get("./build/installer_out." + f.name().toLowerCase()), f, false);
+            reverse.write(Paths.get("./build/installer_out_rev." + f.name().toLowerCase()), f, false);
         }
     }
 }
