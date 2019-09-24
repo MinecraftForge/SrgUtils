@@ -58,6 +58,16 @@ dependencies {
     compile('com.google.code.findbugs:jsr305:3.0.2')
 }
 
+task sourcesJar(type: Jar) {
+    archiveClassifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives jar
+    archives sourcesJar
+}
+
 publishing {
     publications {
         mavenJava(MavenPublication) {
@@ -67,6 +77,7 @@ publishing {
                 }
             }
             artifact jar
+            artifact sourcesJar
             pom {
                 name = 'SRG Utils'
                 description = 'Library for managing java obfusication mappings in various formats.'
