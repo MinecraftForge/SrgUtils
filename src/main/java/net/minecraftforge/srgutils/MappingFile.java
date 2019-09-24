@@ -70,7 +70,9 @@ class MappingFile implements IMappingFile {
     }
 
     Cls addClass(String original, String mapped) {
-        return classes.put(original, new Cls(original, mapped));
+        Cls ret = new Cls(original, mapped);
+        classes.put(original, ret);
+        return ret;
     }
 
     Cls getOrCreateClass(String original) {
