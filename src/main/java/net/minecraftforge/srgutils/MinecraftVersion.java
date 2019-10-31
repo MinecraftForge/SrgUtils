@@ -88,7 +88,7 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
             this.nearest = splitDots("1.9.3");
             this.pre = 0;
             this.revision = Character.toString((char)('a' - 1)); //16w14a is a actual snapshot, so sort before that.
-        } else if ("3D Shareware v1.34".equals(lower)) { //2019 April Fools
+        } else if ("3d shareware v1.34".equals(lower)) { //2019 April Fools
             this.week = 14;
             this.year = 19;
             this.type = Type.SNAPSHOT;
