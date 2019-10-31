@@ -19,6 +19,8 @@
 
 package net.minecraftforge.srgutils;
 
+import java.util.Locale;
+
 public class MinecraftVersion implements Comparable<MinecraftVersion> {
     public static MinecraftVersion NEGATIVE = from("-1");
     public static MinecraftVersion from(String version) {
@@ -60,7 +62,7 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
         return values;
     }
 
-    private final boolean isSnapshot;
+    private final Type type;
     private final String full;
     private final int[] nearest;
     private final int week;
@@ -70,17 +72,54 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
 
     private MinecraftVersion(String version) {
         this.full = version;
-        if (version.length() == 6 && version.charAt(2) == 'w') {
+        String lower = version.toLowerCase(Locale.ENGLISH);
+
+        if ("15w14a".equals(this.full)) { //2015 April Fools
+            this.week = 14;
+            this.year = 15;
+            this.type = Type.SNAPSHOT;
+            this.nearest = splitDots("1.10");
+            this.pre = 0;
+            this.revision = "a";
+        } else if ("1.rv-pre1".equals(lower)) { //2016 April Fools
+            this.week = 14;
+            this.year = 16;
+            this.type = Type.SNAPSHOT;
+            this.nearest = splitDots("1.9.3");
+            this.pre = 0;
+            this.revision = Character.toString((char)('a' - 1)); //16w14a is a actual snapshot, so sort before that.
+        } else if ("3D Shareware v1.34".equals(lower)) { //2019 April Fools
+            this.week = 14;
+            this.year = 19;
+            this.type = Type.SNAPSHOT;
+            this.nearest = splitDots("1.14");
+            this.pre = 0;
+            this.revision = Character.toString((char)('a' - 1)); //19w14a is a actual snapshot, so sort before that.
+        } else if (this.full.charAt(0) == 'b' || this.full.charAt(0) == 'a') {
+            this.week = -1;
+            this.year = -1;
+            this.type = this.full.charAt(0) == 'b' ? Type.BETA : Type.ALPHA;
+            String clean = this.full.substring(1).replace('_', '.');
+            char end = clean.charAt(clean.length() - 1);
+            if (end < '0' || end > '9') {
+                this.revision = Character.toString(end);
+                this.nearest = splitDots(clean.substring(0, clean.length() - 1));
+            } else {
+                this.revision = null;
+                this.nearest = splitDots(clean);
+            }
+            this.pre = 0;
+        } else if (version.length() == 6 && version.charAt(2) == 'w') {
             this.year = Integer.parseInt(version.substring(0, 2));
             this.week = Integer.parseInt(version.substring(3, 5));
             this.revision = version.substring(5);
-            this.isSnapshot = true;
+            this.type = Type.SNAPSHOT;
             this.nearest = splitDots(fromSnapshot(this.year, this.week));
             this.pre = 0;
         } else {
             this.week = -1;
             this.year = -1;
-            this.isSnapshot = false;
+            this.type = Type.RELEASE;
             this.revision = null;
             if (this.full.contains("-pre")) {
                 String[] pts = full.split("-pre");
@@ -122,14 +161,38 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
     public int compareTo(MinecraftVersion o) {
         if (o == null)
             return 1;
-        if (this.isSnapshot == o.isSnapshot) {
-            if (this.isSnapshot)
-                return this.year != o.year ? this.year - o.year : this.week != o.week ? this.week - o.week : this.revision.compareTo(o.revision);
-            return compareFull(o);
-        } else if (this.isSnapshot)
-            return compareFull(o) == 0 ? -1 : 1;
-        else
-            return compareFull(o) == 0 ? 1 : -1;
+
+        if (this.type != o.type) {
+            if (this.type == Type.ALPHA)
+                return -1;
+            else if (this.type == Type.BETA)
+                return o.type == Type.ALPHA ? 1 : -1;
+            else if (this.type == Type.SNAPSHOT)
+                return compareFull(o) == 0 ? -1 : 1;
+            else
+                return compareFull(o) == 0 ? 1 : -1;
+        }
+
+        switch (this.type) {
+            case ALPHA:
+            case BETA:
+                int ret = compareFull(o);
+                if (ret != 0)                                    return ret;
+                if (this.revision == null && o.revision != null) return  1;
+                if (this.revision != null && o.revision == null) return -1;
+                return this.revision.compareTo(o.revision);
+
+            case SNAPSHOT:
+                if (this.year != o.year) return this.year - o.year;
+                if (this.week != o.week) return this.week - o.week;
+                return this.revision.compareTo(o.revision);
+
+            case RELEASE:
+                return compareFull(o);
+
+            default:
+                throw new IllegalArgumentException("Invalid type: " + this.type);
+        }
     }
 
     private int compareFull(MinecraftVersion o) {
@@ -141,5 +204,12 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
         if (this.nearest.length < o.nearest.length)
             return -1;
         return this.pre - o.pre;
+    }
+
+    private static enum Type {
+        RELEASE,
+        SNAPSHOT,
+        BETA,
+        ALPHA
     }
 }
