@@ -90,6 +90,10 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
                 String[] pts = full.split("_Pre-Release_");
                 this.pre = Integer.parseInt(pts[1]);
                 this.nearest = splitDots(pts[0]);
+            } else if (this.full.contains(" Pre-Release ")) {
+                String[] pts = full.split(" Pre-Release ");
+                this.pre = Integer.parseInt(pts[1]);
+                this.nearest = splitDots(pts[0]);
             } else {
                 this.pre = 0;
                 this.nearest = splitDots(full);
