@@ -96,6 +96,13 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
             this.nearest = splitDots("1.14");
             this.pre = 0;
             this.revision = Character.toString((char)('a' - 1)); //19w14a is a actual snapshot, so sort before that.
+        } else if ("20w14infinite".equals(lower)) { //2020 April Fools
+            this.week = 14;
+            this.year = 20;
+            this.type = Type.SNAPSHOT;
+            this.nearest =  splitDots("1.16");
+            this.pre = 0;
+            this.revision = Character.toString((char)('a' - 1)); //19w14a is a actual snapshot, so sort before that.
         } else if (this.full.charAt(0) == 'b' || this.full.charAt(0) == 'a') {
             this.week = -1;
             this.year = -1;
