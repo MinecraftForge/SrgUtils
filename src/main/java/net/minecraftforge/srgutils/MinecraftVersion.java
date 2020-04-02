@@ -88,21 +88,21 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
             this.type = Type.SNAPSHOT;
             this.nearest = splitDots("1.9.3");
             this.pre = 0;
-            this.revision = Character.toString((char)('a' - 1)); //16w14a is a actual snapshot, so sort before that.
+            this.revision = "`";
         } else if ("3d shareware v1.34".equals(lower)) { //2019 April Fools
             this.week = 14;
             this.year = 19;
             this.type = Type.SNAPSHOT;
             this.nearest = splitDots("1.14");
             this.pre = 0;
-            this.revision = Character.toString((char)('a' - 1)); //19w14a is a actual snapshot, so sort before that.
+            this.revision = "`";
         } else if ("20w14infinite".equals(lower)) { //2020 April Fools
             this.week = 14;
             this.year = 20;
             this.type = Type.SNAPSHOT;
             this.nearest =  splitDots("1.16");
             this.pre = 0;
-            this.revision = Character.toString((char)('a' - 1)); //19w14a is a actual snapshot, so sort before that.
+            this.revision = Character.toString((char)('a' - 1));
         } else if (this.full.charAt(0) == 'b' || this.full.charAt(0) == 'a') {
             this.week = -1;
             this.year = -1;
@@ -175,10 +175,13 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
                 return -1;
             else if (this.type == Type.BETA)
                 return o.type == Type.ALPHA ? 1 : -1;
-            else if (this.type == Type.SNAPSHOT)
-                return compareFull(o) == 0 ? -1 : 1;
-            else
-                return compareFull(o) == 0 ? 1 : -1;
+            else if (this.type == Type.SNAPSHOT) {
+                int ret = compareFull(o);
+                return ret == 0 ? -1 : ret;
+            } else {
+                int ret = compareFull(o);
+                return ret == 0 ? 1 : ret;
+            }
         }
 
         switch (this.type) {
