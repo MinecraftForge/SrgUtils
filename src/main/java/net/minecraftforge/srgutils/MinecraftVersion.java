@@ -24,7 +24,13 @@ import java.util.Locale;
 public class MinecraftVersion implements Comparable<MinecraftVersion> {
     public static MinecraftVersion NEGATIVE = from("-1");
     public static MinecraftVersion from(String version) {
-        return new MinecraftVersion(version);
+        try {
+            return new MinecraftVersion(version);
+        } catch (IllegalArgumentException e) {
+            throw e;
+        } catch (Exception e) { //This is dirty, TODO, make less exceptioney
+            throw new IllegalArgumentException("Unknown version: " + version, e);
+        }
     }
 
     private static String fromSnapshot(int year, int week) {
@@ -74,6 +80,7 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
     private MinecraftVersion(String version) {
         this.full = version;
         String lower = version.toLowerCase(Locale.ENGLISH);
+        char first = this.full.charAt(0);
 
         if ("15w14a".equals(this.full)) { //2015 April Fools
             this.week = 14;
@@ -103,10 +110,53 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
             this.nearest =  splitDots("1.16");
             this.pre = 0;
             this.revision = Character.toString((char)('a' - 1));
-        } else if (this.full.charAt(0) == 'b' || this.full.charAt(0) == 'a') {
+        } else if ("inf-20100618".equals(lower)) {
+            this.week = 25;
+            this.year = 10;
+            this.type = Type.ALPHA;
+            this.nearest = splitDots("1.0.4");
+            this.pre = 0;
+            this.revision = "a";
+        } else if (lower.startsWith("rd-")) {
+            this.year = 9;
+            this.type = Type.ALPHA;
+            this.pre = 0;
+            this.nearest = splitDots("0.0.1");
+            switch (lower) {
+                case "rd-132211":
+                    this.week = 20;
+                    this.revision = "a";
+                    break;
+                case "rd-132328":
+                    this.week = 20;
+                    this.revision = "b";
+                    break;
+                case "rd-20090515":
+                    this.week = 20;
+                    this.revision = "c";
+                    break;
+                case "rd-160052":
+                    this.week = 20;
+                    this.revision = "d";
+                    break;
+                case "rd-161348":
+                    this.week = 20;
+                    this.revision = "e";
+                    break;
+                default:
+                   throw new IllegalArgumentException("Unknown 'rd' version: " + full);
+            }
+        } else if ("c0.0.13a_03".equals(lower)) { //Rather then screw with the logic of the alpha/beta parser, special case this weird one
             this.week = -1;
             this.year = -1;
-            this.type = this.full.charAt(0) == 'b' ? Type.BETA : Type.ALPHA;
+            this.type = Type.ALPHA;
+            this.revision = "`";
+            this.nearest = splitDots("0.0.13");
+            this.pre = 0;
+        } else if (first == 'a' || first == 'b' || first == 'c') {
+            this.week = -1;
+            this.year = -1;
+            this.type = first == 'b' ? Type.BETA : Type.ALPHA;
             String clean = this.full.substring(1).replace('_', '.');
             char end = clean.charAt(clean.length() - 1);
             if (end < '0' || end > '9') {
@@ -142,7 +192,7 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
                 this.pre = Integer.parseInt(pts[1]);
                 this.nearest = splitDots(pts[0]);
             } else {
-                this.pre = 0;
+                this.pre = Integer.MAX_VALUE;
                 this.nearest = splitDots(full);
             }
         }
@@ -171,16 +221,22 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
             return 1;
 
         if (this.type != o.type) {
-            if (this.type == Type.ALPHA)
-                return -1;
-            else if (this.type == Type.BETA)
-                return o.type == Type.ALPHA ? 1 : -1;
-            else if (this.type == Type.SNAPSHOT) {
-                int ret = compareFull(o);
-                return ret == 0 ? -1 : ret;
-            } else {
-                int ret = compareFull(o);
-                return ret == 0 ? 1 : ret;
+            int ret = 0;
+            switch (this.type) {
+                case ALPHA: return -1;
+                case BETA:  return o.type == Type.ALPHA ? 1 : -1;
+                case SNAPSHOT:
+                    ret = compareFull(o);
+                    return ret == 0 ? -1 : ret;
+                case RELEASE:
+                    switch (o.type) {
+                        case ALPHA:
+                        case BETA: return 1;
+                        case SNAPSHOT:
+                        case RELEASE:
+                            ret = compareFull(o);
+                            return ret == 0 ? 1 : ret;
+                    }
             }
         }
 
