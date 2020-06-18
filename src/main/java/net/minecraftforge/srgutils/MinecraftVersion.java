@@ -69,6 +69,7 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
     private final int week;
     private final int year;
     private final int pre;
+    private final int rc;
     private final String revision;
 
     private MinecraftVersion(String version) {
@@ -81,6 +82,7 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
             this.type = Type.SNAPSHOT;
             this.nearest = splitDots("1.10");
             this.pre = 0;
+            this.rc = 0;
             this.revision = "a";
         } else if ("1.rv-pre1".equals(lower)) { //2016 April Fools
             this.week = 14;
@@ -88,6 +90,7 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
             this.type = Type.SNAPSHOT;
             this.nearest = splitDots("1.9.3");
             this.pre = 0;
+            this.rc = 0;
             this.revision = "`";
         } else if ("3d shareware v1.34".equals(lower)) { //2019 April Fools
             this.week = 14;
@@ -95,6 +98,7 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
             this.type = Type.SNAPSHOT;
             this.nearest = splitDots("1.14");
             this.pre = 0;
+            this.rc = 0;
             this.revision = "`";
         } else if ("20w14infinite".equals(lower)) { //2020 April Fools
             this.week = 14;
@@ -102,6 +106,7 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
             this.type = Type.SNAPSHOT;
             this.nearest =  splitDots("1.16");
             this.pre = 0;
+            this.rc = 0;
             this.revision = Character.toString((char)('a' - 1));
         } else if (this.full.charAt(0) == 'b' || this.full.charAt(0) == 'a') {
             this.week = -1;
@@ -117,6 +122,7 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
                 this.nearest = splitDots(clean);
             }
             this.pre = 0;
+            this.rc = 0;
         } else if (version.length() == 6 && version.charAt(2) == 'w') {
             this.year = Integer.parseInt(version.substring(0, 2));
             this.week = Integer.parseInt(version.substring(3, 5));
@@ -124,6 +130,7 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
             this.type = Type.SNAPSHOT;
             this.nearest = splitDots(fromSnapshot(this.year, this.week));
             this.pre = 0;
+            this.rc = 0;
         } else {
             this.week = -1;
             this.year = -1;
@@ -132,17 +139,26 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
             if (this.full.contains("-pre")) {
                 String[] pts = full.split("-pre");
                 this.pre = Integer.parseInt(pts[1]);
+                this.rc = 0;
                 this.nearest = splitDots(pts[0]);
             } else if (this.full.contains("_Pre-Release_")) {
                 String[] pts = full.split("_Pre-Release_");
                 this.pre = Integer.parseInt(pts[1]);
+                this.rc = 0;
                 this.nearest = splitDots(pts[0]);
             } else if (this.full.contains(" Pre-Release ")) {
                 String[] pts = full.split(" Pre-Release ");
                 this.pre = Integer.parseInt(pts[1]);
+                this.rc = 0;
+                this.nearest = splitDots(pts[0]);
+            } else if (this.full.contains("-rc")) {
+                String[] pts = full.split("-rc");
+                this.pre = 0;
+                this.rc = Integer.parseInt(pts[1]);
                 this.nearest = splitDots(pts[0]);
             } else {
                 this.pre = 0;
+                this.rc = 0;
                 this.nearest = splitDots(full);
             }
         }
@@ -214,7 +230,11 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
         }
         if (this.nearest.length < o.nearest.length)
             return -1;
-        return this.pre - o.pre;
+        
+        if (this.pre != o.pre)
+            return this.pre - o.pre;
+        
+        return this.rc - o.rc;
     }
 
     private static enum Type {
