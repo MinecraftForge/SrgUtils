@@ -53,8 +53,9 @@ license {
 }
 
 dependencies {
-    testImplementation('org.junit.jupiter:junit-jupiter:5.5.+')
-    testImplementation('org.powermock:powermock-core:2.0+')
+    testImplementation('org.junit.jupiter:junit-jupiter:5.5.0')
+    testImplementation('org.junit.jupiter:junit-jupiter-engine:5.5.0')
+    testImplementation('org.powermock:powermock-core:2.0.7')
     compile('com.google.code.findbugs:jsr305:3.0.2')
 }
 

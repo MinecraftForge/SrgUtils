@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.opentest4j.AssertionFailedError;
 
 import net.minecraftforge.srgutils.MinecraftVersion;
 
@@ -34,6 +35,23 @@ public class VersionList {
     //Just copy pasted with a little resorting from Mojang's version manifest, https://launchermeta.mojang.com/mc/game/version_manifest.json
     //We can't read this file directly, because its in strict release date order, not target version order
     private String[] versions = new String[] {
+        "1.16-rc1",
+        "1.16-pre8",
+        "1.16-pre7",
+        "1.16-pre6",
+        "1.16-pre5",
+        "1.16-pre4",
+        "1.16-pre3",
+        "1.16-pre2",
+        "1.16-pre1",
+        "20w22a",
+        "20w21a",
+        "20w20b",
+        "20w20a",
+        "20w19a",
+        "20w18a",
+        "20w17a",
+        "20w16a",
         "20w15a",
         "20w14a",
         "20w14infinite",

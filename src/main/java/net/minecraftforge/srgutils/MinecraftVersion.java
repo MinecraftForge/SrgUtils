@@ -191,6 +191,10 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
                 String[] pts = full.split(" Pre-Release ");
                 this.pre = Integer.parseInt(pts[1]);
                 this.nearest = splitDots(pts[0]);
+            } else if (this.full.contains("-rc")) {
+                String[] pts = full.split("-rc");
+                this.pre = -1 * Integer.parseInt(pts[1]);
+                this.nearest = splitDots(pts[0]);
             } else {
                 this.pre = Integer.MAX_VALUE;
                 this.nearest = splitDots(full);
@@ -270,7 +274,13 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
         }
         if (this.nearest.length < o.nearest.length)
             return -1;
-        return this.pre - o.pre;
+        //Release candidates have negative numbers to make them sort differently then pre releases.
+        if (this.pre < 0 && o.pre > 0)
+            return 1;
+        if (this.pre > 0 && o.pre < 0)
+            return -1;
+        return this.pre > 0 ? this.pre - o.pre :
+            -this.pre - -o.pre;
     }
 
     private static enum Type {
