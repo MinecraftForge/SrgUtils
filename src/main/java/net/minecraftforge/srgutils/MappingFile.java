@@ -1,6 +1,6 @@
 /*
  * SRG Utils
- * Copyright (c) 2019
+ * Copyright (c) 2021
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -130,6 +130,7 @@ class MappingFile implements IMappingFile {
             Collections.sort(lines, linesort);
         }
 
+        Files.createDirectories(path.getParent());
         try (BufferedWriter writer = Files.newBufferedWriter(path)) {
             for (String line : lines) {
                 writer.write(line);

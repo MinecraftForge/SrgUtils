@@ -12,13 +12,15 @@ plugins {
     id 'eclipse'
     id 'maven-publish'
     id 'net.minecrell.licenser' version '0.4.1'
-    id 'org.ajoberstar.grgit' version '3.1.1'
-    id 'com.github.ben-manes.versions' version '0.24.0'
+    id 'org.ajoberstar.grgit' version '4.1.0'
+    id 'com.github.ben-manes.versions' version '0.36.0'
 }
 
 group 'net.minecraftforge'
 version = gitVersion()
-targetCompatibility = sourceCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(8)
+
 def gitVersion() {
     def raw = grgit.describe(longDescr: true, tags:true)
     def desc = (raw == null ? 'unknown-offset-hash' : raw).split('-') as List
@@ -53,10 +55,10 @@ license {
 }
 
 dependencies {
-    testImplementation('org.junit.jupiter:junit-jupiter:5.5.0')
-    testImplementation('org.junit.jupiter:junit-jupiter-engine:5.5.0')
-    testImplementation('org.powermock:powermock-core:2.0.7')
-    compile('com.google.code.findbugs:jsr305:3.0.2')
+    testImplementation('org.junit.jupiter:junit-jupiter:5.7.0')
+    testImplementation('org.junit.jupiter:junit-jupiter-engine:5.7.0')
+    testImplementation('org.powermock:powermock-core:2.0.9')
+    compileOnly('com.google.code.findbugs:jsr305:3.0.2')
 }
 
 task sourcesJar(type: Jar) {

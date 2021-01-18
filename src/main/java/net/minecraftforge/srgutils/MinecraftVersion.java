@@ -1,6 +1,6 @@
 /*
  * SRG Utils
- * Copyright (c) 2019
+ * Copyright (c) 2021
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -57,7 +57,9 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
         if (value >= 1830 && value <= 1833) return "1.13.1";
         if (value >= 1843 && value <= 1914) return "1.14";
         if (value >= 1934 && value <= 1946) return "1.15";
-        if (value >= 2006 && value <= 9999) return "1.16";
+        if (value >= 2006 && value <= 2022) return "1.16";
+        if (value >= 2027 && value <= 2030) return "1.16.2";
+        if (value >= 2045 && value <= 9999) return "1.17";
         throw new IllegalArgumentException("Invalid snapshot date: " + value);
     }
 
@@ -196,7 +198,7 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
                 this.pre = -1 * Integer.parseInt(pts[1]);
                 this.nearest = splitDots(pts[0]);
             } else {
-                this.pre = Integer.MAX_VALUE;
+                this.pre = 0;
                 this.nearest = splitDots(full);
             }
         }
@@ -274,11 +276,13 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
         }
         if (this.nearest.length < o.nearest.length)
             return -1;
+        if (this.type == Type.RELEASE && o.type != Type.RELEASE) return 1;
+        if (this.type != Type.RELEASE && o.type == Type.RELEASE) return -1;
         //Release candidates have negative numbers to make them sort differently then pre releases.
-        if (this.pre < 0 && o.pre > 0)
-            return 1;
-        if (this.pre > 0 && o.pre < 0)
-            return -1;
+        if (this.pre == 0 && o.pre != 0) return 1;
+        if (this.pre != 0 && o.pre == 0) return -1;
+        if (this.pre < 0 && o.pre > 0) return 1;
+        if (this.pre > 0 && o.pre < 0) return -1;
         return this.pre > 0 ? this.pre - o.pre :
             -this.pre - -o.pre;
     }

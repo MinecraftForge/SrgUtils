@@ -1,6 +1,6 @@
 /*
  * SRG Utils
- * Copyright (c) 2019
+ * Copyright (c) 2021
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-import org.opentest4j.AssertionFailedError;
 
 import net.minecraftforge.srgutils.MinecraftVersion;
 
@@ -35,6 +34,31 @@ public class VersionList {
     //Just copy pasted with a little resorting from Mojang's version manifest, https://launchermeta.mojang.com/mc/game/version_manifest.json
     //We can't read this file directly, because its in strict release date order, not target version order
     private String[] versions = new String[] {
+        "20w51a",
+        "20w49a",
+        "20w48a",
+        "20w46a",
+        "20w45a",
+        "1.16.5",
+        "1.16.5-rc1",
+        "1.16.4",
+        "1.16.4-rc1",
+        "1.16.4-pre2",
+        "1.16.4-pre1",
+        "1.16.3",
+        "1.16.3-rc1",
+        "1.16.2",
+        "1.16.2-rc2",
+        "1.16.2-rc1",
+        "1.16.2-pre3",
+        "1.16.2-pre2",
+        "1.16.2-pre1",
+        "20w30a",
+        "20w29a",
+        "20w28a",
+        "20w27a",
+        "1.16.1",
+        "1.16",
         "1.16-rc1",
         "1.16-pre8",
         "1.16-pre7",
