@@ -24,134 +24,334 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Deque;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 class InternalUtils {
     static IMappingFile load(InputStream in) throws IOException {
+        INamedMappingFile named = loadNamed(in);
+        return named.getMap(named.getNames().get(0), named.getNames().get(1));
+    }
+
+    static INamedMappingFile loadNamed(InputStream in) throws IOException {
         List<String> lines = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8)).lines()
-            .map(InternalUtils::stripComment)
+            //.map(InternalUtils::stripComment)
             .filter(l -> !l.isEmpty()) //Remove Empty lines
             .collect(Collectors.toList());
 
-        MappingFile ret = new MappingFile();
 
         String firstLine = lines.get(0);
         String test = firstLine.split(" ")[0];
+
         if ("PK:".equals(test) || "CL:".equals(test) || "FD:".equals(test) || "MD:".equals(test)) { //SRG
-            for (String line : lines) {
-                String[] pts = line.split(" ");
-                switch (pts[0]) {
-                    case "PK:": ret.addPackage(pts[1], pts[2]); break;
-                    case "CL:": ret.addClass(pts[1], pts[2]); break;
-                    case "FD:":
-                        if (pts.length == 5)
-                            ret.getOrCreateClass(rsplit(pts[1], '/', 1)[0]).addField(rsplit(pts[1], '/', 1)[1], rsplit(pts[3], '/', 1)[1], pts[2]);
-                        else
-                            ret.getOrCreateClass(rsplit(pts[1], '/', 1)[0]).addField(rsplit(pts[1], '/', 1)[1], rsplit(pts[2], '/', 1)[1]);
-                        break;
-                    case "MD:": ret.getOrCreateClass(rsplit(pts[1], '/', 1)[0]).addMethod(rsplit(pts[1], '/', 1)[1], pts[2], rsplit(pts[3], '/', 1)[1]); break;
-                    default:
-                        throw new IOException("Invalid SRG file, Unknown type: " + line);
-                }
-            }
+            return loadSRG(filter(lines));
         } else if(firstLine.contains(" -> ")) { // ProGuard
-            for (String line : lines) {
-                if (!line.startsWith("    ") && line.endsWith(":")) {
-                    String[] pts = line.replace('.', '/').split(" -> ");
-                    ret.addClass(pts[0], pts[1].substring(0, pts[1].length() - 1));
-                }
-            }
-
-            MappingFile.Cls cls = null;
-            for (String line : lines) {
-                line = line.replace('.', '/');
-                if (!line.startsWith("    ") && line.endsWith(":")) {
-                    //Classes we already did this in the first pass
-                    cls = ret.getClass(line.split(" -> ")[0]);
-                } else if (line.contains("(") && line.contains(")")) {
-                    if (cls == null)
-                        throw new IOException("Invalid PG line, missing class: " + line);
-
-                    line = line.trim();
-                    int start = 0;
-                    int end = 0;
-                    if (line.indexOf(':') != -1) {
-                        int i = line.indexOf(':');
-                        int j = line.indexOf(':', i + 1);
-                        start = Integer.parseInt(line.substring(0,     i));
-                        end   = Integer.parseInt(line.substring(i + 1, j));
-                        line = line.substring(j + 1);
-                    }
-
-                    String obf = line.split(" -> ")[1];
-                    String _ret = toDesc(line.split(" ")[0]);
-                    String name = line.substring(line.indexOf(' ') + 1, line.indexOf('('));
-                    String[] args = line.substring(line.indexOf('(') + 1, line.indexOf(')')).split(",");
-
-                    StringBuffer desc = new StringBuffer();
-                    desc.append('(');
-                    for (String arg : args) {
-                        if (arg.isEmpty()) break;
-                        desc.append(toDesc(arg));
-                    }
-                    desc.append(')').append(_ret);
-
-                    /*
-                    if (("<init>".equals(name) || "<clinit>".equals(name)) && name.equals(obf))
-                        ; // We don't care about initializers, they keep their name by virtue of the JVM spec.
-                    else
-                    */
-                        cls.addMethod(name, desc.toString(), obf, start, end);
-                } else {
-                    if (cls == null)
-                        throw new IOException("Invalid PG line, missing class: " + line);
-                    String[] pts = line.trim().split(" ");
-                    cls.addField(pts[1], pts[3], toDesc(pts[0]));
-                }
-            }
+            return loadProguard(filter(lines));
+        } else if (firstLine.startsWith("v1\t")) { // Tiny V1
+            return loadTinyV1(lines);
+        } else if (firstLine.startsWith("tiny\t")) { // Tiny V2+
+            return loadTinyV2(lines);
         } else { // TSRG/CSRG
-            lines.stream().filter(l -> l.charAt(0) != '\t')
-            .map(l -> l.split(" "))
-            .filter(pts -> pts.length == 2)
-            .forEach(pts -> {
-                if (pts[0].endsWith("/"))
-                    ret.addPackage(pts[0].substring(0, pts[0].length() - 1), pts[1].substring(0, pts[1].length() -1));
-                else
-                    ret.addClass(pts[0], pts[1]);
-            });
+            return loadSlimSRG(filter(lines));
+        }
+    }
 
-            MappingFile.Cls cls = null;
-            for (String line : lines) {
-                String[] pts = line.split(" ");
-                if (pts[0].charAt(0) == '\t') {
-                    if (cls == null)
-                        throw new IOException("Invalid TSRG line, missing class: " + line);
-                    pts[0] = pts[0].substring(1);
-                    if (pts.length == 2)
-                        cls.addField(pts[0], pts[1]);
-                    else if (pts.length == 3)
-                        cls.addMethod(pts[0], pts[1], pts[2]);
+    private static List<String> filter(List<String> lines) {
+        return lines.stream().map(InternalUtils::stripComment)
+        .filter(l -> !l.isEmpty()) //Remove Empty lines
+        .collect(Collectors.toList());
+    }
+
+    private static INamedMappingFile loadSRG(List<String> lines) throws IOException {
+        NamedMappingFile ret = new NamedMappingFile();
+        for (String line : lines) {
+            String[] pts = line.split(" ");
+            switch (pts[0]) {
+                case "PK:": ret.addPackage(pts[1], pts[2]); break;
+                case "CL:": ret.addClass(pts[1], pts[2]); break;
+                case "FD:":
+                    if (pts.length == 5)
+                        ret.getOrCreateClass(rsplit(pts[1], '/', 1)[0]).addField(pts[2], rsplit(pts[1], '/', 1)[1], rsplit(pts[3], '/', 1)[1]);
                     else
-                        throw new IOException("Invalid TSRG line, to many parts: " + line);
-                } else {
-                    if (pts.length == 2) {
-                        if (!pts[0].endsWith("/"))
-                            cls = ret.getClass(pts[0]);
-                    }
-                    else if (pts.length == 3)
-                        ret.getClass(pts[0]).addField(pts[1], pts[2]);
-                    else if (pts.length == 4)
-                        ret.getClass(pts[0]).addMethod(pts[1], pts[2], pts[3]);
-                    else
-                        throw new IOException("Invalid CSRG line, to many parts: " + line);
-                }
+                        ret.getOrCreateClass(rsplit(pts[1], '/', 1)[0]).addField(null,   rsplit(pts[1], '/', 1)[1], rsplit(pts[2], '/', 1)[1]);
+                    break;
+                case "MD:": ret.getOrCreateClass(rsplit(pts[1], '/', 1)[0]).addMethod(0, 0, pts[2], rsplit(pts[1], '/', 1)[1], rsplit(pts[3], '/', 1)[1]); break;
+                default:
+                    throw new IOException("Invalid SRG file, Unknown type: " + line);
             }
         }
         return ret;
+    }
+
+    private static INamedMappingFile loadProguard(List<String> lines) throws IOException {
+        NamedMappingFile ret = new NamedMappingFile();
+
+        for (String line : lines) {
+            if (!line.startsWith("    ") && line.endsWith(":")) {
+                String[] pts = line.replace('.', '/').split(" -> ");
+                ret.addClass(pts[0], pts[1].substring(0, pts[1].length() - 1));
+            }
+        }
+
+        NamedMappingFile.Cls cls = null;
+        for (String line : lines) {
+            line = line.replace('.', '/');
+            if (!line.startsWith("    ") && line.endsWith(":")) {
+                //Classes we already did this in the first pass
+                cls = ret.getClass(line.split(" -> ")[0]);
+            } else if (line.contains("(") && line.contains(")")) {
+                if (cls == null)
+                    throw new IOException("Invalid PG line, missing class: " + line);
+
+                line = line.trim();
+                int start = 0;
+                int end = 0;
+                if (line.indexOf(':') != -1) {
+                    int i = line.indexOf(':');
+                    int j = line.indexOf(':', i + 1);
+                    start = Integer.parseInt(line.substring(0,     i));
+                    end   = Integer.parseInt(line.substring(i + 1, j));
+                    line = line.substring(j + 1);
+                }
+
+                String obf = line.split(" -> ")[1];
+                String _ret = toDesc(line.split(" ")[0]);
+                String name = line.substring(line.indexOf(' ') + 1, line.indexOf('('));
+                String[] args = line.substring(line.indexOf('(') + 1, line.indexOf(')')).split(",");
+
+                StringBuffer desc = new StringBuffer();
+                desc.append('(');
+                for (String arg : args) {
+                    if (arg.isEmpty()) break;
+                    desc.append(toDesc(arg));
+                }
+                desc.append(')').append(_ret);
+                cls.addMethod(start, end, desc.toString(), obf, name);
+            } else {
+                if (cls == null)
+                    throw new IOException("Invalid PG line, missing class: " + line);
+                String[] pts = line.trim().split(" ");
+                cls.addField(toDesc(pts[0]), pts[1], pts[3]);
+            }
+        }
+
+        return ret;
+    }
+
+    private static NamedMappingFile loadSlimSRG(List<String> lines) throws IOException {
+        NamedMappingFile ret = new NamedMappingFile();
+
+        lines.stream().filter(l -> l.charAt(0) != '\t')
+        .map(l -> l.split(" "))
+        .filter(pts -> pts.length == 2)
+        .forEach(pts -> {
+            if (pts[0].endsWith("/"))
+                ret.addPackage(pts[0].substring(0, pts[0].length() - 1), pts[1].substring(0, pts[1].length() -1));
+            else
+                ret.addClass(pts[0], pts[1]);
+        });
+
+        NamedMappingFile.Cls cls = null;
+        for (String line : lines) {
+            String[] pts = line.split(" ");
+            if (pts[0].charAt(0) == '\t') {
+                if (cls == null)
+                    throw new IOException("Invalid TSRG line, missing class: " + line);
+                pts[0] = pts[0].substring(1);
+                if (pts.length == 2)
+                    cls.addField(null, pts[0], pts[1]);
+                else if (pts.length == 3)
+                    cls.addMethod(0, 0, pts[1], pts[0], pts[2]);
+                else
+                    throw new IOException("Invalid TSRG line, to many parts: " + line);
+            } else {
+                if (pts.length == 2) {
+                    if (!pts[0].endsWith("/"))
+                        cls = ret.getClass(pts[0]);
+                }
+                else if (pts.length == 3)
+                    ret.getClass(pts[0]).addField(null, pts[1], pts[2]);
+                else if (pts.length == 4)
+                    ret.getClass(pts[0]).addMethod(0, 0, pts[2], pts[1], pts[3]);
+                else
+                    throw new IOException("Invalid CSRG line, to many parts: " + line);
+            }
+        }
+
+        return ret;
+    }
+
+    private static INamedMappingFile loadTinyV1(List<String> lines) throws IOException {
+        /*
+         *  The entire file is just a list tab-separated-value lines.
+         *  It can have a unlimited number of name steps, The first part of the header is always 'v1'
+         *  anything extra tells us the names of mapping stages. So we build a bunch of maps from the first value to the Nth value
+         */
+        String[] header = lines.get(0).split("\t");
+        if (header.length < 3) throw new IOException("Invalid Tiny v1 Header: " + lines.get(0));
+        NamedMappingFile ret = new NamedMappingFile(Arrays.copyOfRange(header, 1, header.length));
+
+        for (int x = 1; x < lines.size(); x++) {
+            String[] line = lines.get(x).split("\t");
+            switch (line[0]) {
+                case "CLASS": // CLASS Name1 Name2 Name3...
+                    if (line.length != header.length)
+                        throw new IOException("Invalid Tiny v1 line: #" + x + ": " + line);
+                    ret.addClass(Arrays.copyOfRange(line, 1, line.length));
+                    break;
+                case "FIELD": // FIELD Owner Desc Name1 Name2 Name3
+                    if (line.length != header.length  + 2)
+                        throw new IOException("Invalid Tiny v1 line: #" + x + ": " + line);
+                    ret.getOrCreateClass(line[1]).addField(line[2], Arrays.copyOfRange(line, 3, line.length));
+                    break;
+                case "METHOD": // METHOD Owner Desc Name1 Name2 Name3
+                    if (line.length != header.length  + 2)
+                        throw new IOException("Invalid Tiny v1 line: #" + x + ": " + line);
+                    ret.getOrCreateClass(line[1]).addMethod(0, 0, line[2], Arrays.copyOfRange(line, 3, line.length));
+                    break;
+                default:
+                    throw new IOException("Invalid Tiny v1 line: #" + x + ": " + line);
+            }
+        }
+
+        return ret;
+    }
+
+    private static INamedMappingFile loadTinyV2(List<String> lines) throws IOException {
+        /*
+         * This is the only spec I could find on it, so i'm assuming its official:
+         * https://github.com/FabricMC/tiny-remapper/issues/9
+         */
+        String[] header = lines.get(0).split("\t");
+        if (header.length < 5) throw new IOException("Invalid Tiny v2 Header: " + lines.get(0));
+
+        try {
+            int major = Integer.parseInt(header[1]);
+            int minor = Integer.parseInt(header[2]);
+            if (major != 2 || minor != 0)
+                throw new IOException("Unsupported Tiny v2 version: " + lines.get(0));
+        } catch (NumberFormatException e) {
+            throw new IOException("Invalid Tiny v2 Header: " + lines.get(0));
+        }
+        NamedMappingFile ret = new NamedMappingFile(Arrays.copyOfRange(header, 3, header.length));
+
+        int nameCount = ret.getNames().size();
+        boolean escaped = false;
+        Map<String, String> properties = new HashMap<>();
+        int start = 1;
+        for(start = 1; start < lines.size(); start++) {
+            String[] line = lines.get(start).split("\t");
+            if (!line[0].isEmpty())
+                break;
+
+            properties.put(line[1], line.length < 3 ? null : escaped ? unescapeTinyString(line[2]) : line[2]);
+            if ("escaped-names".equals(line[1]))
+                escaped = true;
+        }
+
+        Deque<TinyV2State> stack = new ArrayDeque<>();
+        NamedMappingFile.Cls cls = null;
+        //NamedMappingFile.Cls.Field field = null;
+        NamedMappingFile.Cls.Method method = null;
+
+        for (int x = start; x < lines.size(); x++) {
+            String line = lines.get(x);
+
+            int newdepth = 0;
+            while (line.charAt(newdepth) == '\t')
+                newdepth++;
+            if (newdepth != 0)
+                line = line.substring(newdepth);
+
+            if (newdepth != stack.size()) {
+                while (stack.size() != newdepth)
+                    stack.pop();
+            }
+
+            String[] parts = line.split("\t");
+            if (escaped) {
+                for (int y = 1; y < parts.length; y++)
+                    parts[y] = unescapeTinyString(parts[y]);
+            }
+
+            switch (parts[0]) {
+                case "c":
+                    if (stack.size() == 0) { // Class: c Name1 Name2 Name3
+                        if (parts.length != nameCount + 1)
+                            throw new IOException("Invalid Tiny v2 line: #" + x + ": " + line);
+
+                        cls = ret.addClass(Arrays.copyOfRange(parts, 1, parts.length));
+                        stack.push(TinyV2State.CLASS);
+                    } else { // Comment
+                        //String comment = unescapeTinyString(parts[1]);
+                        //TODO: Do we care?
+                    }
+                    break;
+                case "f": // Field: f desc Name1 Name2 Name3
+                    if (parts.length != nameCount + 2 || stack.peek() != TinyV2State.CLASS)
+                        throw new IOException("Invalid Tiny v2 line: #" + x + ": " + line);
+
+                    /*field =*/ cls.addField(parts[1], Arrays.copyOfRange(parts, 2, parts.length));
+                    stack.push(TinyV2State.FIELD);
+
+                    break;
+
+                case "m": // Method: m desc Name1 Name2 Name3
+                    if (parts.length != nameCount + 2 || stack.peek() != TinyV2State.CLASS)
+                        throw new IOException("Invalid Tiny v2 line: #" + x + ": " + line);
+
+                    method = cls.addMethod(0, 0, parts[1], Arrays.copyOfRange(parts, 2, parts.length));
+                    stack.push(TinyV2State.METHOD);
+
+                    break;
+
+                case "p": // Parameters: p index Name1 Name2 Name3
+                    if (parts.length != nameCount + 2 || stack.peek() != TinyV2State.METHOD)
+                        throw new IOException("Invalid Tiny v2 line: #" + x + ": " + line);
+
+                    method.addParameter(Integer.parseInt(parts[1]), Arrays.copyOfRange(parts, 2, parts.length));
+                    stack.push(TinyV2State.PARAMETER);
+
+                    break;
+                case "v": // Local Variable: v index start Name1 Name2 Name3?
+                    break; //TODO: Unsupported, is this used? Should we expose it?
+                default:
+                    throw new IOException("Invalid Tiny v2 line: #" + x + ": " + line);
+            }
+        }
+
+        return ret;
+    }
+    enum TinyV2State { ROOT, CLASS, FIELD, METHOD, PARAMETER }
+
+    /* <escaped-string> is a string that must not contain <eol> and escapes
+     *     \ to \\
+     *     "\n" to \n
+     *     "\r" to \r
+     *     "\t" to \t
+     *     "\0" to \0
+     * */
+    private static String unescapeTinyString(String value) {
+        return value.replace("\\\\", "\\")
+                .replace("\\n", "\n")
+                .replace("\\r", "\r")
+                .replace("\\t", "\t")
+                .replace("\\0", "\0");
+    }
+
+    static String escapeTinyString(String value) {
+        return value.replace("\\", "\\\\")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r")
+                .replace("\t", "\\t")
+                .replace("\0", "\\0");
     }
 
     static String toDesc(String type) {

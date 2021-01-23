@@ -29,7 +29,6 @@ import java.util.Locale;
 
 import javax.annotation.Nullable;
 
-
 public interface IMappingFile {
     public static IMappingFile load(File path) throws IOException {
         try (InputStream in = new FileInputStream(path)) {
@@ -42,19 +41,35 @@ public interface IMappingFile {
     }
 
     public enum Format {
-        SRG(false),
-        XSRG(false),
-        CSRG(false),
-        TSRG(true),
-        PG(true);
+        SRG  (false, false, false),
+        XSRG (false, true,  false),
+        CSRG (false, false, false),
+        TSRG (true,  false, false),
+        PG   (true,  true,  false),
+        TINY1(false, true,  true ),
+        TINY (true,  true,  false)
+        ;
 
-        private boolean ordered = true;
-        private Format(boolean ordered) {
+        private final boolean ordered;
+        private final boolean hasFieldTypes;
+        private final boolean hasNames;
+
+        private Format(boolean ordered, boolean hasFieldTypes, boolean hasNames) {
             this.ordered = ordered;
+            this.hasFieldTypes = hasFieldTypes;
+            this.hasNames = hasNames;
         }
 
         public boolean isOrdered() {
             return this.ordered;
+        }
+
+        public boolean hasFieldTypes() {
+            return this.hasFieldTypes;
+        }
+
+        public boolean hasNames() {
+            return this.hasNames;
         }
 
         public static Format get(String name) {
@@ -85,6 +100,7 @@ public interface IMappingFile {
     public interface INode {
         String getOriginal();
         String getMapped();
+        @Nullable // Returns null if the specified format doesn't support this node type
         String write(Format format, boolean reversed);
     }
 
@@ -96,6 +112,11 @@ public interface IMappingFile {
 
         String remapField(String field);
         String remapMethod(String name, String desc);
+
+        @Nullable
+        IField getField(String name);
+        @Nullable
+        IMethod getMethod(String name, String desc);
     }
 
     public interface IOwnedNode<T> extends INode {
@@ -112,5 +133,11 @@ public interface IMappingFile {
     public interface IMethod extends IOwnedNode<IClass> {
         String getDescriptor();
         String getMappedDescriptor();
+        Collection<? extends IParameter> getParameters();
+        String remapParameter(int index, String name);
+    }
+
+    public interface IParameter extends IOwnedNode<IMethod> {
+        int getIndex();
     }
 }

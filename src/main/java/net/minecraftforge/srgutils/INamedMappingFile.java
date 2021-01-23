@@ -17,30 +17,34 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package net.minecraftforge.srgutils.test;
+package net.minecraftforge.srgutils;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Paths;
+import java.nio.file.Path;
+import java.util.List;
 
-import org.junit.jupiter.api.Test;
-
-import net.minecraftforge.srgutils.IMappingFile;
 import net.minecraftforge.srgutils.IMappingFile.Format;
 
-public class MappingTest {
-
-    InputStream getStream(String name) {
-        return MappingTest.class.getClassLoader().getResourceAsStream(name);
-    }
-
-    @Test
-    void test() throws IOException {
-        IMappingFile pg = IMappingFile.load(getStream("./installer.pg"));
-        IMappingFile reverse = pg.reverse();
-        for (Format f : Format.values()) {
-            pg.write(Paths.get("./build/installer_out." + f.name().toLowerCase()), f, false);
-            reverse.write(Paths.get("./build/installer_out_rev." + f.name().toLowerCase()), f, false);
+public interface INamedMappingFile {
+    public static INamedMappingFile load(File path) throws IOException {
+        try (InputStream in = new FileInputStream(path)) {
+            return load(in);
         }
     }
+
+    public static INamedMappingFile load(InputStream in) throws IOException {
+        return InternalUtils.loadNamed(in);
+    }
+
+    List<String> getNames();
+    IMappingFile getMap(String from, String to);
+
+    default void write(Path path, Format format) throws IOException {
+        write(path, format, getNames().toArray(new String[getNames().size()]));
+    }
+
+    void write(Path path, Format format, String... order) throws IOException;
 }
