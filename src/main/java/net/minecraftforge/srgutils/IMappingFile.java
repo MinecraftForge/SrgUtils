@@ -45,6 +45,7 @@ public interface IMappingFile {
         XSRG (false, true,  false),
         CSRG (false, false, false),
         TSRG (true,  false, false),
+        TSRG2(true,  true,  true ),
         PG   (true,  true,  false),
         TINY1(false, true,  true ),
         TINY (true,  true,  false)

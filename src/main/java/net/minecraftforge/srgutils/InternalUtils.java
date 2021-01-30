@@ -50,17 +50,18 @@ class InternalUtils {
         String firstLine = lines.get(0);
         String test = firstLine.split(" ")[0];
 
-        if ("PK:".equals(test) || "CL:".equals(test) || "FD:".equals(test) || "MD:".equals(test)) { //SRG
+        if ("PK:".equals(test) || "CL:".equals(test) || "FD:".equals(test) || "MD:".equals(test)) //SRG
             return loadSRG(filter(lines));
-        } else if(firstLine.contains(" -> ")) { // ProGuard
+        else if(firstLine.contains(" -> ")) // ProGuard
             return loadProguard(filter(lines));
-        } else if (firstLine.startsWith("v1\t")) { // Tiny V1
+        else if (firstLine.startsWith("v1\t")) // Tiny V1
             return loadTinyV1(lines);
-        } else if (firstLine.startsWith("tiny\t")) { // Tiny V2+
+        else if (firstLine.startsWith("tiny\t")) // Tiny V2+
             return loadTinyV2(lines);
-        } else { // TSRG/CSRG
+        else if (firstLine.startsWith("tsrg2 ")) // TSRG v2, parameters, and multi-names
+            return loadTSrg2(lines);
+        else // TSRG/CSRG
             return loadSlimSRG(filter(lines));
-        }
     }
 
     private static List<String> filter(List<String> lines) {
@@ -182,6 +183,82 @@ class InternalUtils {
                     ret.getClass(pts[0]).addMethod(0, 0, pts[2], pts[1], pts[3]);
                 else
                     throw new IOException("Invalid CSRG line, to many parts: " + line);
+            }
+        }
+
+        return ret;
+    }
+
+    private static INamedMappingFile loadTSrg2(List<String> lines) throws IOException {
+        /*
+         *   This is a extended spec of the TSRG format, mainly to allow multiple names
+         * for entries, consolidating our files into a single one, parameter names, and
+         * optional descriptors for fields {Doesn't really matter in MC modding, but why not..}
+         *
+         * Multiple names:
+         *   The header line defines how many extra names are allowed.
+         *   tsrg2 [name ...]
+         *
+         * Field Descriptors:
+         *   If a line would be a method line, but the descriptor does not start with '(' it is a field with a descriptor
+         *
+         * Parameters:
+         *   tabbed in one extra time below method nodes.
+         *   \t\tindex [name ...]
+         *
+         * Things we do not care about:
+         *   Local variables:
+         *     In theory this would be useful if decompilers were perfect and matched up
+         *     things perfectly, but they don't so it's not really worth caring.
+         *   Comments:
+         *     This format is targeted towards binary files, comments are added else ware.
+         *   Line numbers:
+         *     I can't see a use for this
+         */
+        String[] header = lines.get(0).split(" ");
+        if (header.length < 3) throw new IOException("Invalid TSrg v2 Header: " + lines.get(0));
+        NamedMappingFile ret = new NamedMappingFile(Arrays.copyOfRange(header, 1, header.length));
+        int nameCount = header.length - 1;
+
+        NamedMappingFile.Cls cls = null;
+        NamedMappingFile.Cls.Method mtd = null;
+        for (String line : lines) {
+            if (line.length() < 2)
+                throw new IOException("Invalid TSRG v2 line, too short: " + line);
+
+            String[] pts = line.split(" ");
+            if (line.charAt(0) != '\t') { // Classes or Packages are not tabbed
+                if (pts.length != nameCount)
+                    throw new IOException("Invalid TSRG v2 line: " + line);
+                if (pts[0].charAt(pts[0].length()) == '/') { // Packages
+                    for (int x = 0; x < pts.length; x++)
+                        pts[x] = pts[x].substring(0, pts[x].length() - 1);
+                    ret.addPackage(pts);
+                    cls = null;
+                } else
+                    cls = ret.addClass(pts);
+                mtd = null;
+            } else if (line.charAt(1) == '\t') { //Parameter
+                if (mtd == null)
+                    throw new IOException("Invalid TSRG v2 line, missing method: " + line);
+                pts[0] = pts[0].substring(2, pts[0].length());
+                mtd.addParameter(Integer.parseInt(pts[0]), Arrays.copyOfRange(pts, 1, pts.length));
+            } else {
+                if (cls == null)
+                    throw new IOException("Invalid TSRG v2 line, missing class: " + line);
+                pts[0] = pts[0].substring(1, pts[0].length());
+                if (pts.length == 1 + nameCount) // Field without descriptor
+                    cls.addField(null, Arrays.copyOfRange(pts, 1, pts.length));
+                else if (pts.length == 2 + nameCount) {
+                    swapFirst(pts);
+                    if (pts[0].charAt(0) == '(') { // Methods
+                        mtd = cls.addMethod(0, 0, pts[0], Arrays.copyOfRange(pts, 1, pts.length));
+                    } else { // Field with Descriptor
+                        mtd = null;
+                        cls.addField(pts[0], Arrays.copyOfRange(pts, 1, pts.length));
+                    }
+                } else
+                    throw new IOException("Invalid TSRG v2 line, to many parts: " + line);
             }
         }
 
@@ -488,5 +565,11 @@ class InternalUtils {
         while (end > 1 && str.charAt(end - 1) == ' ')
             end--;
         return end == 0 ? "" : str.substring(0, end);
+    }
+
+    private static void swapFirst(String[] values) {
+        String tmp = values[0];
+        values[0] = values[1];
+        values[1] = tmp;
     }
 }

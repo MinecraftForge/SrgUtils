@@ -108,6 +108,12 @@ class NamedMappingFile implements INamedMappingFile {
             for (String name : order)
                 buf.append('\t').append(name);
             lines.add(0, buf.toString());
+        } else if (format == Format.TSRG2) {
+            StringBuilder buf = new StringBuilder();
+            buf.append("tsrg2");
+            for (String name : order)
+                buf.append(' ').append(name);
+            lines.add(0, buf.toString());
         }
 
         Files.createDirectories(path.getParent());
@@ -227,11 +233,22 @@ class NamedMappingFile implements INamedMappingFile {
                 case XSRG: return "PK: " + getName(order[0]) + ' ' + getName(order[1]);
                 case CSRG:
                 case TSRG: return getName(order[0]) + "/ " + getName(order[1]) + '/';
+                case TSRG2: return getTsrg2(order);
                 case PG:
                 case TINY1:
                 case TINY: return null;
                 default: throw new UnsupportedOperationException("Unknown format: " + format);
             }
+        }
+
+        private String getTsrg2(int... order) {
+            StringBuilder ret = new StringBuilder();
+            for (int x = 0; x < order.length; x++) {
+                ret.append(getName(x)).append('/');
+                if (x != order.length - 1)
+                    ret.append(' ');
+            }
+            return ret.toString();
         }
     }
 
@@ -266,11 +283,22 @@ class NamedMappingFile implements INamedMappingFile {
                 case XSRG:  return "CL: " + getName(order[0]) + ' ' + getName(order[1]);
                 case CSRG:
                 case TSRG:  return getName(order[0]) + ' ' + getName(order[1]);
+                case TSRG2: return getTsrg2(order);
                 case PG:    return getName(order[0]).replace('/', '.') + " -> " + getName(order[1]).replace('/', '.') + ':';
                 case TINY1: return "CLASS" + getNames(order);
                 case TINY:  return "c" + getNames(order);
                 default: throw new UnsupportedOperationException("Unknown format: " + format);
             }
+        }
+
+        private String getTsrg2(int... order) {
+            StringBuilder ret = new StringBuilder();
+            for (int x = 0; x < order.length; x++) {
+                ret.append(getName(x));
+                if (x != order.length - 1)
+                    ret.append(' ');
+            }
+            return ret.toString();
         }
 
         class Field extends Named {
@@ -293,11 +321,24 @@ class NamedMappingFile implements INamedMappingFile {
                     case XSRG:  return "FD: " + Cls.this.getName(order[0]) + '/' + getName(order[0]) + (this.desc == null ? "" : getDescriptor(order[0])) + ' ' + Cls.this.getName(order[1]) + '/' + getName(order[1]) + (this.desc == null ? "" : getDescriptor(order[1]));
                     case CSRG:  return Cls.this.getName(order[0]) + ' ' + getName(order[0]) + ' ' + getName(order[1]);
                     case TSRG:  return '\t' + getName(order[0]) + ' ' + getName(order[1]);
+                    case TSRG2: return getTsrg2(order);
                     case PG:    return "    " + InternalUtils.toSource(getDescriptor(order[0])) + ' ' + getName(order[0]) + " -> " + getName(order[1]);
                     case TINY1: return "FIELD" + getNames(order);
                     case TINY:  return "\tf\t" + getDescriptor(order[0]) + getNames(order);
                     default: throw new UnsupportedOperationException("Unknown format: " + format);
                 }
+            }
+
+            private String getTsrg2(int... order) {
+                StringBuilder ret = new StringBuilder().append('\t');
+                for (int x = 0; x < order.length; x++) {
+                    ret.append(getName(x));
+                    if (x == 0 && getDescriptor(order[x]) != null)
+                        ret.append(' ').append(getDescriptor(order[x]));
+                    if (x != order.length - 1)
+                        ret.append(' ');
+                }
+                return ret.toString();
             }
 
         }
@@ -347,11 +388,24 @@ class NamedMappingFile implements INamedMappingFile {
                     case XSRG: return "MD: " + oOwner + '/' + oName + ' ' + oDesc + ' ' + Cls.this.getName(order[1]) + '/' + mName + ' ' + getDescriptor(order[1]);
                     case CSRG: return oOwner + ' ' + oName + ' ' + oDesc + ' ' + mName;
                     case TSRG: return '\t' + oName + ' ' + oDesc + ' ' + mName;
+                    case TSRG2: return getTsrg2(order);
                     case PG:   return "    " + (start == 0 && end == 0 ? "" : start + ":" + end + ":") + InternalUtils.toSource(oName, oDesc) + " -> " + mName;
                     case TINY1: return "METHOD\t" + oOwner + '\t' + oDesc + getNames(order);
                     case TINY: return "\tm\t" + oDesc + getNames(order);
                     default: throw new UnsupportedOperationException("Unknown format: " + format);
                 }
+            }
+
+            private String getTsrg2(int... order) {
+                StringBuilder ret = new StringBuilder().append('\t');
+                for (int x = 0; x < order.length; x++) {
+                    ret.append(getName(x));
+                    if (x == 0 && getDescriptor(order[x]) != null)
+                        ret.append(' ').append(getDescriptor(order[x]));
+                    if (x != order.length - 1)
+                        ret.append(' ');
+                }
+                return ret.toString();
             }
 
             class Parameter extends Named {
@@ -375,8 +429,17 @@ class NamedMappingFile implements INamedMappingFile {
                         case PG:
                         case TINY1: return null;
                         case TINY: return "\t\tp\t" + getIndex() + getNames(order);
+                        case TSRG2: return getTsrg2(order);
                         default: throw new UnsupportedOperationException("Unknown format: " + format);
                     }
+                }
+
+                private String getTsrg2(int... order) {
+                    StringBuilder ret = new StringBuilder()
+                        .append("\t\t").append(getIndex());
+                    for (int x = 0; x < order.length; x++)
+                        ret.append(' ').append(getName(x));
+                    return ret.toString();
                 }
             }
         }

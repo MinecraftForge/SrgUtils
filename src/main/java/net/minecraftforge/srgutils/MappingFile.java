@@ -142,8 +142,10 @@ class MappingFile implements IMappingFile {
 
         if (format == Format.TINY1) {
             lines.add(0, "v1\tleft\tright");
-        } else  if (format == Format.TINY) {
+        } else if (format == Format.TINY) {
             lines.add(0, "tiny\t2\t0\tleft\tright");
+        } else if (format == Format.TSRG2) {
+            lines.add(0, "tsrg2 left right");
         }
 
         Files.createDirectories(path.getParent());
@@ -253,7 +255,8 @@ class MappingFile implements IMappingFile {
                 case SRG:
                 case XSRG: return "PK: " + sorig + ' ' + smap;
                 case CSRG:
-                case TSRG: return getOriginal() + "/ " + getMapped() + '/';
+                case TSRG:
+                case TSRG2: return getOriginal() + "/ " + getMapped() + '/';
                 case PG:
                 case TINY1: return null;
                 default: throw new UnsupportedOperationException("Unknown format: " + format);
@@ -285,7 +288,8 @@ class MappingFile implements IMappingFile {
                 case SRG:
                 case XSRG: return "CL: " + oName + ' ' + mName;
                 case CSRG:
-                case TSRG: return oName + ' ' + mName;
+                case TSRG:
+                case TSRG2: return oName + ' ' + mName;
                 case PG: return oName.replace('/', '.') + " -> " + mName.replace('/', '.') + ':';
                 case TINY1: return "CLASS\t" + oName + '\t' + mName;
                 case TINY:  return "c\t" + oName + '\t' + mName;
@@ -365,7 +369,7 @@ class MappingFile implements IMappingFile {
             @Override
             @Nullable
             public String write(Format format, boolean reversed) {
-                if (format.hasFieldTypes() && this.desc == null)
+                if (format != Format.TSRG2 && format.hasFieldTypes() && this.desc == null)
                     throw new IllegalStateException("Can not write " + format.name() + " format, field is missing descriptor");
 
                 String oOwner = !reversed ? Cls.this.getOriginal() : Cls.this.getMapped();
@@ -380,6 +384,7 @@ class MappingFile implements IMappingFile {
                     case XSRG: return "FD: " + oOwner + '/' + oName + (oDesc == null ? "" : ' ' + oDesc) + ' ' + mOwner + '/' + mName + (mDesc == null ? "" : ' ' + mDesc);
                     case CSRG: return oOwner + ' ' + oName + ' ' + mName;
                     case TSRG: return '\t' + oName + ' ' + mName;
+                    case TSRG2: return '\t' + oName + (oDesc == null ? "" : ' ' + oDesc) + ' ' + mName;
                     case PG:   return "    " + InternalUtils.toSource(oDesc) + ' ' + oName + " -> " + mName;
                     case TINY1: return "FIELD\t" + oOwner + '\t' + oDesc + '\t' + oName + '\t' + mName;
                     case TINY: return "\tf\t" + oDesc + '\t' + oName + '\t' + mName;
@@ -452,7 +457,8 @@ class MappingFile implements IMappingFile {
                     case SRG:
                     case XSRG: return "MD: " + oOwner + '/' + oName + ' ' + oDesc + ' ' + mOwner + '/' + mName + ' ' + mDesc;
                     case CSRG: return oOwner + ' ' + oName + ' ' + oDesc + ' ' + mName;
-                    case TSRG: return '\t' + oName + ' ' + oDesc + ' ' + mName;
+                    case TSRG:
+                    case TSRG2: return '\t' + oName + ' ' + oDesc + ' ' + mName;
                     case PG:   return "    " + (start == 0 && end == 0 ? "" : start + ":" + end + ":") + InternalUtils.toSource(oName, oDesc) + " -> " + mName;
                     case TINY1: return "METHOD\t" + oOwner + '\t' + oDesc + '\t' + oName + '\t' + mName;
                     case TINY: return "\tm\t" + oDesc + '\t' + oName + '\t' + mName;
@@ -496,6 +502,7 @@ class MappingFile implements IMappingFile {
                         case PG:
                         case TINY1: return null;
                         case TINY: return "\t\tp\t" + getIndex() + '\t' + oName + '\t' + mName;
+                        case TSRG2: return "\t\t" + getIndex() + ' ' + oName + ' ' + mName;
                         default: throw new UnsupportedOperationException("Unknown format: " + format);
                     }
                 }
