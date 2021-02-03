@@ -35,6 +35,9 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
+import static net.minecraftforge.srgutils.InternalUtils.Element.*;
+import static net.minecraftforge.srgutils.InternalUtils.*;
+
 class MappingFile implements IMappingFile {
     private Map<String, Package> packages = new HashMap<>();
     private Collection<Package> packagesView = Collections.unmodifiableCollection(packages.values());
@@ -45,13 +48,13 @@ class MappingFile implements IMappingFile {
 
     MappingFile(){}
     MappingFile(NamedMappingFile source, int from, int to) {
-        source.getPackages().forEach(pkg -> addPackage(pkg.getName(from), pkg.getName(to)));
+        source.getPackages().forEach(pkg -> addPackage(pkg.getName(from), pkg.getName(to), pkg.meta));
         source.getClasses().forEach(cls -> {
-            Cls c = addClass(cls.getName(from), cls.getName(to));
-            cls.getFields().forEach(fld -> c.addField(fld.getName(from), fld.getName(to), fld.getDescriptor(from)));
+            Cls c = addClass(cls.getName(from), cls.getName(to), cls.meta);
+            cls.getFields().forEach(fld -> c.addField(fld.getName(from), fld.getName(to), fld.getDescriptor(from), fld.meta));
             cls.getMethods().forEach(mtd -> {
-                Cls.Method m = c.addMethod(mtd.getName(from), mtd.getDescriptor(from), mtd.getName(to), mtd.getStart(), mtd.getEnd());
-                mtd.getParameters().forEach(par -> m.addParameter(par.getIndex(), par.getName(from), par.getName(to)));
+                Cls.Method m = c.addMethod(mtd.getName(from), mtd.getDescriptor(from), mtd.getName(to), mtd.meta);
+                mtd.getParameters().forEach(par -> m.addParameter(par.getIndex(), par.getName(from), par.getName(to), par.meta));
             });
         });
     }
@@ -67,8 +70,8 @@ class MappingFile implements IMappingFile {
         return packages.get(original);
     }
 
-    private Package addPackage(String original, String mapped) {
-        return packages.put(original, new Package(original, mapped));
+    private Package addPackage(String original, String mapped, Map<String, String> metadata) {
+        return packages.put(original, new Package(original, mapped, metadata));
     }
 
     @Override
@@ -82,8 +85,8 @@ class MappingFile implements IMappingFile {
         return classes.get(original);
     }
 
-    private Cls addClass(String original, String mapped) {
-        return retPut(this.classes, original, new Cls(original, mapped));
+    private Cls addClass(String original, String mapped, Map<String, String> metadata) {
+        return retPut(this.classes, original, new Cls(original, mapped, metadata));
     }
 
     @Override
@@ -126,15 +129,33 @@ class MappingFile implements IMappingFile {
     public void write(Path path, Format format, boolean reversed) throws IOException {
         List<String> lines = new ArrayList<>();
         Comparator<INode> sort = reversed ? (a,b) -> a.getMapped().compareTo(b.getMapped()) : (a,b) -> a.getOriginal().compareTo(b.getOriginal());
-        getPackages().stream().sorted(sort).map(e -> e.write(format, reversed)).filter(s -> s != null).forEachOrdered(lines::add);
+
+        getPackages().stream().sorted(sort).forEachOrdered(pkg -> {
+            lines.add(pkg.write(format, reversed));
+            writeMeta(format, lines, PACKAGE, pkg.getMetadata());
+        });
         getClasses().stream().sorted(sort).forEachOrdered(cls -> {
             lines.add(cls.write(format, reversed));
-            cls.getFields().stream().sorted(sort).map(e -> e.write(format, reversed)).forEachOrdered(lines::add);
+            writeMeta(format, lines, CLASS, cls.getMetadata());
+
+            cls.getFields().stream().sorted(sort).forEachOrdered(fld -> {
+                lines.add(fld.write(format, reversed));
+                writeMeta(format, lines, FIELD, fld.getMetadata());
+            });
+
             cls.getMethods().stream().sorted(sort).forEachOrdered(mtd -> {
                 lines.add(mtd.write(format, reversed));
-                mtd.getParameters().stream().sorted((a,b) -> a.getIndex() - b.getIndex()).map(e -> e.write(format, reversed)).filter(s -> s != null).forEachOrdered(lines::add);
+                writeMeta(format, lines, METHOD, mtd.getMetadata());
+
+                mtd.getParameters().stream().sorted((a,b) -> a.getIndex() - b.getIndex()).forEachOrdered(par -> {
+                    lines.add(par.write(format, reversed));
+                    writeMeta(format, lines, PARAMETER, par.getMetadata());
+                });
             });
         });
+
+        lines.removeIf(e -> e == null);
+
         if (!format.isOrdered()) {
             Comparator<String> linesort = (format == Format.SRG || format == Format.XSRG) ? InternalUtils::compareLines : (o1, o2) -> o1.compareTo(o2);
             Collections.sort(lines, linesort);
@@ -160,13 +181,13 @@ class MappingFile implements IMappingFile {
     @Override
     public MappingFile reverse() {
         MappingFile ret = new MappingFile();
-        getPackages().stream().forEach(e -> ret.addPackage(e.getMapped(), e.getOriginal()));
+        getPackages().stream().forEach(pkg -> ret.addPackage(pkg.getMapped(), pkg.getOriginal(), pkg.getMetadata()));
         getClasses().stream().forEach(cls -> {
-            Cls c = ret.addClass(cls.getMapped(), cls.getOriginal());
-            cls.getFields().stream().forEach(fld -> c.addField(fld.getMapped(), fld.getOriginal(), fld.getMappedDescriptor()));
+            Cls c = ret.addClass(cls.getMapped(), cls.getOriginal(), cls.getMetadata());
+            cls.getFields().stream().forEach(fld -> c.addField(fld.getMapped(), fld.getOriginal(), fld.getMappedDescriptor(), fld.getMetadata()));
             cls.getMethods().stream().forEach(mtd -> {
-                Cls.Method m = c.addMethod(mtd.getMapped(), mtd.getMappedDescriptor(), mtd.getOriginal(), mtd.start, mtd.end);
-                mtd.getParameters().stream().forEach(par -> m.addParameter(par.getIndex(), par.getMapped(), par.getOriginal()));
+                Cls.Method m = c.addMethod(mtd.getMapped(), mtd.getMappedDescriptor(), mtd.getOriginal(), mtd.getMetadata());
+                mtd.getParameters().stream().forEach(par -> m.addParameter(par.getIndex(), par.getMapped(), par.getOriginal(), par.getMetadata()));
             });
         });
         return ret;
@@ -175,11 +196,14 @@ class MappingFile implements IMappingFile {
     @Override
     public MappingFile rename(IRenamer renamer) {
         MappingFile ret = new MappingFile();
-        getPackages().stream().forEach(e -> ret.addPackage(e.getOriginal(), renamer.rename(e)));
+        getPackages().stream().forEach(pkg -> ret.addPackage(pkg.getOriginal(), renamer.rename(pkg), pkg.getMetadata()));
         getClasses().stream().forEach(cls -> {
-            Cls c = ret.addClass(cls.getOriginal(), renamer.rename(cls));
-            cls.getFields().stream().forEach(fld -> c.addField(fld.getOriginal(), renamer.rename(fld), fld.getDescriptor()));
-            cls.getMethods().stream().forEach(mtd -> c.addMethod(mtd.getOriginal(), mtd.getDescriptor(), renamer.rename(mtd), mtd.start, mtd.end));
+            Cls c = ret.addClass(cls.getOriginal(), renamer.rename(cls), cls.getMetadata());
+            cls.getFields().stream().forEach(fld -> c.addField(fld.getOriginal(), renamer.rename(fld), fld.getDescriptor(), fld.getMetadata()));
+            cls.getMethods().stream().forEach(mtd -> {
+                Cls.Method m = c.addMethod(mtd.getOriginal(), mtd.getDescriptor(), renamer.rename(mtd), mtd.getMetadata());
+                mtd.getParameters().stream().forEach(par -> m.addParameter(par.getIndex(), par.getOriginal(), renamer.rename(par), par.getMetadata()));
+            });
         });
         return ret;
     }
@@ -215,12 +239,14 @@ class MappingFile implements IMappingFile {
     }
 
     abstract class Node implements INode {
-        protected String original;
-        protected String mapped;
+        private final String original;
+        private final String mapped;
+        private final Map<String, String> metadata;
 
-        protected Node(String original, String mapped) {
+        protected Node(String original, String mapped, Map<String, String> metadata) {
             this.original = original;
             this.mapped = mapped;
+            this.metadata = metadata.isEmpty() ? Collections.emptyMap() : Collections.unmodifiableMap(metadata);
         }
 
         @Override
@@ -232,11 +258,16 @@ class MappingFile implements IMappingFile {
         public String getMapped() {
             return this.mapped;
         }
+
+        @Override
+        public Map<String, String> getMetadata() {
+            return this.metadata;
+        }
     }
 
     class Package extends Node implements IPackage {
-        protected Package(String original, String mapped) {
-            super(original, mapped);
+        protected Package(String original, String mapped, Map<String, String> metadata) {
+            super(original, mapped, metadata);
         }
 
         @Override
@@ -275,8 +306,8 @@ class MappingFile implements IMappingFile {
         private Map<String, Method> methods = new HashMap<>();
         private Collection<Method> methodsView = Collections.unmodifiableCollection(methods.values());
 
-        protected Cls(String original, String mapped) {
-            super(original, mapped);
+        protected Cls(String original, String mapped, Map<String, String> metadata) {
+            super(original, mapped, metadata);
         }
 
         @Override
@@ -314,8 +345,8 @@ class MappingFile implements IMappingFile {
             return fld  == null ? field : fld.getMapped();
         }
 
-        private Field addField(String original, String mapped, String desc) {
-            return retPut(this.fields, original, new Field(original, mapped, desc));
+        private Field addField(String original, String mapped, String desc, Map<String, String> metadata) {
+            return retPut(this.fields, original, new Field(original, mapped, desc, metadata));
         }
 
         @Override
@@ -329,8 +360,8 @@ class MappingFile implements IMappingFile {
             return this.methods.get(name + desc);
         }
 
-        private Method addMethod(String original, String desc, String mapped, int start, int end) {
-            return retPut(this.methods, original + desc, new Method(original, desc, mapped, start, end));
+        private Method addMethod(String original, String desc, String mapped, Map<String, String> metadata) {
+            return retPut(this.methods, original + desc, new Method(original, desc, mapped, metadata));
         }
 
         @Override
@@ -347,12 +378,8 @@ class MappingFile implements IMappingFile {
         class Field extends Node implements IField {
             private String desc;
 
-            private Field(String original, String mapped) {
-                this(original, mapped, null);
-            }
-
-            private Field(String original, String mapped, String desc) {
-                super(original, mapped);
+            private Field(String original, String mapped, String desc, Map<String, String> metadata) {
+                super(original, mapped, metadata);
                 this.desc = desc;
             }
 
@@ -404,20 +431,13 @@ class MappingFile implements IMappingFile {
         }
 
         class Method extends Node implements IMethod {
-            private String desc;
-            private int start, end = 0;
-            private Map<Integer, Parameter> params = new HashMap<>();
-            private Collection<Parameter> paramsView = Collections.unmodifiableCollection(params.values());
+            private final String desc;
+            private final Map<Integer, Parameter> params = new HashMap<>();
+            private final Collection<Parameter> paramsView = Collections.unmodifiableCollection(params.values());
 
-            private Method(String original, String desc, String mapped) {
-                this(original, desc, mapped, 0, 0);
-            }
-
-            private Method(String original, String desc, String mapped, int start, int end) {
-                super(original, mapped);
+            private Method(String original, String desc, String mapped, Map<String, String> metadata) {
+                super(original, mapped, metadata);
                 this.desc = desc;
-                this.start = start;
-                this.end = end;
             }
 
             @Override
@@ -434,8 +454,8 @@ class MappingFile implements IMappingFile {
                 return this.paramsView;
             }
 
-            private Parameter addParameter(int index, String original, String mapped) {
-                return retPut(this.params, index, new Parameter(index, original, mapped));
+            private Parameter addParameter(int index, String original, String mapped, Map<String, String> metadata) {
+                return retPut(this.params, index, new Parameter(index, original, mapped, metadata));
             }
 
             @Override
@@ -459,9 +479,12 @@ class MappingFile implements IMappingFile {
                     case CSRG: return oOwner + ' ' + oName + ' ' + oDesc + ' ' + mName;
                     case TSRG:
                     case TSRG2: return '\t' + oName + ' ' + oDesc + ' ' + mName;
-                    case PG:   return "    " + (start == 0 && end == 0 ? "" : start + ":" + end + ":") + InternalUtils.toSource(oName, oDesc) + " -> " + mName;
                     case TINY1: return "METHOD\t" + oOwner + '\t' + oDesc + '\t' + oName + '\t' + mName;
                     case TINY: return "\tm\t" + oDesc + '\t' + oName + '\t' + mName;
+                    case PG:
+                        int start = Integer.parseInt(getMetadata().getOrDefault("start_line", "0"));
+                        int end = Integer.parseInt(getMetadata().getOrDefault("end_line", "0"));
+                        return "    " + (start == 0 && end == 0 ? "" : start + ":" + end + ":") + InternalUtils.toSource(oName, oDesc) + " -> " + mName;
                     default: throw new UnsupportedOperationException("Unknown format: " + format);
                 }
             }
@@ -478,8 +501,8 @@ class MappingFile implements IMappingFile {
 
             class Parameter extends Node implements IParameter {
                 private final int index;
-                protected Parameter(int index, String original, String mapped) {
-                    super(original, mapped);
+                protected Parameter(int index, String original, String mapped, Map<String, String> metadata) {
+                    super(original, mapped, metadata);
                     this.index = index;
                 }
                 @Override

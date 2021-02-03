@@ -18,6 +18,7 @@ plugins {
 
 group 'net.minecraftforge'
 version = gitVersion()
+println('Version: ' + version)
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 

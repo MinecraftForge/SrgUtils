@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -103,6 +104,21 @@ public interface IMappingFile {
         String getMapped();
         @Nullable // Returns null if the specified format doesn't support this node type
         String write(Format format, boolean reversed);
+
+        /*
+         * A unmodifiable map of various metadata that is attached to this node.
+         * This is very dependent on the format. Some examples:
+         * Tiny v1/v2:
+         *   "comment": Javadoc comment to insert into source
+         * TSRG:
+         *   On Methods:
+         *     "is_static": Value means nothing, just a marker if it exists.
+         * Proguard:
+         *   On Methods:
+         *     "start_line": The source line that this method starts on
+         *     "end_line": The source line for the end of this method
+         */
+        Map<String, String> getMetadata();
     }
 
     public interface IPackage extends INode {}

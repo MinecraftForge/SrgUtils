@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -37,19 +38,26 @@ import javax.annotation.Nullable;
 
 import net.minecraftforge.srgutils.IMappingFile.Format;
 
-class NamedMappingFile implements INamedMappingFile {
+import static net.minecraftforge.srgutils.IMappingFile.Format.*;
+import static net.minecraftforge.srgutils.InternalUtils.Element.*;
+import static net.minecraftforge.srgutils.InternalUtils.*;
+
+class NamedMappingFile implements INamedMappingFile, IMappingBuilder {
     private final List<String> names;
     private Map<String, Package> packages = new HashMap<>();
     private Map<String, Cls> classes = new HashMap<>();
     private Map<String, String[]> classCache = new HashMap<>();
     private Map<String, IMappingFile> mapCache = new HashMap<>(); //TODO: Weak?
 
-    NamedMappingFile() {
-        this("left", "right");
+    NamedMappingFile(String... names) {
+        if (names == null || names.length < 2)
+            throw new IllegalArgumentException("Can not create Mapping file with less then two names");
+        this.names = Collections.unmodifiableList(Arrays.asList(names));
     }
 
-    NamedMappingFile(String... names) {
-        this.names = Collections.unmodifiableList(Arrays.asList(names));
+    private void ensureCount(String... names) {
+        if (names == null) throw new IllegalArgumentException("Names can not be null");
+        if (names.length != this.names.size()) throw new IllegalArgumentException("Invalid number of names, expected " + this.names.size() + " got " + names.length);
     }
 
     @Override
@@ -88,27 +96,44 @@ class NamedMappingFile implements INamedMappingFile {
         List<String> lines = new ArrayList<>();
         Comparator<Named> sort = (a,b) -> a.getName(indexes[0]).compareTo(b.getName(indexes[0]));
 
-        getPackages().sorted(sort).map(e -> e.write(format, indexes)).filter(s -> s != null).forEachOrdered(lines::add);
+        getPackages().sorted(sort).forEachOrdered(pkg -> {
+            lines.add(pkg.write(format, indexes));
+            writeMeta(format, lines, PACKAGE, pkg.meta);
+        });
         getClasses().sorted(sort).forEachOrdered(cls -> {
             lines.add(cls.write(format, indexes));
-            cls.getFields().sorted(sort).map(e -> e.write(format, indexes)).forEachOrdered(lines::add);
+            writeMeta(format, lines, CLASS, cls.meta);
+
+            cls.getFields().sorted(sort).forEachOrdered(fld -> {
+                lines.add(fld.write(format, indexes));
+                writeMeta(format, lines, FIELD, fld.meta);
+            });
+
             cls.getMethods().sorted(sort).forEachOrdered(mtd -> {
                 lines.add(mtd.write(format, indexes));
-                mtd.getParameters().sorted((a,b) -> a.getIndex() - b.getIndex()).map(e -> e.write(format, indexes)).filter(s -> s != null).forEachOrdered(lines::add);
+                writeMeta(format, lines, METHOD, mtd.meta);
+
+                mtd.getParameters().sorted((a,b) -> a.getIndex() - b.getIndex()).forEachOrdered(par -> {
+                    lines.add(par.write(format, indexes));
+                    writeMeta(format, lines, PARAMETER, par.meta);
+                });
             });
         });
+
+        lines.removeIf(e -> e == null);
+
         if (!format.isOrdered()) {
-            Comparator<String> linesort = (format == Format.SRG || format == Format.XSRG) ? InternalUtils::compareLines : (o1, o2) -> o1.compareTo(o2);
+            Comparator<String> linesort = (format == SRG || format == XSRG) ? InternalUtils::compareLines : (o1, o2) -> o1.compareTo(o2);
             Collections.sort(lines, linesort);
         }
 
-        if (format == Format.TINY1 || format == Format.TINY) {
+        if (format == TINY1 || format == TINY) {
             StringBuilder buf = new StringBuilder();
-            buf.append(format == Format.TINY ? "tiny\t2\t0" : "v1");
+            buf.append(format == TINY ? "tiny\t2\t0" : "v1");
             for (String name : order)
                 buf.append('\t').append(name);
             lines.add(0, buf.toString());
-        } else if (format == Format.TSRG2) {
+        } else if (format == TSRG2) {
             StringBuilder buf = new StringBuilder();
             buf.append("tsrg2");
             for (String name : order)
@@ -129,12 +154,6 @@ class NamedMappingFile implements INamedMappingFile {
     private static <K, V> V retPut(Map<K, V> map, K key, V value) {
         map.put(key, value);
         return value;
-    }
-
-    private String[] duplicate(String value) {
-        String[] ret = new String[this.names.size()];
-        Arrays.fill(ret, value);
-        return ret;
     }
 
     private String remapClass(int index, String cls) {
@@ -180,12 +199,21 @@ class NamedMappingFile implements INamedMappingFile {
     }
 
     // Builder functions, only called from InternalUtils/reading
-    Package addPackage(String... names) {
+    @Override
+    public Package addPackage(String... names) {
+        ensureCount(names);
         return retPut(this.packages, names[0], new Package(names));
     }
 
-    Cls addClass(String... names) {
+    @Override
+    public Cls addClass(String... names) {
+        ensureCount(names);
         return retPut(this.classes, names[0], new Cls(names));
+    }
+
+    @Override
+    public INamedMappingFile build() {
+        return this;
     }
 
     @Nullable
@@ -193,12 +221,9 @@ class NamedMappingFile implements INamedMappingFile {
         return this.classes.get(name);
     }
 
-    Cls getOrCreateClass(String name) {
-        return this.classes.computeIfAbsent(name, k -> new Cls(duplicate(name)));
-    }
-
     abstract class Named {
         private final String[] names;
+
         Named(String... names) {
             this.names = names;
         }
@@ -221,7 +246,9 @@ class NamedMappingFile implements INamedMappingFile {
         abstract String write(Format format, int... order);
     }
 
-    class Package extends Named {
+    class Package extends Named implements IMappingBuilder.IPackage {
+        final Map<String, String> meta = new LinkedHashMap<>();
+
         Package(String... names) {
             super(names);
         }
@@ -250,11 +277,23 @@ class NamedMappingFile implements INamedMappingFile {
             }
             return ret.toString();
         }
+
+        @Override
+        public IPackage meta(String key, String value) {
+            meta.put(key, value);
+            return this;
+        }
+
+        @Override
+        public IMappingBuilder build() {
+            return NamedMappingFile.this;
+        }
     }
 
-    class Cls extends Named {
+    class Cls extends Named implements IMappingBuilder.IClass {
         private final Map<String, Field> fields = new HashMap<>();
         private final Map<String, Method> methods = new HashMap<>();
+        final Map<String, String> meta = new LinkedHashMap<>();
 
         Cls(String... name) {
             super(name);
@@ -268,12 +307,27 @@ class NamedMappingFile implements INamedMappingFile {
             return this.methods.values().stream();
         }
 
-        Field addField(@Nullable String desc, String... names) {
-            return retPut(this.fields, names[0], new Field(desc, names));
+        @Override
+        public Field field(String... names) {
+            ensureCount(names);
+            return retPut(this.fields, names[0], new Field(names));
         }
 
-        Method addMethod(int start, int end, String desc, String... names) {
-            return retPut(this.methods, names[0] + desc, new Method(start, end, desc, names));
+        @Override
+        public Method method(String desc, String... names) {
+            ensureCount(names);
+            return retPut(this.methods, names[0] + desc, new Method(desc, names));
+        }
+
+        @Override
+        public IClass meta(String key, String value) {
+            this.meta.put(key, value);
+            return this;
+        }
+
+        @Override
+        public IMappingBuilder build() {
+            return NamedMappingFile.this;
         }
 
         @Override
@@ -301,17 +355,34 @@ class NamedMappingFile implements INamedMappingFile {
             return ret.toString();
         }
 
-        class Field extends Named {
+        class Field extends Named implements IMappingBuilder.IField {
             @Nullable
-            private final String desc;
+            private String desc;
+            final Map<String, String> meta = new LinkedHashMap<>();
 
-            Field(@Nullable String desc, String... names) {
+            Field(String... names) {
                 super(names);
-                this.desc = desc;
             }
 
             public String getDescriptor(int index) {
                 return this.desc == null ? null : index == 0 ? this.desc : NamedMappingFile.this.remapDescriptor(index, this.desc);
+            }
+
+            @Override
+            public IField descriptor(String value) {
+                this.desc = value;
+                return this;
+            }
+
+            @Override
+            public IField meta(String key, String value) {
+                this.meta.put(key, value);
+                return this;
+            }
+
+            @Override
+            public IClass build() {
+                return Cls.this;
             }
 
             @Override
@@ -340,41 +411,42 @@ class NamedMappingFile implements INamedMappingFile {
                 }
                 return ret.toString();
             }
-
         }
 
-        class Method extends Named {
+        class Method extends Named implements IMappingBuilder.IMethod {
             private final String desc;
-            private final int start, end;
             private final Map<Integer, Parameter> params = new HashMap<>();
+            final Map<String, String> meta = new LinkedHashMap<>();
 
-            Method(int start, int end, String desc, String... names) {
+            Method(String desc, String... names) {
                 super(names);
                 this.desc = desc;
-                this.start = start;
-                this.end = end;
+            }
+
+            @Override
+            public IParameter parameter(int index, String... names) {
+                ensureCount(names);
+                return retPut(this.params, index, new Parameter(index, names));
+            }
+
+            @Override
+            public IMethod meta(String key, String value) {
+                this.meta.put(key, value);
+                return this;
+            }
+
+            @Override
+            public IClass build() {
+                return Cls.this;
             }
 
             public String getDescriptor(int index) {
                 return index == 0 ? this.desc : NamedMappingFile.this.remapDescriptor(index, this.desc);
             }
 
-            public int getStart() {
-                return this.start;
-            }
-
-            public int getEnd() {
-                return this.end;
-            }
-
             Stream<Parameter> getParameters() {
                 return this.params.values().stream();
             }
-
-            Parameter addParameter(int index, String... names) {
-                return retPut(this.params, index, new Parameter(index, names));
-            }
-
 
             @Override
             String write(Format format, int... order) {
@@ -389,9 +461,12 @@ class NamedMappingFile implements INamedMappingFile {
                     case CSRG: return oOwner + ' ' + oName + ' ' + oDesc + ' ' + mName;
                     case TSRG: return '\t' + oName + ' ' + oDesc + ' ' + mName;
                     case TSRG2: return getTsrg2(order);
-                    case PG:   return "    " + (start == 0 && end == 0 ? "" : start + ":" + end + ":") + InternalUtils.toSource(oName, oDesc) + " -> " + mName;
                     case TINY1: return "METHOD\t" + oOwner + '\t' + oDesc + getNames(order);
                     case TINY: return "\tm\t" + oDesc + getNames(order);
+                    case PG:
+                        int start = Integer.parseInt(meta.getOrDefault("start_line", "0"));
+                        int end = Integer.parseInt(meta.getOrDefault("end_line", "0"));
+                        return "    " + (start == 0 && end == 0 ? "" : start + ":" + end + ":") + InternalUtils.toSource(oName, oDesc) + " -> " + mName;
                     default: throw new UnsupportedOperationException("Unknown format: " + format);
                 }
             }
@@ -408,8 +483,10 @@ class NamedMappingFile implements INamedMappingFile {
                 return ret.toString();
             }
 
-            class Parameter extends Named {
+            class Parameter extends Named implements IMappingBuilder.IParameter {
                 private final int index;
+                final Map<String, String> meta = new LinkedHashMap<>();
+
                 Parameter(int index, String... names) {
                     super(names);
                     this.index = index;
@@ -440,6 +517,17 @@ class NamedMappingFile implements INamedMappingFile {
                     for (int x = 0; x < order.length; x++)
                         ret.append(' ').append(getName(x));
                     return ret.toString();
+                }
+
+                @Override
+                public IParameter meta(String key, String value) {
+                    this.meta.put(key, value);
+                    return this;
+                }
+
+                @Override
+                public IMethod build() {
+                    return Method.this;
                 }
             }
         }

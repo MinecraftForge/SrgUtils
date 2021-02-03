@@ -22,7 +22,6 @@ package net.minecraftforge.srgutils.test;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Paths;
-
 import org.junit.jupiter.api.Test;
 
 import net.minecraftforge.srgutils.IMappingFile;

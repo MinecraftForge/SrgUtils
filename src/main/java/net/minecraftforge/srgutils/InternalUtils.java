@@ -30,9 +30,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import net.minecraftforge.srgutils.IMappingFile.Format;
 
 class InternalUtils {
     static IMappingFile load(InputStream in) throws IOException {
@@ -48,20 +51,23 @@ class InternalUtils {
 
 
         String firstLine = lines.get(0);
+        Iterator<String> itr = lines.iterator();
+        while (stripComment(firstLine).isEmpty() && itr.hasNext())
+            firstLine = itr.next();
         String test = firstLine.split(" ")[0];
 
         if ("PK:".equals(test) || "CL:".equals(test) || "FD:".equals(test) || "MD:".equals(test)) //SRG
-            return loadSRG(filter(lines));
+            return loadSRG(filter(lines)).build();
         else if(firstLine.contains(" -> ")) // ProGuard
-            return loadProguard(filter(lines));
+            return loadProguard(filter(lines)).build();
         else if (firstLine.startsWith("v1\t")) // Tiny V1
-            return loadTinyV1(lines);
+            return loadTinyV1(lines).build();
         else if (firstLine.startsWith("tiny\t")) // Tiny V2+
-            return loadTinyV2(lines);
+            return loadTinyV2(lines).build();
         else if (firstLine.startsWith("tsrg2 ")) // TSRG v2, parameters, and multi-names
-            return loadTSrg2(lines);
+            return loadTSrg2(lines).build();
         else // TSRG/CSRG
-            return loadSlimSRG(filter(lines));
+            return loadSlimSRG(filter(lines)).build();
     }
 
     private static List<String> filter(List<String> lines) {
@@ -70,20 +76,30 @@ class InternalUtils {
         .collect(Collectors.toList());
     }
 
-    private static INamedMappingFile loadSRG(List<String> lines) throws IOException {
-        NamedMappingFile ret = new NamedMappingFile();
+    private static IMappingBuilder loadSRG(List<String> lines) throws IOException {
+        IMappingBuilder ret = IMappingBuilder.create("left", "right");
+        Map<String, IMappingBuilder.IClass> classes = new HashMap<>();
         for (String line : lines) {
             String[] pts = line.split(" ");
             switch (pts[0]) {
                 case "PK:": ret.addPackage(pts[1], pts[2]); break;
-                case "CL:": ret.addClass(pts[1], pts[2]); break;
+                case "CL:": classes.put(pts[1], ret.addClass(pts[1], pts[2])); break;
                 case "FD:":
-                    if (pts.length == 5)
-                        ret.getOrCreateClass(rsplit(pts[1], '/', 1)[0]).addField(pts[2], rsplit(pts[1], '/', 1)[1], rsplit(pts[3], '/', 1)[1]);
-                    else
-                        ret.getOrCreateClass(rsplit(pts[1], '/', 1)[0]).addField(null,   rsplit(pts[1], '/', 1)[1], rsplit(pts[2], '/', 1)[1]);
+                    if (pts.length == 5) {
+                        String[] left = rsplit(pts[1], '/', 1);
+                        String[] right = rsplit(pts[3], '/', 1);
+                        classes.computeIfAbsent(left[0], k -> ret.addClass(left[0], right[0])).field(left[1], right[1]).descriptor(pts[2]);
+                    } else {
+                        String[] left = rsplit(pts[1], '/', 1);
+                        String[] right = rsplit(pts[2], '/', 1);
+                        classes.computeIfAbsent(left[0], k -> ret.addClass(left[0], right[0])).field(left[1], right[1]).descriptor(pts[2]);
+                    }
                     break;
-                case "MD:": ret.getOrCreateClass(rsplit(pts[1], '/', 1)[0]).addMethod(0, 0, pts[2], rsplit(pts[1], '/', 1)[1], rsplit(pts[3], '/', 1)[1]); break;
+                case "MD:":
+                    String[] left = rsplit(pts[1], '/', 1);
+                    String[] right = rsplit(pts[3], '/', 1);
+                    classes.computeIfAbsent(left[0], k -> ret.addClass(left[0], right[0])).method(pts[2], left[1], right[1]);
+                    break;
                 default:
                     throw new IOException("Invalid SRG file, Unknown type: " + line);
             }
@@ -91,22 +107,15 @@ class InternalUtils {
         return ret;
     }
 
-    private static INamedMappingFile loadProguard(List<String> lines) throws IOException {
-        NamedMappingFile ret = new NamedMappingFile();
+    private static IMappingBuilder loadProguard(List<String> lines) throws IOException {
+        IMappingBuilder ret = IMappingBuilder.create("left", "right");
 
-        for (String line : lines) {
-            if (!line.startsWith("    ") && line.endsWith(":")) {
-                String[] pts = line.replace('.', '/').split(" -> ");
-                ret.addClass(pts[0], pts[1].substring(0, pts[1].length() - 1));
-            }
-        }
-
-        NamedMappingFile.Cls cls = null;
+        IMappingBuilder.IClass cls = null;
         for (String line : lines) {
             line = line.replace('.', '/');
             if (!line.startsWith("    ") && line.endsWith(":")) {
-                //Classes we already did this in the first pass
-                cls = ret.getClass(line.split(" -> ")[0]);
+                String[] pts = line.replace('.', '/').split(" -> ");
+                cls = ret.addClass(pts[0], pts[1].substring(0, pts[1].length() - 1));
             } else if (line.contains("(") && line.contains(")")) {
                 if (cls == null)
                     throw new IOException("Invalid PG line, missing class: " + line);
@@ -134,20 +143,23 @@ class InternalUtils {
                     desc.append(toDesc(arg));
                 }
                 desc.append(')').append(_ret);
-                cls.addMethod(start, end, desc.toString(), obf, name);
+                IMappingBuilder.IMethod mtd = cls.method(desc.toString(), name, obf);
+                if (start != 0) mtd.meta("start_line", Integer.toString(start));
+                if (end   != 0) mtd.meta("end_line",   Integer.toString(end));
             } else {
                 if (cls == null)
                     throw new IOException("Invalid PG line, missing class: " + line);
                 String[] pts = line.trim().split(" ");
-                cls.addField(toDesc(pts[0]), pts[1], pts[3]);
+                cls.field(pts[1], pts[3]).descriptor(toDesc(pts[0]));
             }
         }
 
         return ret;
     }
 
-    private static NamedMappingFile loadSlimSRG(List<String> lines) throws IOException {
-        NamedMappingFile ret = new NamedMappingFile();
+    private static IMappingBuilder loadSlimSRG(List<String> lines) throws IOException {
+        IMappingBuilder ret = IMappingBuilder.create("left", "right");
+        Map<String, IMappingBuilder.IClass> classes = new HashMap<>();
 
         lines.stream().filter(l -> l.charAt(0) != '\t')
         .map(l -> l.split(" "))
@@ -156,10 +168,10 @@ class InternalUtils {
             if (pts[0].endsWith("/"))
                 ret.addPackage(pts[0].substring(0, pts[0].length() - 1), pts[1].substring(0, pts[1].length() -1));
             else
-                ret.addClass(pts[0], pts[1]);
+                classes.put(pts[0], ret.addClass(pts[0], pts[1]));
         });
 
-        NamedMappingFile.Cls cls = null;
+        IMappingBuilder.IClass cls = null;
         for (String line : lines) {
             String[] pts = line.split(" ");
             if (pts[0].charAt(0) == '\t') {
@@ -167,20 +179,20 @@ class InternalUtils {
                     throw new IOException("Invalid TSRG line, missing class: " + line);
                 pts[0] = pts[0].substring(1);
                 if (pts.length == 2)
-                    cls.addField(null, pts[0], pts[1]);
+                    cls.field(pts[0], pts[1]);
                 else if (pts.length == 3)
-                    cls.addMethod(0, 0, pts[1], pts[0], pts[2]);
+                    cls.method(pts[1], pts[0], pts[2]);
                 else
                     throw new IOException("Invalid TSRG line, to many parts: " + line);
             } else {
                 if (pts.length == 2) {
                     if (!pts[0].endsWith("/"))
-                        cls = ret.getClass(pts[0]);
+                        cls = classes.get(pts[0]);
                 }
                 else if (pts.length == 3)
-                    ret.getClass(pts[0]).addField(null, pts[1], pts[2]);
+                    classes.get(pts[0]).field(pts[1], pts[2]);
                 else if (pts.length == 4)
-                    ret.getClass(pts[0]).addMethod(0, 0, pts[2], pts[1], pts[3]);
+                    classes.get(pts[0]).method(pts[2], pts[1], pts[3]);
                 else
                     throw new IOException("Invalid CSRG line, to many parts: " + line);
             }
@@ -189,7 +201,7 @@ class InternalUtils {
         return ret;
     }
 
-    private static INamedMappingFile loadTSrg2(List<String> lines) throws IOException {
+    private static IMappingBuilder loadTSrg2(List<String> lines) throws IOException {
         /*
          *   This is a extended spec of the TSRG format, mainly to allow multiple names
          * for entries, consolidating our files into a single one, parameter names, and
@@ -202,9 +214,19 @@ class InternalUtils {
          * Field Descriptors:
          *   If a line would be a method line, but the descriptor does not start with '(' it is a field with a descriptor
          *
+         * Methods:
+         *   The same as TSRG 1 but with potentially multiple names
+         *   \t name1 desc [name..]
+         *
          * Parameters:
-         *   tabbed in one extra time below method nodes.
+         *   Tabbed in one extra time below method nodes.
          *   \t\tindex [name ...]
+         *
+         * Static Identifier:
+         *   To allow consumers to know if there is a synthetic 'this' parameter without having it added to every function.
+         *   There is a marker under the method node, Any method that has parameters, yet does not have this marker
+         *   Can be assume to be non-static and thus have a synthetic 'this' parameter.
+         *   \t\ts
          *
          * Things we do not care about:
          *   Local variables:
@@ -217,11 +239,12 @@ class InternalUtils {
          */
         String[] header = lines.get(0).split(" ");
         if (header.length < 3) throw new IOException("Invalid TSrg v2 Header: " + lines.get(0));
-        NamedMappingFile ret = new NamedMappingFile(Arrays.copyOfRange(header, 1, header.length));
+        IMappingBuilder ret = IMappingBuilder.create(Arrays.copyOfRange(header, 1, header.length));
         int nameCount = header.length - 1;
+        lines.remove(0);
 
-        NamedMappingFile.Cls cls = null;
-        NamedMappingFile.Cls.Method mtd = null;
+        IMappingBuilder.IClass cls = null;
+        IMappingBuilder.IMethod mtd = null;
         for (String line : lines) {
             if (line.length() < 2)
                 throw new IOException("Invalid TSRG v2 line, too short: " + line);
@@ -230,7 +253,7 @@ class InternalUtils {
             if (line.charAt(0) != '\t') { // Classes or Packages are not tabbed
                 if (pts.length != nameCount)
                     throw new IOException("Invalid TSRG v2 line: " + line);
-                if (pts[0].charAt(pts[0].length()) == '/') { // Packages
+                if (pts[0].charAt(pts[0].length() - 1) == '/') { // Packages
                     for (int x = 0; x < pts.length; x++)
                         pts[x] = pts[x].substring(0, pts[x].length() - 1);
                     ret.addPackage(pts);
@@ -238,24 +261,31 @@ class InternalUtils {
                 } else
                     cls = ret.addClass(pts);
                 mtd = null;
-            } else if (line.charAt(1) == '\t') { //Parameter
+            } else if (line.charAt(1) == '\t') {
                 if (mtd == null)
                     throw new IOException("Invalid TSRG v2 line, missing method: " + line);
-                pts[0] = pts[0].substring(2, pts[0].length());
-                mtd.addParameter(Integer.parseInt(pts[0]), Arrays.copyOfRange(pts, 1, pts.length));
+                pts[0] = pts[0].substring(2);
+
+                if (pts.length == 1 && pts[0].equals("static"))
+                    mtd.meta("is_static", "true");
+                else if (pts.length == nameCount + 1) // Parameter
+                    mtd.parameter(Integer.parseInt(pts[0]), Arrays.copyOfRange(pts, 1, pts.length));
+                else
+                    throw new IOException("Invalid TSRG v2 line, too many parts: " + line);
             } else {
                 if (cls == null)
                     throw new IOException("Invalid TSRG v2 line, missing class: " + line);
-                pts[0] = pts[0].substring(1, pts[0].length());
-                if (pts.length == 1 + nameCount) // Field without descriptor
-                    cls.addField(null, Arrays.copyOfRange(pts, 1, pts.length));
-                else if (pts.length == 2 + nameCount) {
+                pts[0] = pts[0].substring(1);
+
+                if (pts.length == nameCount) // Field without descriptor
+                    cls.field(pts);
+                else if (pts.length == 1 + nameCount) {
                     swapFirst(pts);
                     if (pts[0].charAt(0) == '(') { // Methods
-                        mtd = cls.addMethod(0, 0, pts[0], Arrays.copyOfRange(pts, 1, pts.length));
+                        mtd = cls.method(pts[0], Arrays.copyOfRange(pts, 1, pts.length));
                     } else { // Field with Descriptor
                         mtd = null;
-                        cls.addField(pts[0], Arrays.copyOfRange(pts, 1, pts.length));
+                        cls.field(Arrays.copyOfRange(pts, 1, pts.length)).descriptor(pts[0]);
                     }
                 } else
                     throw new IOException("Invalid TSRG v2 line, to many parts: " + line);
@@ -265,7 +295,7 @@ class InternalUtils {
         return ret;
     }
 
-    private static INamedMappingFile loadTinyV1(List<String> lines) throws IOException {
+    private static IMappingBuilder loadTinyV1(List<String> lines) throws IOException {
         /*
          *  The entire file is just a list tab-separated-value lines.
          *  It can have a unlimited number of name steps, The first part of the header is always 'v1'
@@ -273,25 +303,30 @@ class InternalUtils {
          */
         String[] header = lines.get(0).split("\t");
         if (header.length < 3) throw new IOException("Invalid Tiny v1 Header: " + lines.get(0));
-        NamedMappingFile ret = new NamedMappingFile(Arrays.copyOfRange(header, 1, header.length));
+        IMappingBuilder ret = IMappingBuilder.create(Arrays.copyOfRange(header, 1, header.length));
+        Map<String, IMappingBuilder.IClass> classes = new HashMap<>();
+        int nameCount = header.length - 1;
 
         for (int x = 1; x < lines.size(); x++) {
             String[] line = lines.get(x).split("\t");
             switch (line[0]) {
                 case "CLASS": // CLASS Name1 Name2 Name3...
-                    if (line.length != header.length)
+                    if (line.length != nameCount + 1)
                         throw new IOException("Invalid Tiny v1 line: #" + x + ": " + line);
-                    ret.addClass(Arrays.copyOfRange(line, 1, line.length));
+                    classes.put(line[1], ret.addClass(Arrays.copyOfRange(line, 1, line.length)));
                     break;
                 case "FIELD": // FIELD Owner Desc Name1 Name2 Name3
-                    if (line.length != header.length  + 2)
+                    if (line.length != nameCount + 3)
                         throw new IOException("Invalid Tiny v1 line: #" + x + ": " + line);
-                    ret.getOrCreateClass(line[1]).addField(line[2], Arrays.copyOfRange(line, 3, line.length));
+                    classes.computeIfAbsent(line[1], k -> ret.addClass(duplicate(k, nameCount)))
+                        .field(Arrays.copyOfRange(line, 3, line.length))
+                        .descriptor(line[2]);
                     break;
                 case "METHOD": // METHOD Owner Desc Name1 Name2 Name3
-                    if (line.length != header.length  + 2)
+                    if (line.length != nameCount + 3)
                         throw new IOException("Invalid Tiny v1 line: #" + x + ": " + line);
-                    ret.getOrCreateClass(line[1]).addMethod(0, 0, line[2], Arrays.copyOfRange(line, 3, line.length));
+                    classes.computeIfAbsent(line[1], k -> ret.addClass(duplicate(k, nameCount)))
+                        .method(line[2], Arrays.copyOfRange(line, 3, line.length));
                     break;
                 default:
                     throw new IOException("Invalid Tiny v1 line: #" + x + ": " + line);
@@ -301,7 +336,7 @@ class InternalUtils {
         return ret;
     }
 
-    private static INamedMappingFile loadTinyV2(List<String> lines) throws IOException {
+    private static IMappingBuilder loadTinyV2(List<String> lines) throws IOException {
         /*
          * This is the only spec I could find on it, so i'm assuming its official:
          * https://github.com/FabricMC/tiny-remapper/issues/9
@@ -317,9 +352,9 @@ class InternalUtils {
         } catch (NumberFormatException e) {
             throw new IOException("Invalid Tiny v2 Header: " + lines.get(0));
         }
-        NamedMappingFile ret = new NamedMappingFile(Arrays.copyOfRange(header, 3, header.length));
+        IMappingBuilder ret = IMappingBuilder.create(Arrays.copyOfRange(header, 3, header.length));
 
-        int nameCount = ret.getNames().size();
+        int nameCount = header.length - 3;
         boolean escaped = false;
         Map<String, String> properties = new HashMap<>();
         int start = 1;
@@ -334,9 +369,10 @@ class InternalUtils {
         }
 
         Deque<TinyV2State> stack = new ArrayDeque<>();
-        NamedMappingFile.Cls cls = null;
-        //NamedMappingFile.Cls.Field field = null;
-        NamedMappingFile.Cls.Method method = null;
+        IMappingBuilder.IClass cls = null;
+        IMappingBuilder.IField field = null;
+        IMappingBuilder.IMethod method = null;
+        IMappingBuilder.IParameter param = null;
 
         for (int x = start; x < lines.size(); x++) {
             String line = lines.get(x);
@@ -348,8 +384,15 @@ class InternalUtils {
                 line = line.substring(newdepth);
 
             if (newdepth != stack.size()) {
-                while (stack.size() != newdepth)
-                    stack.pop();
+                while (stack.size() != newdepth) {
+                    switch(stack.pop()) {
+                        case CLASS:     cls    = null; break;
+                        case FIELD:     field  = null; break;
+                        case METHOD:    method = null; break;
+                        case PARAMETER: param  = null; break;
+                        default: break;
+                    }
+                }
             }
 
             String[] parts = line.split("\t");
@@ -367,15 +410,18 @@ class InternalUtils {
                         cls = ret.addClass(Arrays.copyOfRange(parts, 1, parts.length));
                         stack.push(TinyV2State.CLASS);
                     } else { // Comment
-                        //String comment = unescapeTinyString(parts[1]);
-                        //TODO: Do we care?
+                        String comment = unescapeTinyString(parts[1]);
+                        if (method     != null) method.meta("comment", comment);
+                        else if (field != null) field .meta("comment", comment);
+                        else if (cls   != null) cls   .meta("comment", comment);
+                        else if (param != null) param .meta("comment", comment);
                     }
                     break;
                 case "f": // Field: f desc Name1 Name2 Name3
                     if (parts.length != nameCount + 2 || stack.peek() != TinyV2State.CLASS)
                         throw new IOException("Invalid Tiny v2 line: #" + x + ": " + line);
 
-                    /*field =*/ cls.addField(parts[1], Arrays.copyOfRange(parts, 2, parts.length));
+                    field = cls.field(Arrays.copyOfRange(parts, 2, parts.length)).descriptor(parts[1]);
                     stack.push(TinyV2State.FIELD);
 
                     break;
@@ -384,7 +430,7 @@ class InternalUtils {
                     if (parts.length != nameCount + 2 || stack.peek() != TinyV2State.CLASS)
                         throw new IOException("Invalid Tiny v2 line: #" + x + ": " + line);
 
-                    method = cls.addMethod(0, 0, parts[1], Arrays.copyOfRange(parts, 2, parts.length));
+                    method = cls.method(parts[1], Arrays.copyOfRange(parts, 2, parts.length));
                     stack.push(TinyV2State.METHOD);
 
                     break;
@@ -393,7 +439,7 @@ class InternalUtils {
                     if (parts.length != nameCount + 2 || stack.peek() != TinyV2State.METHOD)
                         throw new IOException("Invalid Tiny v2 line: #" + x + ": " + line);
 
-                    method.addParameter(Integer.parseInt(parts[1]), Arrays.copyOfRange(parts, 2, parts.length));
+                    param = method.parameter(Integer.parseInt(parts[1]), Arrays.copyOfRange(parts, 2, parts.length));
                     stack.push(TinyV2State.PARAMETER);
 
                     break;
@@ -571,5 +617,47 @@ class InternalUtils {
         String tmp = values[0];
         values[0] = values[1];
         values[1] = tmp;
+    }
+
+    private static String[] duplicate(String value, int count) {
+        String[] ret = new String[count];
+        Arrays.fill(ret, value);
+        return ret;
+    }
+
+    enum Element{ PACKAGE, CLASS, FIELD, METHOD, PARAMETER }
+    static void writeMeta(Format format, List<String> lines, Element element, Map<String, String> meta) {
+        int indent = 0;
+        switch (element) {
+            case PACKAGE:
+            case CLASS:     indent = 1; break;
+            case FIELD:
+            case METHOD:    indent = 2; break;
+            case PARAMETER: indent = 3; break;
+        }
+
+        switch (format) {
+            case CSRG:
+            case PG:
+            case SRG:
+            case TINY1:
+            case TSRG:
+            case XSRG: break;
+            case TINY:
+                String comment = meta.get("comment");
+                if (comment != null) {
+                    char[] prefix = new char[indent];
+                    Arrays.fill(prefix, '\t');
+                    lines.add(new String(prefix) + "c\t" + comment);
+                }
+                break;
+            case TSRG2:
+                if (meta.containsKey("is_static")) {
+                    char[] prefix = new char[indent];
+                    Arrays.fill(prefix, '\t');
+                    lines.add(new String(prefix) + "static");
+                }
+                break;
+        }
     }
 }
