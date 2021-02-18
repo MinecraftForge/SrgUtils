@@ -19,11 +19,7 @@
 
 package net.minecraftforge.srgutils;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,17 +34,12 @@ import java.util.stream.Collectors;
 import net.minecraftforge.srgutils.IMappingFile.Format;
 
 class InternalUtils {
-    static IMappingFile load(InputStream in) throws IOException {
-        INamedMappingFile named = loadNamed(in);
+    static IMappingFile load(List<String> lines) throws IOException {
+        INamedMappingFile named = loadNamed(lines);
         return named.getMap(named.getNames().get(0), named.getNames().get(1));
     }
 
-    static INamedMappingFile loadNamed(InputStream in) throws IOException {
-        List<String> lines = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8)).lines()
-            //.map(InternalUtils::stripComment)
-            .filter(l -> !l.isEmpty()) //Remove Empty lines
-            .collect(Collectors.toList());
-
+    static INamedMappingFile loadNamed(List<String> lines) throws IOException {
 
         String firstLine = lines.get(0);
         Iterator<String> itr = lines.iterator();

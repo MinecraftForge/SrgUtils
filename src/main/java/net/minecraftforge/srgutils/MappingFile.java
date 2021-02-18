@@ -126,7 +126,7 @@ class MappingFile implements IMappingFile {
     }
 
     @Override
-    public void write(Path path, Format format, boolean reversed) throws IOException {
+    public List<String> write(Format format, boolean reversed) {
         List<String> lines = new ArrayList<>();
         Comparator<INode> sort = reversed ? (a,b) -> a.getMapped().compareTo(b.getMapped()) : (a,b) -> a.getOriginal().compareTo(b.getOriginal());
 
@@ -169,13 +169,7 @@ class MappingFile implements IMappingFile {
             lines.add(0, "tsrg2 left right");
         }
 
-        Files.createDirectories(path.getParent());
-        try (BufferedWriter writer = Files.newBufferedWriter(path)) {
-            for (String line : lines) {
-                writer.write(line);
-                writer.write('\n');
-            }
-        }
+        return lines;
     }
 
     @Override

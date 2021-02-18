@@ -78,7 +78,7 @@ class NamedMappingFile implements INamedMappingFile, IMappingBuilder {
     }
 
     @Override
-    public void write(Path path, Format format, String... order) throws IOException {
+    public List<String> write(Format format, String... order) {
         if (order == null || order.length == 1)
             throw new IllegalArgumentException("Invalid order, you must specify atleast 2 names");
 
@@ -141,13 +141,7 @@ class NamedMappingFile implements INamedMappingFile, IMappingBuilder {
             lines.add(0, buf.toString());
         }
 
-        Files.createDirectories(path.getParent());
-        try (BufferedWriter writer = Files.newBufferedWriter(path)) {
-            for (String line : lines) {
-                writer.write(line);
-                writer.write('\n');
-            }
-        }
+        return lines;
     }
 
     // Internal Utilities

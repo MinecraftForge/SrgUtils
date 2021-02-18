@@ -19,18 +19,31 @@
 
 package net.minecraftforge.srgutils;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
 public interface IMappingFile {
+    public static IMappingFile load(Path path) throws IOException {
+        try (Reader reader = Files.newBufferedReader(path)) {
+            return load(reader);
+        }
+    }
+
     public static IMappingFile load(File path) throws IOException {
         try (InputStream in = new FileInputStream(path)) {
             return load(in);
@@ -38,7 +51,22 @@ public interface IMappingFile {
     }
 
     public static IMappingFile load(InputStream in) throws IOException {
-        return InternalUtils.load(in);
+        return load(new InputStreamReader(in));
+    }
+
+    public static IMappingFile load(Reader in) throws IOException {
+        BufferedReader reader = in instanceof BufferedReader ? (BufferedReader) in : new BufferedReader(in);
+        List<String> lines = reader.lines()
+            .filter(s -> !s.isEmpty())
+            .collect(Collectors.toList());
+        return InternalUtils.load(lines);
+    }
+
+    public static IMappingFile load(List<String> lines) throws IOException {
+        List<String> input = lines.stream()
+            .filter(s -> !s.isEmpty())
+            .collect(Collectors.toList());
+        return InternalUtils.load(input);
     }
 
     public enum Format {
@@ -93,7 +121,17 @@ public interface IMappingFile {
     String remapClass(String desc);
     String remapDescriptor(String desc);
 
-    void write(Path path, Format format, boolean reversed) throws IOException;
+    default void write(Path path, Format format, boolean reversed) throws IOException {
+        List<String> lines = write(format, reversed);
+        Files.createDirectories(path.getParent());
+        try (BufferedWriter writer = Files.newBufferedWriter(path)) {
+            for (String line : lines) {
+                writer.write(line);
+                writer.write('\n');
+            }
+        }
+    }
+    List<String> write(Format format, boolean reversed);
 
     IMappingFile reverse();
     IMappingFile rename(IRenamer renamer);
