@@ -75,7 +75,9 @@ public interface INamedMappingFile {
 
     default void write(Path path, Format format, String... order) throws IOException {
         List<String> lines = write(format, order);
-        Files.createDirectories(path.getParent());
+        if (path.getParent() != null) {
+            Files.createDirectories(path.getParent());
+        }
         try (BufferedWriter writer = Files.newBufferedWriter(path)) {
             for (String line : lines) {
                 writer.write(line);

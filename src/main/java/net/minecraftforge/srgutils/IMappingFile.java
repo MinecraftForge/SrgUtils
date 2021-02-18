@@ -123,7 +123,9 @@ public interface IMappingFile {
 
     default void write(Path path, Format format, boolean reversed) throws IOException {
         List<String> lines = write(format, reversed);
-        Files.createDirectories(path.getParent());
+        if (path.getParent() != null) {
+            Files.createDirectories(path.getParent());
+        }
         try (BufferedWriter writer = Files.newBufferedWriter(path)) {
             for (String line : lines) {
                 writer.write(line);
