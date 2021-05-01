@@ -108,6 +108,16 @@ public interface IMappingFile {
     IMappingFile rename(IRenamer renamer);
     IMappingFile chain(IMappingFile other);
 
+    /**
+     * Fills mapping with nodes from another mapping.
+     * 
+     * <p>Both mapping must have common original side to resolve node linkage.
+     * 
+     * @param other mapping to fill with nodes
+     * @return mapping filled with missing nodes
+     */
+    IMappingFile fill(IMappingFile other);
+
     public interface INode {
         String getOriginal();
         String getMapped();

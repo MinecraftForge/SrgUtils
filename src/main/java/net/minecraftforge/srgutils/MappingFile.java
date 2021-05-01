@@ -253,6 +253,40 @@ class MappingFile implements IMappingFile {
         });
     }
 
+    @Override
+    public MappingFile fill(final IMappingFile link) {
+        link.getPackages().stream().forEach(pkg -> addPackage(pkg.getOriginal(), pkg.getMapped(), pkg.getMetadata()));
+        link.getClasses().stream().forEach(cls -> {
+            Cls c;
+            if (MappingFile.this.getClass(cls.getOriginal()) == null) {
+                c = addClass(cls.getOriginal(), cls.getMapped(), cls.getMetadata());
+            } else {
+                c = MappingFile.this.getClass(cls.getOriginal());
+            }
+            cls.getFields().stream().forEach(fld -> {
+                if (c.getField(fld.getOriginal()) == null) {
+                    c.addField(fld.getOriginal(), fld.getMapped(), fld.getDescriptor(), fld.getMetadata());
+                }
+            });
+            cls.getMethods().stream().forEach(mtd -> {
+                Cls.Method m;
+                if (c.getMethod(mtd.getOriginal(), mtd.getDescriptor()) == null) {
+                    m = c.addMethod(mtd.getOriginal(), mtd.getDescriptor(), mtd.getMapped(), mtd.getMetadata());
+                } else {
+                    m = (Cls.Method)c.getMethod(mtd.getOriginal(), mtd.getDescriptor());
+                }
+                mtd.getParameters().stream().forEach(par -> {
+                    if (m.getParameters().stream().noneMatch(p -> {
+                        return p.getIndex() == par.getIndex();
+                    })) {
+                        m.addParameter(par.getIndex(), par.getOriginal(), par.getMapped(), par.getMetadata());
+                    }
+                });
+            });
+        });
+        return this;
+    }
+
     abstract class Node implements INode {
         private final String original;
         private final String mapped;
