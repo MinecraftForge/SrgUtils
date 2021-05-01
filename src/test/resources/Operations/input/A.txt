@@ -1,0 +1,12 @@
+tsrg2 shared mappedA
+cls classA
+	fld fieldA
+	fld2 field2A
+	mtd (Lcls;ZZ)I methodA
+		1 leftA1 parameterA
+		3 leftA3 onlyA3
+		4 leftA4 onlyA4
+	mtd2 (II)D method2A
+		1 leftA1 firstA
+		2 leftA2 secondA
+cls2 classA2

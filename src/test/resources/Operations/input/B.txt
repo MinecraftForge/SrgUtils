@@ -1,0 +1,11 @@
+tsrg2 shared mappedB
+cls classB
+	fld fieldB
+	fld3 I field3B
+	mtd (Lcls;ZZ)I methodB
+		1 leftB1 parameterB
+		2 leftB2 onlyB
+	mtd3 ([DII)V method3B
+		1 leftB1 firstB
+		2 leftB2 secondB
+cls3 classB2

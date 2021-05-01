@@ -1,0 +1,18 @@
+tsrg2 left right
+cls classA
+	fld fieldA
+	fld2 field2A
+	fld3 I field3B
+	mtd (Lcls;ZZ)I methodA
+		1 leftA1 parameterA
+		2 leftB2 onlyB
+		3 leftA3 onlyA3
+		4 leftA4 onlyA4
+	mtd2 (II)D method2A
+		1 leftA1 firstA
+		2 leftA2 secondA
+	mtd3 ([DII)V method3B
+		1 leftB1 firstB
+		2 leftB2 secondB
+cls2 classA2
+cls3 classB2
