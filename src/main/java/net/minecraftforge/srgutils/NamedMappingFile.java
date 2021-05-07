@@ -168,9 +168,10 @@ class NamedMappingFile implements INamedMappingFile, IMappingBuilder {
             if (_cls == null) {
                 int idx = cls.lastIndexOf('$');
                 if (idx != -1) {
-                    ret = remapClass(cls.substring(0, idx));
+                    String[] parent = remapClass(cls.substring(0, idx));
+                    ret = new String[parent.length];
                     for (int x = 0; x < ret.length; x++)
-                        ret[x] += '$' + cls.substring(idx + 1);
+                        ret[x] = parent[x] + '$' + cls.substring(idx + 1);
                 } else
                     ret = new String[]{ cls };
             } else
