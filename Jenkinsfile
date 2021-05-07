@@ -3,8 +3,8 @@
 pipeline {
     agent {
         docker {
-            image 'gradlewrapper:latest'
-            args '-v gradlecache:/gradlecache'
+            image 'gradle:jdk8'
+            args '-v forgegc:/home/gradle/.gradle'
         }
     }
     environment {
@@ -43,7 +43,6 @@ pipeline {
             post {
                 success {
                     writeChangelog(currentBuild, 'build/changelog.txt')
-                    archiveArtifacts artifacts: 'build/changelog.txt', fingerprint: false
                 }
             }
         }
@@ -57,8 +56,16 @@ pipeline {
                 FORGE_MAVEN = credentials('forge-maven-forge-user')
             }
             steps {
-                sh './gradlew ${GRADLE_ARGS} publish -PforgeMavenUser=${FORGE_MAVEN_USR} -PforgeMavenPassword=${FORGE_MAVEN_PSW}'
-                sh 'curl --user ${FORGE_MAVEN} http://files.minecraftforge.net/maven/manage/promote/latest/${MYGROUP}.${MYARTIFACT}/${MYVERSION}'
+                withCredentials([usernamePassword(credentialsId: 'maven-forge-user', usernameVariable: 'MAVEN_USER', passwordVariable: 'MAVEN_PASSWORD')]) {
+                    withGradle {
+                        sh './gradlew ${GRADLE_ARGS} publish'
+                    }
+                }
+            }
+            post {
+                success {
+                    build job: 'filegenerator', parameters: [string(name: 'COMMAND', value: "promote ${env.MYGROUP}:${env.MYARTIFACT} ${env.MYVERSION} latest")], propagate: false, wait: false
+                }
             }
         }
     }
