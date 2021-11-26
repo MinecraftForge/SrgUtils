@@ -2,7 +2,6 @@ buildscript {
     repositories {
         mavenLocal()
         maven { url = 'https://maven.minecraftforge.net/' }
-        jcenter()
         mavenCentral()
     }
 }
@@ -11,7 +10,7 @@ plugins {
     id 'java'
     id 'eclipse'
     id 'maven-publish'
-    id 'net.minecrell.licenser' version '0.4.1'
+    id 'org.cadixdev.licenser' version '0.6.1'
     id 'org.ajoberstar.grgit' version '4.1.0'
     id 'com.github.ben-manes.versions' version '0.36.0'
 }
