@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.stream.Stream;
 
@@ -46,8 +47,8 @@ class NamedMappingFile implements INamedMappingFile, IMappingBuilder {
     private final List<String> names;
     private Map<String, Package> packages = new HashMap<>();
     private Map<String, Cls> classes = new HashMap<>();
-    private Map<String, String[]> classCache = new HashMap<>();
-    private Map<String, IMappingFile> mapCache = new HashMap<>(); //TODO: Weak?
+    private Map<String, String[]> classCache = new ConcurrentHashMap<>();
+    private Map<String, IMappingFile> mapCache = new ConcurrentHashMap<>(); //TODO: Weak?
 
     NamedMappingFile(String... names) {
         if (names == null || names.length < 2)
