@@ -30,7 +30,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,7 +43,7 @@ class MappingFile implements IMappingFile {
     private Collection<Package> packagesView = Collections.unmodifiableCollection(packages.values());
     private Map<String, Cls> classes = new HashMap<>();
     private Collection<Cls> classesView = Collections.unmodifiableCollection(classes.values());
-    private Map<String, String> cache = new ConcurrentHashMap<>();
+    private Map<String, String> cache = new HashMap<>();
     static final Pattern DESC = Pattern.compile("L(?<cls>[^;]+);");
 
     MappingFile(){}
@@ -101,17 +100,19 @@ class MappingFile implements IMappingFile {
     public String remapClass(String cls) {
         String ret = cache.get(cls);
         if (ret == null) {
-            Cls _cls = classes.get(cls);
-            if (_cls == null) {
-                int idx = cls.lastIndexOf('$');
-                if (idx != -1)
-                    ret = remapClass(cls.substring(0, idx)) + '$' + cls.substring(idx + 1);
-                else
-                    ret = cls;
-            } else
-                ret = _cls.getMapped();
-            //TODO: Package bulk moves? Issue: moving default package will move EVERYTHING, it's what its meant to do but we shouldn't.
-            cache.put(cls, ret);
+            synchronized (cls.intern()) {
+                Cls _cls = classes.get(cls);
+                if (_cls == null) {
+                    int idx = cls.lastIndexOf('$');
+                    if (idx != -1)
+                        ret = remapClass(cls.substring(0, idx)) + '$' + cls.substring(idx + 1);
+                    else
+                        ret = cls;
+                } else
+                    ret = _cls.getMapped();
+                //TODO: Package bulk moves? Issue: moving default package will move EVERYTHING, it's what its meant to do but we shouldn't.
+                cache.put(cls, ret);
+            }
         }
         return ret;
     }
