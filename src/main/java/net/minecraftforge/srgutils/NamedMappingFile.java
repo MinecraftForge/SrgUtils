@@ -68,13 +68,21 @@ class NamedMappingFile implements INamedMappingFile, IMappingBuilder {
     @Override
     public IMappingFile getMap(final String from, final String to) {
         String key = from + "_to_" + to;
-        return mapCache.computeIfAbsent(key, k -> {
-            int fromI = this.names.indexOf(from);
-            int toI = this.names.indexOf(to);
-            if (fromI == -1 || toI == -1)
-                throw new IllegalArgumentException("Could not find mapping names: " + from + " / " + to);
-            return new MappingFile(this, fromI, toI);
-        });
+        IMappingFile ret = mapCache.get(key);
+        if (ret == null) {
+            synchronized (key.intern()) {
+                ret = mapCache.get(key);
+                if (ret == null) {
+                    int fromI = this.names.indexOf(from);
+                    int toI = this.names.indexOf(to);
+                    if (fromI == -1 || toI == -1)
+                        throw new IllegalArgumentException("Could not find mapping names: " + from + " / " + to);
+                    ret = new MappingFile(this, fromI, toI);
+                    mapCache.put(key, ret);
+                }
+            }
+        }
+        return ret;
     }
 
     @Override
@@ -164,19 +172,24 @@ class NamedMappingFile implements INamedMappingFile, IMappingBuilder {
     private String[] remapClass(String cls) {
         String[] ret = classCache.get(cls);
         if (ret == null) {
-            Cls _cls = classes.get(cls);
-            if (_cls == null) {
-                int idx = cls.lastIndexOf('$');
-                if (idx != -1) {
-                    String[] parent = remapClass(cls.substring(0, idx));
-                    ret = new String[parent.length];
-                    for (int x = 0; x < ret.length; x++)
-                        ret[x] = parent[x] + '$' + cls.substring(idx + 1);
-                } else
-                    ret = new String[]{ cls };
-            } else
-                ret = _cls.getNames();
-            classCache.put(cls, ret);
+            synchronized (cls.intern()) {
+                ret = classCache.get(cls);
+                if (ret == null) {
+                    Cls _cls = classes.get(cls);
+                    if (_cls == null) {
+                        int idx = cls.lastIndexOf('$');
+                        if (idx != -1) {
+                            String[] parent = remapClass(cls.substring(0, idx));
+                            ret = new String[parent.length];
+                            for (int x = 0; x < ret.length; x++)
+                                ret[x] = parent[x] + '$' + cls.substring(idx + 1);
+                        } else
+                            ret = new String[]{ cls };
+                    } else
+                        ret = _cls.getNames();
+                    classCache.put(cls, ret);
+                }
+            }
         }
         return ret;
     }
