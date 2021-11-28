@@ -101,17 +101,20 @@ class MappingFile implements IMappingFile {
         String ret = cache.get(cls);
         if (ret == null) {
             synchronized (cls.intern()) {
-                Cls _cls = classes.get(cls);
-                if (_cls == null) {
-                    int idx = cls.lastIndexOf('$');
-                    if (idx != -1)
-                        ret = remapClass(cls.substring(0, idx)) + '$' + cls.substring(idx + 1);
-                    else
-                        ret = cls;
-                } else
-                    ret = _cls.getMapped();
-                //TODO: Package bulk moves? Issue: moving default package will move EVERYTHING, it's what its meant to do but we shouldn't.
-                cache.put(cls, ret);
+                ret = cache.get(cls);
+                if (ret == null) {
+                    Cls _cls = classes.get(cls);
+                    if (_cls == null) {
+                        int idx = cls.lastIndexOf('$');
+                        if (idx != -1)
+                            ret = remapClass(cls.substring(0, idx)) + '$' + cls.substring(idx + 1);
+                        else
+                            ret = cls;
+                    } else
+                        ret = _cls.getMapped();
+                    //TODO: Package bulk moves? Issue: moving default package will move EVERYTHING, it's what its meant to do but we shouldn't.
+                    cache.put(cls, ret);
+                }
             }
         }
         return ret;
