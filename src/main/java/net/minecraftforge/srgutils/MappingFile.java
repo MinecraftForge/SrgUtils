@@ -30,6 +30,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,7 +44,7 @@ class MappingFile implements IMappingFile {
     private Collection<Package> packagesView = Collections.unmodifiableCollection(packages.values());
     private Map<String, Cls> classes = new HashMap<>();
     private Collection<Cls> classesView = Collections.unmodifiableCollection(classes.values());
-    private Map<String, String> cache = new HashMap<>();
+    private Map<String, String> cache = new ConcurrentHashMap<>();
     static final Pattern DESC = Pattern.compile("L(?<cls>[^;]+);");
 
     MappingFile(){}
