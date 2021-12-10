@@ -2,7 +2,6 @@ buildscript {
     repositories {
         mavenLocal()
         maven { url = 'https://maven.minecraftforge.net/' }
-        jcenter()
         mavenCentral()
     }
 }
@@ -11,27 +10,16 @@ plugins {
     id 'java'
     id 'eclipse'
     id 'maven-publish'
-    id 'net.minecrell.licenser' version '0.4.1'
-    id 'org.ajoberstar.grgit' version '4.1.0'
-    id 'com.github.ben-manes.versions' version '0.36.0'
+    id 'org.cadixdev.licenser' version '0.6.1'
+    id 'net.minecraftforge.gradleutils' version '1.+'
+    id 'com.github.ben-manes.versions' version '0.39.0'
 }
 
 group 'net.minecraftforge'
-version = gitVersion()
+version = gradleutils.getTagOffsetVersion()
 println('Version: ' + version)
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(8)
-
-def gitVersion() {
-    def raw = grgit.describe(longDescr: true, tags:true)
-    def desc = (raw == null ? 'unknown-offset-hash' : raw).split('-') as List
-    def hash = desc.remove(desc.size() - 1)
-    def offset = desc.remove(desc.size() - 1)
-    def tag = desc.join('-')
-    def branch = grgit.branch.current().name
-    project.ext.SPEC_VERSION = tag
-    return "${tag}.${offset}${t -> if (branch != 'master') t << '-' + branch}"
-}
 
 ext {
     CHANGELOG = rootProject.file('build/changelog.txt')
@@ -40,7 +28,6 @@ ext {
 repositories {
     mavenLocal()
     maven { url = 'https://maven.minecraftforge.net/' }
-    jcenter()
     mavenCentral()
 }
 
@@ -56,8 +43,8 @@ license {
 }
 
 dependencies {
-    testImplementation('org.junit.jupiter:junit-jupiter:5.7.0')
-    testImplementation('org.junit.jupiter:junit-jupiter-engine:5.7.0')
+    testImplementation('org.junit.jupiter:junit-jupiter:5.8.2')
+    testImplementation('org.junit.jupiter:junit-jupiter-engine:5.8.2')
     testImplementation('org.powermock:powermock-core:2.0.9')
     compileOnly('com.google.code.findbugs:jsr305:3.0.2')
 }
@@ -84,7 +71,7 @@ publishing {
             artifact sourcesJar
             pom {
                 name = 'SRG Utils'
-                description = 'Library for managing java obfusication mappings in various formats.'
+                description = 'Library for managing java obfuscation mappings in various formats.'
                 url = 'https://github.com/MinecraftForge/SrgUtils'
                 scm {
                     url = 'https://github.com/MinecraftForge/SrgUtils'
@@ -113,20 +100,7 @@ publishing {
         }
     }
     repositories {
-        maven {
-            if (System.env.MAVEN_USER) {
-                url 'https://maven.minecraftforge.net/'
-                authentication {
-                    basic(BasicAuthentication)
-                }
-                credentials {
-                    username = System.env.MAVEN_USER ?: 'not'
-                    password = System.env.MAVEN_PASSWORD ?: 'set'
-                }
-            } else {
-                url 'file://' + rootProject.file('repo').getAbsolutePath()
-            }
-        }
+        maven gradleutils.publishingForgeMaven
     }
 }
 
