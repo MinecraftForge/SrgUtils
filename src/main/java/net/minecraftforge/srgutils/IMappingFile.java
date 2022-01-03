@@ -97,6 +97,16 @@ public interface IMappingFile {
 
     IMappingFile reverse();
     IMappingFile rename(IRenamer renamer);
+
+    /**
+     * Chain this mapping file with another.
+     * The merge strategy used for chaining is as follows:
+     * <p>
+     * A->B ("ours") and B->C ("theirs") becomes A->C. Mappings present in only ours are preserved,
+     * but mappings present only in theirs are dropped, except for parameters, which are preserved for all method mappings
+     * that were present in ours.
+     * Conflicts in metadata are resolved by overwriting with the B->C metadata.
+     */
     IMappingFile chain(IMappingFile other);
 
     public interface INode {

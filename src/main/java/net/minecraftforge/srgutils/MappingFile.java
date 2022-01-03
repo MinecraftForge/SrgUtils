@@ -28,8 +28,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -210,33 +212,105 @@ class MappingFile implements IMappingFile {
     }
 
     @Override
-    public MappingFile chain(final IMappingFile link) {
-        return rename(new IRenamer() {
-            public String rename(IPackage value) {
-                return link.remapPackage(value.getMapped());
+    public IMappingFile chain(IMappingFile theirs) {
+        IMappingBuilder builder = IMappingBuilder.create();
+
+        for (IMappingFile.IPackage ourPackage : this.getPackages()) {
+            IMappingFile.IPackage theirPackage = theirs.getPackage(ourPackage.getMapped());
+
+            if (theirPackage != null) {
+                IMappingBuilder.IPackage newPackage = builder.addPackage(ourPackage.getOriginal(), theirPackage.getMapped());
+                ourPackage.getMetadata().forEach(newPackage::meta);
+                theirPackage.getMetadata().forEach(newPackage::meta);
+            } else {
+                IMappingBuilder.IPackage newPackage = builder.addPackage(ourPackage.getOriginal(), ourPackage.getMapped());
+                ourPackage.getMetadata().forEach(newPackage::meta);
+            }
+        }
+
+        for (IMappingFile.IClass ourClass : this.getClasses()) {
+            IMappingFile.IClass theirClass =  theirs.getClass(ourClass.getMapped());
+            IMappingBuilder.IClass newClass;
+
+            if (theirClass != null) {
+                newClass = builder.addClass(ourClass.getOriginal(), theirClass.getMapped());
+                ourClass.getMetadata().forEach(newClass::meta);
+                theirClass.getMetadata().forEach(newClass::meta);
+            } else {
+                newClass = builder.addClass(ourClass.getOriginal(), ourClass.getMapped());
+                ourClass.getMetadata().forEach(newClass::meta);
             }
 
-            public String rename(IClass value) {
-                return link.remapClass(value.getMapped());
-            }
+            for (IMappingFile.IField ourField : ourClass.getFields()) {
+                if (theirClass != null) {
+                    IMappingFile.IField theirField = theirClass.getField(ourField.getMapped());
 
-            public String rename(IField value) {
-                IClass cls = link.getClass(value.getParent().getMapped());
-                return cls == null ? value.getMapped() : cls.remapField(value.getMapped());
+                    if (theirField != null) {
+                        IMappingBuilder.IField newField = newClass.field(ourField.getOriginal(), theirField.getMapped()).descriptor(ourField.getDescriptor());
+                        ourField.getMetadata().forEach(newField::meta);
+                        theirField.getMetadata().forEach(newField::meta);
+                    } else {
+                        IMappingBuilder.IField newField = newClass.field(ourField.getOriginal(), ourField.getMapped()).descriptor(ourField.getDescriptor());
+                        ourField.getMetadata().forEach(newField::meta);
+                    }
+                } else {
+                    IMappingBuilder.IField newField = newClass.field(ourField.getOriginal(), ourField.getMapped()).descriptor(ourField.getDescriptor());
+                    ourField.getMetadata().forEach(newField::meta);
+                }
             }
+            for (IMappingFile.IMethod ourMethod : ourClass.getMethods()) {
+                IMappingFile.IMethod theirMethod = null;
+                IMappingBuilder.IMethod newMethod;
+                if (theirClass != null) {
+                    theirMethod = theirClass.getMethod(ourMethod.getMapped(), ourMethod.getMappedDescriptor());
 
-            public String rename(IMethod value) {
-                IClass cls = link.getClass(value.getParent().getMapped());
-                return cls == null ? value.getMapped() : cls.remapMethod(value.getMapped(), value.getMappedDescriptor());
-            }
+                    if (theirMethod != null) {
+                        newMethod = newClass.method(ourMethod.getDescriptor(), ourMethod.getOriginal(), theirMethod.getMapped());
+                        ourMethod.getMetadata().forEach(newMethod::meta);
+                        theirMethod.getMetadata().forEach(newMethod::meta);
+                    } else {
+                        newMethod = newClass.method(ourMethod.getDescriptor(), ourMethod.getOriginal(), ourMethod.getMapped());
+                        ourMethod.getMetadata().forEach(newMethod::meta);
+                    }
+                } else {
+                    newMethod = newClass.method(ourMethod.getDescriptor(), ourMethod.getOriginal(), ourMethod.getMapped());
+                    ourMethod.getMetadata().forEach(newMethod::meta);
+                }
 
-            public String rename(IParameter value) {
-                IMethod mtd = value.getParent();
-                IClass cls = link.getClass(mtd.getParent().getMapped());
-                mtd = cls == null ? null : cls.getMethod(mtd.getMapped(), mtd.getMappedDescriptor());
-                return mtd == null ? value.getMapped() : mtd.remapParameter(value.getIndex(), value.getMapped());
+                Map<Integer, IMappingFile.IParameter> theirParameters = new HashMap<>();
+                Set<Integer> seenParameters = new HashSet<>();
+
+                if (theirMethod != null) {
+                    for (IMappingFile.IParameter parameter : theirMethod.getParameters()) {
+                        theirParameters.put(parameter.getIndex(), parameter);
+                    }
+                }
+
+                for (IMappingFile.IParameter ourParameter : ourMethod.getParameters()) {
+                    IMappingFile.IParameter theirParameter = theirParameters.get(ourParameter.getIndex());
+
+                    if (theirParameter != null) {
+                        IMappingBuilder.IParameter newParameter = newMethod.parameter(ourParameter.getIndex(), ourParameter.getOriginal(), theirParameter.getMapped());
+                        ourParameter.getMetadata().forEach(newParameter::meta);
+                        theirParameter.getMetadata().forEach(newParameter::meta);
+                        seenParameters.add(ourParameter.getIndex());
+                    } else {
+                        IMappingBuilder.IParameter newParameter = newMethod.parameter(ourParameter.getIndex(), ourParameter.getOriginal(), ourParameter.getMapped());
+                        ourParameter.getMetadata().forEach(newParameter::meta);
+                    }
+                }
+
+                // add any parameters we haven't seen
+                theirParameters.forEach((k, theirParameter) -> {
+                    if (!seenParameters.contains(k)) {
+                        IMappingBuilder.IParameter newParameter = newMethod.parameter(theirParameter.getIndex(), theirParameter.getOriginal(), theirParameter.getMapped());
+                        theirParameter.getMetadata().forEach(newParameter::meta);
+                    }
+                });
             }
-        });
+        }
+        
+        return builder.build().getMap("left", "right");
     }
 
     abstract class Node implements INode {
