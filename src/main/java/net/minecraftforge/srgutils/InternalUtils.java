@@ -411,10 +411,10 @@ class InternalUtils {
                         stack.push(TinyV2State.CLASS);
                     } else { // Comment
                         String comment = unescapeTinyString(parts[1]);
-                        if (method     != null) method.meta("comment", comment);
-                        else if (field != null) field .meta("comment", comment);
-                        else if (cls   != null) cls   .meta("comment", comment);
-                        else if (param != null) param .meta("comment", comment);
+                        if (param       != null) param .meta("comment", comment);
+                        else if (method != null) method.meta("comment", comment);
+                        else if (field  != null) field .meta("comment", comment);
+                        else if (cls    != null) cls   .meta("comment", comment);
                     }
                     break;
                 case "f": // Field: f desc Name1 Name2 Name3
@@ -648,7 +648,7 @@ class InternalUtils {
                 if (comment != null) {
                     char[] prefix = new char[indent];
                     Arrays.fill(prefix, '\t');
-                    lines.add(new String(prefix) + "c\t" + comment);
+                    lines.add(new String(prefix) + "c\t" + escapeTinyString(comment));
                 }
                 break;
             case TSRG2:
