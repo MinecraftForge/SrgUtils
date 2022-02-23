@@ -405,21 +405,37 @@ class InternalUtils {
                 case "c":
                     if (stack.size() == 0) { // Class: c Name1 Name2 Name3
                         if (parts.length != nameCount + 1)
-                            throw new IOException("Invalid Tiny v2 line: #" + x + ": " + line);
+                            throw tiny2Exception(x, line);
 
                         cls = ret.addClass(Arrays.copyOfRange(parts, 1, parts.length));
                         stack.push(TinyV2State.CLASS);
                     } else { // Comment
                         String comment = unescapeTinyString(parts[1]);
-                        if (method     != null) method.meta("comment", comment);
-                        else if (field != null) field .meta("comment", comment);
-                        else if (cls   != null) cls   .meta("comment", comment);
-                        else if (param != null) param .meta("comment", comment);
+                        switch (stack.peek()) {
+                            case CLASS:
+                                if (cls == null) throw tiny2Exception(x, line);
+                                cls.meta("comment", comment);
+                                break;
+                            case FIELD:
+                                if (field == null) throw tiny2Exception(x, line);
+                                field.meta("comment", comment);
+                                break;
+                            case METHOD:
+                                if (method == null) throw tiny2Exception(x, line);
+                                method.meta("comment", comment);
+                                break;
+                            case PARAMETER:
+                                if (param == null) throw tiny2Exception(x, line);
+                                param.meta("comment", comment);
+                                break;
+                            default:
+                                throw tiny2Exception(x, line);
+                        }
                     }
                     break;
                 case "f": // Field: f desc Name1 Name2 Name3
                     if (parts.length != nameCount + 2 || stack.peek() != TinyV2State.CLASS)
-                        throw new IOException("Invalid Tiny v2 line: #" + x + ": " + line);
+                        throw tiny2Exception(x, line);
 
                     field = cls.field(Arrays.copyOfRange(parts, 2, parts.length)).descriptor(parts[1]);
                     stack.push(TinyV2State.FIELD);
@@ -428,7 +444,7 @@ class InternalUtils {
 
                 case "m": // Method: m desc Name1 Name2 Name3
                     if (parts.length != nameCount + 2 || stack.peek() != TinyV2State.CLASS)
-                        throw new IOException("Invalid Tiny v2 line: #" + x + ": " + line);
+                        throw tiny2Exception(x, line);
 
                     method = cls.method(parts[1], Arrays.copyOfRange(parts, 2, parts.length));
                     stack.push(TinyV2State.METHOD);
@@ -437,7 +453,7 @@ class InternalUtils {
 
                 case "p": // Parameters: p index Name1 Name2 Name3
                     if (parts.length != nameCount + 2 || stack.peek() != TinyV2State.METHOD)
-                        throw new IOException("Invalid Tiny v2 line: #" + x + ": " + line);
+                        throw tiny2Exception(x, line);
 
                     param = method.parameter(Integer.parseInt(parts[1]), Arrays.copyOfRange(parts, 2, parts.length));
                     stack.push(TinyV2State.PARAMETER);
@@ -446,13 +462,16 @@ class InternalUtils {
                 case "v": // Local Variable: v index start Name1 Name2 Name3?
                     break; //TODO: Unsupported, is this used? Should we expose it?
                 default:
-                    throw new IOException("Invalid Tiny v2 line: #" + x + ": " + line);
+                    throw tiny2Exception(x, line);
             }
         }
 
         return ret;
     }
     enum TinyV2State { ROOT, CLASS, FIELD, METHOD, PARAMETER }
+    private static IOException tiny2Exception(int line, String data) {
+        return new IOException("Invalid Tiny v2 line: #" + line + ": " + data);
+    }
 
     /* <escaped-string> is a string that must not contain <eol> and escapes
      *     \ to \\
@@ -648,7 +667,7 @@ class InternalUtils {
                 if (comment != null) {
                     char[] prefix = new char[indent];
                     Arrays.fill(prefix, '\t');
-                    lines.add(new String(prefix) + "c\t" + comment);
+                    lines.add(new String(prefix) + "c\t" + escapeTinyString(comment));
                 }
                 break;
             case TSRG2:

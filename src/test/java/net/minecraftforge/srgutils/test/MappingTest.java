@@ -23,12 +23,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Paths;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import net.minecraftforge.srgutils.IMappingFile;
 import net.minecraftforge.srgutils.IMappingFile.Format;
 import net.minecraftforge.srgutils.INamedMappingFile;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class MappingTest {
 
@@ -52,11 +53,11 @@ public class MappingTest {
         IMappingFile b = INamedMappingFile.load(getStream("./installer.pg")).getMap("left", "right").reverse();
         a.getClasses().forEach(ca -> {
             IMappingFile.IClass cb = b.getClass(ca.getOriginal());
-            Assertions.assertNotNull(cb, "Could not find class: " + ca);
+            assertNotNull(cb, "Could not find class: " + ca);
             ca.getFields().forEach(fa -> {
                 IMappingFile.IField fb = cb.getField(fa.getOriginal());
-                Assertions.assertNotNull(fb, "Could not find field: " + fa);
-                Assertions.assertEquals(fa.getMapped(), fb.getMapped(), "Fields did not match: " + fa + "{" + fa.getMapped() + " -> " + fb.getMapped() + "}");
+                assertNotNull(fb, "Could not find field: " + fa);
+                assertEquals(fa.getMapped(), fb.getMapped(), "Fields did not match: " + fa + "{" + fa.getMapped() + " -> " + fb.getMapped() + "}");
             });
             ca.getMethods().forEach(ma -> {
                 IMappingFile.IMethod mb = cb.getMethod(ma.getOriginal(), ma.getDescriptor());
@@ -69,9 +70,31 @@ public class MappingTest {
                     });
                     throw new IllegalArgumentException(buf.toString());
                 }
-                Assertions.assertEquals(ma.getMapped(), mb.getMapped(), "Methods did not match: " + ma + "{" + ma.getMapped() + " -> " + mb.getMapped() + "}");
-                Assertions.assertEquals(ma.getMappedDescriptor(), mb.getMappedDescriptor(), "Method descriptors did not match: " + ma + "{" + ma.getMappedDescriptor() + " -> " + mb.getMappedDescriptor() + "}");
+                assertEquals(ma.getMapped(), mb.getMapped(), "Methods did not match: " + ma + "{" + ma.getMapped() + " -> " + mb.getMapped() + "}");
+                assertEquals(ma.getMappedDescriptor(), mb.getMappedDescriptor(), "Method descriptors did not match: " + ma + "{" + ma.getMappedDescriptor() + " -> " + mb.getMappedDescriptor() + "}");
             });
         });
+    }
+
+    @Test
+    void tinyV2Comments() throws IOException {
+        IMappingFile map = INamedMappingFile.load(getStream("./tiny_v2.tiny")).getMap("left", "right");
+
+        IMappingFile.IClass cls = map.getClass("Foo");
+        assertNotNull(cls, "Missing class");
+        assertEquals("Class Comment", cls.getMetadata().get("comment"));
+
+        IMappingFile.IField fld = cls.getField("foo");
+        assertNotNull(fld, "Missing field");
+        assertEquals("Field Comment", fld.getMetadata().get("comment"));
+
+        IMappingFile.IMethod mtd = cls.getMethod("foo", "()V");
+        assertNotNull(mtd, "Missing method");
+        assertEquals("Method Comment", mtd.getMetadata().get("comment"));
+        assertNotNull(mtd.getParameters(), "Missing parameter collection");
+
+        IMappingFile.IParameter par = mtd.getParameters().iterator().next();
+        assertNotNull(par, "Missing Parameter");
+        assertEquals("Param Comment", par.getMetadata().get("comment"));
     }
 }

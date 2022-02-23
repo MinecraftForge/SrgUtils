@@ -1,0 +1,9 @@
+tiny	2	0	left	right
+c	Foo	Bar
+	c	Class Comment
+	f	LFoo;	foo	bar
+		c	Field Comment
+	m	()V	foo	bar
+		c	Method Comment
+		p	1		buzz
+			c	Param Comment
