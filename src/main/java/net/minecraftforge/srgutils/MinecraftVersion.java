@@ -20,9 +20,13 @@
 package net.minecraftforge.srgutils;
 
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MinecraftVersion implements Comparable<MinecraftVersion> {
+    private static final Pattern SNAPSHOT_PATTERN = Pattern.compile("(\\d{2})w(\\d{2})([a-z]+)");
     public static MinecraftVersion NEGATIVE = from("-1");
+
     public static MinecraftVersion from(String version) {
         try {
             return new MinecraftVersion(version);
@@ -105,13 +109,6 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
             this.nearest = splitDots("1.14");
             this.pre = 0;
             this.revision = "`";
-        } else if ("20w14infinite".equals(lower)) { //2020 April Fools
-            this.week = 14;
-            this.year = 20;
-            this.type = Type.SNAPSHOT;
-            this.nearest =  splitDots("1.16");
-            this.pre = 0;
-            this.revision = Character.toString((char)('a' - 1));
         } else if ("inf-20100618".equals(lower)) {
             this.week = 25;
             this.year = 10;
@@ -169,10 +166,12 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
                 this.nearest = splitDots(clean);
             }
             this.pre = 0;
-        } else if (version.length() == 6 && version.charAt(2) == 'w') {
-            this.year = Integer.parseInt(version.substring(0, 2));
-            this.week = Integer.parseInt(version.substring(3, 5));
-            this.revision = version.substring(5);
+        } else if (SNAPSHOT_PATTERN.matcher(lower).matches()) {
+            Matcher matcher = SNAPSHOT_PATTERN.matcher(lower);
+            matcher.matches();
+            this.year = Integer.parseInt(matcher.group(1));
+            this.week = Integer.parseInt(matcher.group(2));
+            this.revision = matcher.group(3);
             this.type = Type.SNAPSHOT;
             this.nearest = splitDots(fromSnapshot(this.year, this.week));
             this.pre = 0;
