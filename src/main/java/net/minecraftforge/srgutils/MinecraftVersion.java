@@ -98,40 +98,29 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
         char first = version.charAt(0);
         String preA = Character.toString((char)('a' - 1));
 
-        if ("15w14a".equals(lower)) // 2015 April Fools
+        if ("15w14a".equals(lower))                    // 2015 April Fools
             return new MinecraftVersion(Type.SNAPSHOT, version, 14, 15, 0, "a", splitDots("1.10"));
-        else if ("1.rv-pre1".equals(lower)) // 2016 April Fools
+        else if ("1.rv-pre1".equals(lower))            // 2016 April Fools
             return new MinecraftVersion(Type.SNAPSHOT, version, 14, 16, 0, preA, splitDots("1.9.3"));
-        else if ("3d shareware v1.34".equals(lower)) // 2019 April Fools
+        else if ("3d shareware v1.34".equals(lower))   // 2019 April Fools
             return new MinecraftVersion(Type.SNAPSHOT, version, 14, 19, 0, preA, splitDots("1.14"));
-        else if ("20w14infinite".equals(lower)) // 2020 April Fools
+        else if ("20w14infinite".equals(lower))        // 2020 April Fools
             return new MinecraftVersion(Type.SNAPSHOT, version, 14, 20, 0, preA, splitDots("1.16"));
         else if ("22w13oneblockatatime".equals(lower)) // 2022 April Fools
             return new MinecraftVersion(Type.SNAPSHOT, version, 13, 22, 0, "b", splitDots("1.19"));
         else if ("inf-20100618".equals(lower))
             return new MinecraftVersion(Type.ALPHA, version, 25, 10, 0, "a", splitDots("1.0.4"));
-        else if ("c0.0.13a_03".equals(lower)) // Rather than screw with the logic of the alpha/beta parser, special case this weird one
+        else if ("c0.0.13a_03".equals(lower))          // Rather than screw with the logic of the alpha/beta parser, special case this weird one
             return new MinecraftVersion(Type.ALPHA, version, -1, -1, 0, preA, splitDots("0.0.13"));
         else if (lower.startsWith("rd-")) {
             String rev;
             switch (lower) {
-                case "rd-132211":
-                    rev = "a";
-                    break;
-                case "rd-132328":
-                    rev = "b";
-                    break;
-                case "rd-20090515":
-                    rev = "c";
-                    break;
-                case "rd-160052":
-                    rev = "d";
-                    break;
-                case "rd-161348":
-                    rev = "e";
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unknown 'rd' version: " + version);
+                case "rd-132211":   rev = "a"; break;
+                case "rd-132328":   rev = "b"; break;
+                case "rd-20090515": rev = "c"; break;
+                case "rd-160052":   rev = "d"; break;
+                case "rd-161348":   rev = "e"; break;
+                default: throw new IllegalArgumentException("Unknown 'rd' version: " + version);
             }
 
             return new MinecraftVersion(Type.ALPHA, version, 20, 9, 0, rev, splitDots("0.0.1"));
