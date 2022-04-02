@@ -23,9 +23,10 @@ import java.util.Locale;
 
 public class MinecraftVersion implements Comparable<MinecraftVersion> {
     public static MinecraftVersion NEGATIVE = from("-1");
+
     public static MinecraftVersion from(String version) {
         try {
-            return new MinecraftVersion(version);
+            return MinecraftVersion.get(version);
         } catch (IllegalArgumentException e) {
             throw e;
         } catch (Exception e) { //This is dirty, TODO, make less exceptioney
@@ -59,7 +60,10 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
         if (value >= 1934 && value <= 1946) return "1.15";
         if (value >= 2006 && value <= 2022) return "1.16";
         if (value >= 2027 && value <= 2030) return "1.16.2";
-        if (value >= 2045 && value <= 9999) return "1.17";
+        if (value >= 2045 && value <= 2120) return "1.17";
+        if (value >= 2137 && value <= 2144) return "1.18";
+        if (value >= 2203 && value <= 2207) return "1.18.2";
+        if (value >= 2211 && value <= 9999) return "1.19";
         throw new IllegalArgumentException("Invalid snapshot date: " + value);
     }
 
@@ -79,128 +83,84 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
     private final int pre;
     private final String revision;
 
-    private MinecraftVersion(String version) {
-        this.full = version;
-        String lower = version.toLowerCase(Locale.ENGLISH);
-        char first = this.full.charAt(0);
+    private MinecraftVersion(Type type, String full, int week, int year, int pre, String revision, int[] nearest) {
+        this.type = type;
+        this.full = full;
+        this.nearest = nearest;
+        this.week = week;
+        this.year = year;
+        this.pre = pre;
+        this.revision = revision;
+    }
 
-        if ("15w14a".equals(this.full)) { //2015 April Fools
-            this.week = 14;
-            this.year = 15;
-            this.type = Type.SNAPSHOT;
-            this.nearest = splitDots("1.10");
-            this.pre = 0;
-            this.revision = "a";
-        } else if ("1.rv-pre1".equals(lower)) { //2016 April Fools
-            this.week = 14;
-            this.year = 16;
-            this.type = Type.SNAPSHOT;
-            this.nearest = splitDots("1.9.3");
-            this.pre = 0;
-            this.revision = "`";
-        } else if ("3d shareware v1.34".equals(lower)) { //2019 April Fools
-            this.week = 14;
-            this.year = 19;
-            this.type = Type.SNAPSHOT;
-            this.nearest = splitDots("1.14");
-            this.pre = 0;
-            this.revision = "`";
-        } else if ("20w14infinite".equals(lower)) { //2020 April Fools
-            this.week = 14;
-            this.year = 20;
-            this.type = Type.SNAPSHOT;
-            this.nearest =  splitDots("1.16");
-            this.pre = 0;
-            this.revision = Character.toString((char)('a' - 1));
-        } else if ("inf-20100618".equals(lower)) {
-            this.week = 25;
-            this.year = 10;
-            this.type = Type.ALPHA;
-            this.nearest = splitDots("1.0.4");
-            this.pre = 0;
-            this.revision = "a";
-        } else if (lower.startsWith("rd-")) {
-            this.year = 9;
-            this.type = Type.ALPHA;
-            this.pre = 0;
-            this.nearest = splitDots("0.0.1");
+    private static MinecraftVersion get(String version) {
+        String lower = version.toLowerCase(Locale.ENGLISH);
+        char first = version.charAt(0);
+        String preA = Character.toString((char)('a' - 1));
+
+        if ("15w14a".equals(lower))                    // 2015 April Fools
+            return new MinecraftVersion(Type.SNAPSHOT, version, 14, 15, 0, "a", splitDots("1.10"));
+        else if ("1.rv-pre1".equals(lower))            // 2016 April Fools
+            return new MinecraftVersion(Type.SNAPSHOT, version, 14, 16, 0, preA, splitDots("1.9.3"));
+        else if ("3d shareware v1.34".equals(lower))   // 2019 April Fools
+            return new MinecraftVersion(Type.SNAPSHOT, version, 14, 19, 0, preA, splitDots("1.14"));
+        else if ("20w14infinite".equals(lower))        // 2020 April Fools
+            return new MinecraftVersion(Type.SNAPSHOT, version, 14, 20, 0, preA, splitDots("1.16"));
+        else if ("22w13oneblockatatime".equals(lower)) // 2022 April Fools
+            return new MinecraftVersion(Type.SNAPSHOT, version, 13, 22, 0, "b", splitDots("1.19"));
+        else if ("inf-20100618".equals(lower))
+            return new MinecraftVersion(Type.ALPHA, version, 25, 10, 0, "a", splitDots("1.0.4"));
+        else if ("c0.0.13a_03".equals(lower))          // Rather than screw with the logic of the alpha/beta parser, special case this weird one
+            return new MinecraftVersion(Type.ALPHA, version, -1, -1, 0, preA, splitDots("0.0.13"));
+        else if (lower.startsWith("rd-")) {
+            String rev;
             switch (lower) {
-                case "rd-132211":
-                    this.week = 20;
-                    this.revision = "a";
-                    break;
-                case "rd-132328":
-                    this.week = 20;
-                    this.revision = "b";
-                    break;
-                case "rd-20090515":
-                    this.week = 20;
-                    this.revision = "c";
-                    break;
-                case "rd-160052":
-                    this.week = 20;
-                    this.revision = "d";
-                    break;
-                case "rd-161348":
-                    this.week = 20;
-                    this.revision = "e";
-                    break;
-                default:
-                   throw new IllegalArgumentException("Unknown 'rd' version: " + full);
+                case "rd-132211":   rev = "a"; break;
+                case "rd-132328":   rev = "b"; break;
+                case "rd-20090515": rev = "c"; break;
+                case "rd-160052":   rev = "d"; break;
+                case "rd-161348":   rev = "e"; break;
+                default: throw new IllegalArgumentException("Unknown 'rd' version: " + version);
             }
-        } else if ("c0.0.13a_03".equals(lower)) { //Rather then screw with the logic of the alpha/beta parser, special case this weird one
-            this.week = -1;
-            this.year = -1;
-            this.type = Type.ALPHA;
-            this.revision = "`";
-            this.nearest = splitDots("0.0.13");
-            this.pre = 0;
+
+            return new MinecraftVersion(Type.ALPHA, version, 20, 9, 0, rev, splitDots("0.0.1"));
         } else if (first == 'a' || first == 'b' || first == 'c') {
-            this.week = -1;
-            this.year = -1;
-            this.type = first == 'b' ? Type.BETA : Type.ALPHA;
-            String clean = this.full.substring(1).replace('_', '.');
+            String clean = version.substring(1).replace('_', '.');
+            String nearest = clean;
+            String rev = null;
             char end = clean.charAt(clean.length() - 1);
             if (end < '0' || end > '9') {
-                this.revision = Character.toString(end);
-                this.nearest = splitDots(clean.substring(0, clean.length() - 1));
-            } else {
-                this.revision = null;
-                this.nearest = splitDots(clean);
+                rev = Character.toString(end);
+                nearest = clean.substring(0, clean.length() - 1);
             }
-            this.pre = 0;
+
+            return new MinecraftVersion(first == 'b' ? Type.BETA : Type.ALPHA, version, -1, -1, 0, rev, splitDots(nearest));
         } else if (version.length() == 6 && version.charAt(2) == 'w') {
-            this.year = Integer.parseInt(version.substring(0, 2));
-            this.week = Integer.parseInt(version.substring(3, 5));
-            this.revision = version.substring(5);
-            this.type = Type.SNAPSHOT;
-            this.nearest = splitDots(fromSnapshot(this.year, this.week));
-            this.pre = 0;
+            int year = Integer.parseInt(version.substring(0, 2));
+            int week = Integer.parseInt(version.substring(3, 5));
+
+            return new MinecraftVersion(Type.SNAPSHOT, version, week, year, 0, version.substring(5), splitDots(fromSnapshot(year, week)));
         } else {
-            this.week = -1;
-            this.year = -1;
-            this.type = Type.RELEASE;
-            this.revision = null;
-            if (this.full.contains("-pre")) {
-                String[] pts = full.split("-pre");
-                this.pre = Integer.parseInt(pts[1]);
-                this.nearest = splitDots(pts[0]);
-            } else if (this.full.contains("_Pre-Release_")) {
-                String[] pts = full.split("_Pre-Release_");
-                this.pre = Integer.parseInt(pts[1]);
-                this.nearest = splitDots(pts[0]);
-            } else if (this.full.contains(" Pre-Release ")) {
-                String[] pts = full.split(" Pre-Release ");
-                this.pre = Integer.parseInt(pts[1]);
-                this.nearest = splitDots(pts[0]);
-            } else if (this.full.contains("-rc")) {
-                String[] pts = full.split("-rc");
-                this.pre = -1 * Integer.parseInt(pts[1]);
-                this.nearest = splitDots(pts[0]);
-            } else {
-                this.pre = 0;
-                this.nearest = splitDots(full);
+            int pre = 0;
+            String nearest = version;
+            if (version.contains("-pre")) {
+                String[] pts = version.split("-pre");
+                pre = Integer.parseInt(pts[1]);
+                nearest = pts[0];
+            } else if (version.contains("_Pre-Release_")) {
+                String[] pts = version.split("_Pre-Release_");
+                pre = Integer.parseInt(pts[1]);
+                nearest = pts[0];
+            } else if (version.contains(" Pre-Release ")) {
+                String[] pts = version.split(" Pre-Release ");
+                pre = Integer.parseInt(pts[1]);
+                nearest = pts[0];
+            } else if (version.contains("-rc")) {
+                String[] pts = version.split("-rc");
+                pre = -1 * Integer.parseInt(pts[1]);
+                nearest = pts[0];
             }
+            return new MinecraftVersion(Type.RELEASE, version, -1, -1, pre, null, splitDots(nearest));
         }
     }
 
