@@ -19,12 +19,21 @@
 
 package net.minecraftforge.srgutils;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MinecraftVersion implements Comparable<MinecraftVersion> {
-    private static final Pattern SNAPSHOT_PATTERN = Pattern.compile("(\\d{2})w(\\d{2})([a-z]+)");
+    private static final Map<String, Character> JOKE_SNAPSHOT_REVISIONS;
+
+    static {
+        JOKE_SNAPSHOT_REVISIONS = new HashMap<>();
+        JOKE_SNAPSHOT_REVISIONS.put("20w14infinite", (char) ('a' - 1)); // 2020 April Fools
+        JOKE_SNAPSHOT_REVISIONS.put("22w13oneblockatatime", (char) ('a' + 1)); // 2022 April Fools
+    }
+
     public static MinecraftVersion NEGATIVE = from("-1");
 
     public static MinecraftVersion from(String version) {
@@ -169,12 +178,17 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
                 this.nearest = splitDots(clean);
             }
             this.pre = 0;
-        } else if (SNAPSHOT_PATTERN.matcher(lower).matches()) {
-            Matcher matcher = SNAPSHOT_PATTERN.matcher(lower);
-            matcher.matches();
-            this.year = Integer.parseInt(matcher.group(1));
-            this.week = Integer.parseInt(matcher.group(2));
-            this.revision = matcher.group(3);
+        } else if (version.length() == 6 && version.charAt(2) == 'w') {
+            this.year = Integer.parseInt(version.substring(0, 2));
+            this.week = Integer.parseInt(version.substring(3, 5));
+            this.revision = version.substring(5);
+            this.type = Type.SNAPSHOT;
+            this.nearest = splitDots(fromSnapshot(this.year, this.week));
+            this.pre = 0;
+        } else if (JOKE_SNAPSHOT_REVISIONS.containsKey(lower)) {
+            this.year = Integer.parseInt(version.substring(0, 2));
+            this.week = Integer.parseInt(version.substring(3, 5));
+            this.revision = JOKE_SNAPSHOT_REVISIONS.get(lower).toString();
             this.type = Type.SNAPSHOT;
             this.nearest = splitDots(fromSnapshot(this.year, this.week));
             this.pre = 0;
