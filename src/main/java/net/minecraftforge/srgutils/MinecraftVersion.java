@@ -63,7 +63,10 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
         if (value >= 1934 && value <= 1946) return "1.15";
         if (value >= 2006 && value <= 2022) return "1.16";
         if (value >= 2027 && value <= 2030) return "1.16.2";
-        if (value >= 2045 && value <= 9999) return "1.17";
+        if (value >= 2045 && value <= 2120) return "1.17";
+        if (value >= 2137 && value <= 2144) return "1.18";
+        if (value >= 2203 && value <= 2207) return "1.18.2";
+        if (value >= 2211 && value <= 9999) return "1.19";
         throw new IllegalArgumentException("Invalid snapshot date: " + value);
     }
 
