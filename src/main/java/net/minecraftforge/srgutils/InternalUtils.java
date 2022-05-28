@@ -76,6 +76,26 @@ class InternalUtils {
         .collect(Collectors.toList());
     }
 
+    /*
+     *
+     * 'RetroGuard' style mapping files.
+     * This loads both SRG and XSRG formats, the only difference between SRG and XSRG is that fields can have descriptors.
+     * Ordering does not matter, every line is prefixed with an identifier, parts are split on space.
+     * PK for Packages
+     * CL for classes
+     * FD for Fields
+     * MD for Methods
+     *
+     * Line Formats:
+     * PK: Original Renamed
+     * CL: Original Renamed
+     * FD: OriginalClass/OriginalField NewClass/NewField
+     * MD: OriginalClass/OriginalMethod OriginalDesc NewClass/NewMethod NewDesc
+     *
+     * For XSRG:
+     * FD: OriginalClass/OriginalField OriginalDeesc NewClass/NewField  NewDesc
+     *
+     */
     private static IMappingBuilder loadSRG(List<String> lines) throws IOException {
         IMappingBuilder ret = IMappingBuilder.create("left", "right");
         Map<String, IMappingBuilder.IClass> classes = new HashMap<>();
@@ -92,7 +112,7 @@ class InternalUtils {
                     } else {
                         String[] left = rsplit(pts[1], '/', 1);
                         String[] right = rsplit(pts[2], '/', 1);
-                        classes.computeIfAbsent(left[0], k -> ret.addClass(left[0], right[0])).field(left[1], right[1]).descriptor(pts[2]);
+                        classes.computeIfAbsent(left[0], k -> ret.addClass(left[0], right[0])).field(left[1], right[1]);
                     }
                     break;
                 case "MD:":
@@ -107,6 +127,33 @@ class InternalUtils {
         return ret;
     }
 
+    /*
+     * Proguard ( https://github.com/Guardsquare/proguard ) style log files
+     * Ordering does matter, and everything are referenced as source format,
+     * so using . instead of / for package levels, and comma separated arguments. Except inner classes use $
+     * We make some assumptions on the format because this is typically a log file not what i'd consider a real map file.
+     * We pick methods by if they have ( and ) in the name
+     * There is no support for parameters.
+     * Code Line ranges are optional
+     *
+     * Classes, No indent, End with :
+     *   OldName -> NewName:
+     * Fields/Methods, indented, no suffix, optional line numbers
+     *       [StartLine:EndLine] Type Name[Desc] -> NewNamee
+     *
+     * Best way to describe it is with examples:
+     *
+     * Root Class, No Line Numbers:
+     * some.package.Class -> new.package.NewClass:
+     *     int oldField -> newField
+     *     boolean oldFunction(java.lang.Objeect,int[]) -> newFunction
+     *
+     * Inner class, With Line Numbers:
+     * some.package.Class$Inner -> new.package.NewClass$Inner:
+     *     int oldField -> newField
+     *     10:15 boolean oldFunction(java.lang.Objeect,int[]) -> newFunction
+     *
+     */
     private static IMappingBuilder loadProguard(List<String> lines) throws IOException {
         IMappingBuilder ret = IMappingBuilder.create("left", "right");
 
@@ -157,6 +204,27 @@ class InternalUtils {
         return ret;
     }
 
+    /*
+     * 'Compact' and 'Tiny' SRG formats were designed to save disk space by removing redundant data from SRG format.
+     * Line type is determined by element count
+     * Order does not matter except for TSRG, as the leading classname is replaced by a \t {tab character}
+     * Since there is no prefix, packages are differentiated from classes by the names ending in /
+     * The remaped descriptor from SRG is dropped entirely as it can be reconstructed from the context of the rest of the map.
+     * Descriptors on fields are not supported.
+     *
+     * CSRG:
+     * old/package/ new/package/
+     * OldClass NewClass
+     * OldClass OldField NewField
+     * OldClass OldMethod OldDesc NewMethod
+     *
+     * TSRG:
+     * old/package/ new/package/
+     * OldClass NewClass
+     *     OldField NewField
+     *     OldMethod OldDesc NewMethod
+     *
+     */
     private static IMappingBuilder loadSlimSRG(List<String> lines) throws IOException {
         IMappingBuilder ret = IMappingBuilder.create("left", "right");
         Map<String, IMappingBuilder.IClass> classes = new HashMap<>();
