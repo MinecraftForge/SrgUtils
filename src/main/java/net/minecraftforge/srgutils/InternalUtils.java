@@ -65,7 +65,7 @@ class InternalUtils {
         else if (firstLine.startsWith("tiny\t")) // Tiny V2+
             return loadTinyV2(lines).build();
         else if (firstLine.startsWith("tsrg2 ")) // TSRG v2, parameters, and multi-names
-            return loadTSrg2(lines).build();
+            return loadTSrg2(filter(lines)).build();
         else // TSRG/CSRG
             return loadSlimSRG(filter(lines)).build();
     }
