@@ -11,19 +11,13 @@ plugins {
     id 'eclipse'
     id 'maven-publish'
     id 'org.cadixdev.licenser' version '0.6.1'
-    id 'net.minecraftforge.gradleutils' version '1.+'
-    id 'com.github.ben-manes.versions' version '0.39.0'
+    id 'net.minecraftforge.gradleutils' version '2.+'
+    id 'com.github.ben-manes.versions' version '0.46.0'
 }
 
 group 'net.minecraftforge'
 version = gradleutils.getTagOffsetVersion()
 println('Version: ' + version)
-
-java.toolchain.languageVersion = JavaLanguageVersion.of(8)
-
-ext {
-    CHANGELOG = rootProject.file('build/changelog.txt')
-}
 
 repositories {
     mavenLocal()
@@ -37,9 +31,6 @@ test {
 
 license {
     header = file('LICENSE-header.txt')
-    ext {
-        project = 'SRG Utils'
-    }
 }
 
 dependencies {
@@ -49,26 +40,19 @@ dependencies {
     compileOnly('com.google.code.findbugs:jsr305:3.0.2')
 }
 
-task sourcesJar(type: Jar) {
-    archiveClassifier = 'sources'
-    from sourceSets.main.allSource
+java {
+    withSourcesJar()
+    toolchain.languageVersion = JavaLanguageVersion.of(8)
 }
 
-artifacts {
-    archives jar
-    archives sourcesJar
+changelog {
+    fromTag '0.4'
 }
 
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            if (CHANGELOG.exists()) {
-                artifact(CHANGELOG) {
-                    classifier = 'changelog'
-                }
-            }
-            artifact jar
-            artifact sourcesJar
+            from components.java
             pom {
                 name = 'SRG Utils'
                 description = 'Library for managing java obfuscation mappings in various formats.'
