@@ -6,6 +6,7 @@ build/
 .classpath
 .project
 .settings/
+.idea/
 /repo/
 *.log
 src/test/resources/maven/
