@@ -21,7 +21,7 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
     }
 
     private static String fromSnapshot(int year, int week) {
-        int value = (year * 100) + week;
+        int value = (year * 100) + week;//
         if (value >= 1147 && value <= 1201) return "1.1";
         if (value >= 1203 && value <= 1208) return "1.2";
         if (value >= 1215 && value <= 1230) return "1.3";
