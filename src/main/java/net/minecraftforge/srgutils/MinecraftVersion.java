@@ -98,7 +98,7 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
             return new MinecraftVersion(Type.SNAPSHOT, version, 14, 20, 0, preA, splitDots("1.16"));
         else if ("22w13oneblockatatime".equals(lower)) // 2022 April Fools
             return new MinecraftVersion(Type.SNAPSHOT, version, 13, 22, 0, "b", splitDots("1.19"));
-        else if ("22w13a_or_b".equals(lower)) // 2022 April Fools
+        else if ("23w13a_or_b".equals(lower)) // 2022 April Fools
             return new MinecraftVersion(Type.SNAPSHOT, version, 13, 23, 0, "b", splitDots("1.20"));
         else if ("inf-20100618".equals(lower))
             return new MinecraftVersion(Type.ALPHA, version, 25, 10, 0, "a", splitDots("1.0.4"));
