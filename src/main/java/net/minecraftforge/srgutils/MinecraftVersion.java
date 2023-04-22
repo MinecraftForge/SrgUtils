@@ -89,17 +89,17 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
         String preA = Character.toString((char)('a' - 1));
 
         if ("15w14a".equals(lower))                    // 2015 April Fools
-            return new MinecraftVersion(Type.SNAPSHOT, version, 14, 15, 0, "a", splitDots("1.10"));
+            return new MinecraftVersion(Type.APRIL_FOOLS, version, 14, 15, 0, "a", splitDots("1.10"));
         else if ("1.rv-pre1".equals(lower))            // 2016 April Fools
-            return new MinecraftVersion(Type.SNAPSHOT, version, 14, 16, 0, preA, splitDots("1.9.3"));
+            return new MinecraftVersion(Type.APRIL_FOOLS, version, 14, 16, 0, preA, splitDots("1.9.3"));
         else if ("3d shareware v1.34".equals(lower))   // 2019 April Fools
-            return new MinecraftVersion(Type.SNAPSHOT, version, 14, 19, 0, preA, splitDots("1.14"));
+            return new MinecraftVersion(Type.APRIL_FOOLS, version, 14, 19, 0, preA, splitDots("1.14"));
         else if ("20w14infinite".equals(lower))        // 2020 April Fools
-            return new MinecraftVersion(Type.SNAPSHOT, version, 14, 20, 0, preA, splitDots("1.16"));
+            return new MinecraftVersion(Type.APRIL_FOOLS, version, 14, 20, 0, preA, splitDots("1.16"));
         else if ("22w13oneblockatatime".equals(lower)) // 2022 April Fools
-            return new MinecraftVersion(Type.SNAPSHOT, version, 13, 22, 0, "b", splitDots("1.19"));
-        else if ("23w13a_or_b".equals(lower)) // 2022 April Fools
-            return new MinecraftVersion(Type.SNAPSHOT, version, 13, 23, 0, "b", splitDots("1.20"));
+            return new MinecraftVersion(Type.APRIL_FOOLS, version, 13, 22, 0, "b", splitDots("1.19"));
+        else if ("23w13a_or_b".equals(lower))          // 2023 April Fools
+            return new MinecraftVersion(Type.APRIL_FOOLS, version, 13, 23, 0, "b", splitDots("1.20"));
         else if ("inf-20100618".equals(lower))
             return new MinecraftVersion(Type.ALPHA, version, 25, 10, 0, "a", splitDots("1.0.4"));
         else if ("c0.0.13a_03".equals(lower))          // Rather than screw with the logic of the alpha/beta parser, special case this weird one
@@ -178,12 +178,13 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
         if (o == null)
             return 1;
 
-        if (this.type != o.type) {
+        if (!this.type.canEasyCompare(o.type)) {
             int ret = 0;
             switch (this.type) {
                 case ALPHA: return -1;
                 case BETA:  return o.type == Type.ALPHA ? 1 : -1;
                 case SNAPSHOT:
+                case APRIL_FOOLS:
                     ret = compareFull(o);
                     return ret == 0 ? -1 : ret;
                 case RELEASE:
@@ -191,6 +192,7 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
                         case ALPHA:
                         case BETA: return 1;
                         case SNAPSHOT:
+                        case APRIL_FOOLS:
                         case RELEASE:
                             ret = compareFull(o);
                             return ret == 0 ? 1 : ret;
@@ -208,6 +210,7 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
                 return this.revision.compareTo(o.revision);
 
             case SNAPSHOT:
+            case APRIL_FOOLS:
                 if (this.year != o.year) return this.year - o.year;
                 if (this.week != o.week) return this.week - o.week;
                 return this.revision.compareTo(o.revision);
@@ -239,10 +242,36 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
             -this.pre - -o.pre;
     }
 
-    private static enum Type {
+    private enum Type {
         RELEASE,
         SNAPSHOT,
         BETA,
-        ALPHA
+        ALPHA,
+
+        // Special Version Types
+        APRIL_FOOLS(true);
+
+        private final boolean special;
+
+        Type() {
+            this(false);
+        }
+
+        Type(boolean special) {
+            this.special = special;
+        }
+
+        public boolean isSpecial() {
+            return this.special;
+        }
+
+        boolean canEasyCompare(Type other) {
+            if (this == other)
+                return true;
+
+            boolean thisSnapshot = this == APRIL_FOOLS || this == SNAPSHOT;
+            boolean otherSnapshot = other == APRIL_FOOLS || other == SNAPSHOT;
+            return thisSnapshot && otherSnapshot;
+        }
     }
 }
