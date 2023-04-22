@@ -156,6 +156,10 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
         }
     }
 
+    public Type getType() {
+        return this.type;
+    }
+
     @Override
     public String toString() {
         return this.full;
@@ -242,7 +246,7 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
             -this.pre - -o.pre;
     }
 
-    private enum Type {
+    public enum Type {
         RELEASE,
         SNAPSHOT,
         BETA,
