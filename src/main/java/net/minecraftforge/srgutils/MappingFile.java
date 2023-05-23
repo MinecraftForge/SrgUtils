@@ -247,6 +247,8 @@ class MappingFile implements IMappingFile {
             }
 
             Cls newCls = ret.addClass(cls.getOriginal(), existingCls.getMapped(), mergeMetadata(existingCls.getMetadata(), cls.getMetadata()));
+            newCls.methods.putAll(existingCls.methods);
+            newCls.fields.putAll(existingCls.fields);
             cls.getFields().stream().forEach(fld -> {
                 IField existingFld = existingCls.getField(fld.getOriginal());
                 if (existingFld == null) {
@@ -256,13 +258,14 @@ class MappingFile implements IMappingFile {
                 }
             });
             cls.getMethods().stream().forEach(mtd -> {
-                IMethod existingMtd = existingCls.getMethod(mtd.getOriginal(), mtd.getDescriptor());
+                Cls.Method existingMtd = existingCls.getMethod(mtd.getOriginal(), mtd.getDescriptor());
                 if (existingMtd == null) {
                     copyMethod(newCls, mtd);
                     return;
                 }
 
                 Cls.Method newMtd = newCls.addMethod(mtd.getOriginal(), existingMtd.getDescriptor(), existingMtd.getMapped(), mergeMetadata(existingMtd.getMetadata(), mtd.getMetadata()));
+                newMtd.params.putAll(existingMtd.params);
                 mtd.getParameters().stream().forEach(par -> {
                     IParameter existingPar = existingMtd.getParameter(par.getIndex());
                     if (existingPar == null) {
@@ -418,7 +421,7 @@ class MappingFile implements IMappingFile {
 
         @Override
         @Nullable
-        public IMethod getMethod(String name, String desc) {
+        public Method getMethod(String name, String desc) {
             return this.methods.get(name + desc);
         }
 
