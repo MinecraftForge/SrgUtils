@@ -244,9 +244,9 @@ class InternalUtils {
                         cls = classes.get(pts[0]);
                 }
                 else if (pts.length == 3)
-                    classes.get(pts[0]).field(pts[1], pts[2]);
+                    classes.computeIfAbsent(pts[0], k -> ret.addClass(k, k)).field(pts[1], pts[2]);
                 else if (pts.length == 4)
-                    classes.get(pts[0]).method(pts[2], pts[1], pts[3]);
+                    classes.computeIfAbsent(pts[0], k -> ret.addClass(k, k)).method(pts[2], pts[1], pts[3]);
                 else
                     throw new IOException("Invalid CSRG line, to many parts: " + line);
             }
