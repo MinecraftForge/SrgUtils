@@ -225,6 +225,81 @@ class MappingFile implements IMappingFile {
         });
     }
 
+    @Override
+    public MappingFile merge(IMappingFile other) {
+        MappingFile ret = new MappingFile();
+        getPackages().stream().forEach(pkg -> ret.addPackage(pkg.getOriginal(), pkg.getMapped(), pkg.getMetadata()));
+        getClasses().stream().forEach(cls -> copyClass(ret, cls));
+
+        other.getPackages().stream().forEach(pkg -> {
+            Package existingPkg = ret.getPackage(pkg.getOriginal());
+            if (existingPkg == null) {
+                ret.addPackage(pkg.getOriginal(), pkg.getMapped(), pkg.getMetadata());
+            } else {
+                ret.addPackage(pkg.getOriginal(), existingPkg.getMapped(), mergeMetadata(existingPkg.getMetadata(), pkg.getMetadata()));
+            }
+        });
+        other.getClasses().stream().forEach(cls -> {
+            Cls existingCls = ret.getClass(cls.getOriginal());
+            if (existingCls == null) {
+                copyClass(ret, cls);
+                return;
+            }
+
+            Cls newCls = ret.addClass(cls.getOriginal(), existingCls.getMapped(), mergeMetadata(existingCls.getMetadata(), cls.getMetadata()));
+            cls.getFields().stream().forEach(fld -> {
+                IField existingFld = existingCls.getField(fld.getOriginal());
+                if (existingFld == null) {
+                    newCls.addField(fld.getOriginal(), fld.getMapped(), fld.getDescriptor(), fld.getMetadata());
+                } else {
+                    newCls.addField(fld.getOriginal(), existingFld.getMapped(), existingFld.getDescriptor(), mergeMetadata(existingFld.getMetadata(), fld.getMetadata()));
+                }
+            });
+            cls.getMethods().stream().forEach(mtd -> {
+                IMethod existingMtd = existingCls.getMethod(mtd.getOriginal(), mtd.getDescriptor());
+                if (existingMtd == null) {
+                    copyMethod(newCls, mtd);
+                    return;
+                }
+
+                Cls.Method newMtd = newCls.addMethod(mtd.getOriginal(), existingMtd.getDescriptor(), existingMtd.getMapped(), mergeMetadata(existingMtd.getMetadata(), mtd.getMetadata()));
+                mtd.getParameters().stream().forEach(par -> {
+                    IParameter existingPar = existingMtd.getParameter(par.getIndex());
+                    if (existingPar == null) {
+                        newMtd.addParameter(par.getIndex(), par.getOriginal(), par.getMapped(), par.getMetadata());
+                    } else {
+                        newMtd.addParameter(par.getIndex(), par.getOriginal(), existingPar.getMapped(), mergeMetadata(existingPar.getMetadata(), par.getMetadata()));
+                    }
+                });
+            });
+        });
+
+        return ret;
+    }
+
+    private static void copyClass(MappingFile ret, IClass cls) {
+        Cls c = ret.addClass(cls.getOriginal(), cls.getMapped(), cls.getMetadata());
+        cls.getFields().stream().forEach(fld -> c.addField(fld.getOriginal(), fld.getMapped(), fld.getDescriptor(), fld.getMetadata()));
+        cls.getMethods().stream().forEach(mtd -> copyMethod(c, mtd));
+    }
+
+    private static void copyMethod(Cls c, IMethod mtd) {
+        Cls.Method m = c.addMethod(mtd.getOriginal(), mtd.getDescriptor(), mtd.getMapped(), mtd.getMetadata());
+        mtd.getParameters().stream().forEach(par -> m.addParameter(par.getIndex(), par.getOriginal(), par.getMapped(), par.getMetadata()));
+    }
+
+    private static Map<String, String> mergeMetadata(Map<String, String> base, Map<String, String> extra) {
+        Map<String, String> merged = new HashMap<>(base);
+
+        for (Map.Entry<String, String> entry : extra.entrySet()) {
+            if (!merged.containsKey(entry.getKey())) {
+                merged.put(entry.getKey(), entry.getValue());
+            }
+        }
+
+        return merged;
+    }
+
     abstract class Node implements INode {
         private final String original;
         private final String mapped;
@@ -443,6 +518,12 @@ class MappingFile implements IMappingFile {
 
             private Parameter addParameter(int index, String original, String mapped, Map<String, String> metadata) {
                 return retPut(this.params, index, new Parameter(index, original, mapped, metadata));
+            }
+
+            @Nullable
+            @Override
+            public IParameter getParameter(int index) {
+                return this.params.get(index);
             }
 
             @Override

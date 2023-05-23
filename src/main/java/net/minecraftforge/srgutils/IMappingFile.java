@@ -83,7 +83,29 @@ public interface IMappingFile {
 
     IMappingFile reverse();
     IMappingFile rename(IRenamer renamer);
+
+    /**
+     * Chains this mapping file with another.
+     * Any extra mappings in the other file that is not used are discarded.
+     * For example:
+     * A mapping file with A -> B chained with a mapping file B -> C
+     * will result in a chained file of A -> C.
+     *
+     * @param other the other mapping file to chain with
+     * @return the resulting chained mapping file
+     */
     IMappingFile chain(IMappingFile other);
+
+    /**
+     * Merges this mapping file with another.
+     * Any mappings in the other file that already exist in this file will be discarded.
+     * All entries in this mapping file are preserved.
+     * This operation is purely additive based on the contents of the other file.
+     *
+     * @param other the other mapping file to merge into this one
+     * @return the resulting merged mapping file
+     */
+    IMappingFile merge(IMappingFile other);
 
     public interface INode {
         String getOriginal();
@@ -138,6 +160,8 @@ public interface IMappingFile {
         String getMappedDescriptor();
         Collection<? extends IParameter> getParameters();
         String remapParameter(int index, String name);
+        @Nullable
+        IParameter getParameter(int index);
     }
 
     public interface IParameter extends IOwnedNode<IMethod> {
