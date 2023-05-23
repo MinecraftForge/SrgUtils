@@ -1,5 +1,6 @@
 gradle.properties
 bin/
+out/
 .gradle/
 repos/
 build/
