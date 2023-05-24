@@ -35,6 +35,8 @@ class InternalUtils {
             .filter(l -> !l.isEmpty()) //Remove Empty lines
             .collect(Collectors.toList());
 
+        if (lines.isEmpty())
+            return IMappingBuilder.create().build();
 
         String firstLine = lines.get(0);
         Iterator<String> itr = lines.iterator();
