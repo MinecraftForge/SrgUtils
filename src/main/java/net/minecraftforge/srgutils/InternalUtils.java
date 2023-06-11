@@ -365,6 +365,9 @@ class InternalUtils {
 
         for (int x = 1; x < lines.size(); x++) {
             String[] line = lines.get(x).split("\t");
+            if (line[0].startsWith("#")) { // Comment
+                continue;
+            }
             switch (line[0]) {
                 case "CLASS": // CLASS Name1 Name2 Name3...
                     if (line.length != nameCount + 1)
