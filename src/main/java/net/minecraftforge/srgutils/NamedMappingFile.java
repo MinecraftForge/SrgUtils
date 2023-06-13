@@ -382,7 +382,7 @@ class NamedMappingFile implements INamedMappingFile, IMappingBuilder {
                     case TSRG:  return '\t' + getName(order[0]) + ' ' + getName(order[1]);
                     case TSRG2: return getTsrg2(order);
                     case PG:    return "    " + InternalUtils.toSource(getDescriptor(order[0])) + ' ' + getName(order[0]) + " -> " + getName(order[1]);
-                    case TINY1: return "FIELD" + getNames(order);
+                    case TINY1: return "FIELD\t" + Cls.this.getName(order[0]) + '\t' + getDescriptor(order[0]) + getNames(order);
                     case TINY:  return "\tf\t" + getDescriptor(order[0]) + getNames(order);
                     default: throw new UnsupportedOperationException("Unknown format: " + format);
                 }
