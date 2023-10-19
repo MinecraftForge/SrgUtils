@@ -2,7 +2,6 @@
  * Copyright (c) Forge Development LLC and contributors
  * SPDX-License-Identifier: LGPL-2.1-only
  */
-
 package net.minecraftforge.srgutils;
 
 import java.util.Locale;
@@ -37,9 +36,9 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
         if (value >= 1614 && value <= 1615) return "1.9.3";
         if (value >= 1620 && value <= 1621) return "1.10";
         if (value >= 1632 && value <= 1644) return "1.11";
-        if (value >= 1650 && value <= 1650) return "1.11.1";
+        if (value == 1650)                  return "1.11.1";
         if (value >= 1706 && value <= 1718) return "1.12";
-        if (value >= 1731 && value <= 1731) return "1.12.1";
+        if (value == 1731)                  return "1.12.1";
         if (value >= 1743 && value <= 1822) return "1.13";
         if (value >= 1830 && value <= 1833) return "1.13.1";
         if (value >= 1843 && value <= 1914) return "1.14";
@@ -50,7 +49,7 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
         if (value >= 2137 && value <= 2144) return "1.18";
         if (value >= 2203 && value <= 2207) return "1.18.2";
         if (value >= 2211 && value <= 2219) return "1.19";
-        if (value >= 2224 && value <= 2224) return "1.19.1";
+        if (value == 2224)                  return "1.19.1";
         if (value >= 2242 && value <= 2246) return "1.19.3";
         if (value >= 2303 && value <= 2307) return "1.19.4";
         if (value >= 2312 && value <= 9999) return "1.20";

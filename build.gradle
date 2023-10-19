@@ -1,3 +1,5 @@
+import net.minecraftforge.gradleutils.PomUtils
+
 plugins {
     id 'java'
     id 'eclipse'
@@ -9,74 +11,65 @@ plugins {
 
 group 'net.minecraftforge'
 version = gradleutils.getTagOffsetVersion()
-println('Version: ' + version)
+println "Version: $version"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
+    withSourcesJar()
+}
 
 repositories {
     mavenLocal()
-    maven { url = 'https://maven.minecraftforge.net/' }
+    maven gradleutils.forgeMaven
     mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+    testImplementation 'org.powermock:powermock-core:2.0.9'
+    compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
 }
 
 test {
     useJUnitPlatform()
 }
 
-license {
-    header = file('LICENSE-header.txt')
-}
-
-dependencies {
-    testImplementation('org.junit.jupiter:junit-jupiter:5.8.2')
-    testImplementation('org.junit.jupiter:junit-jupiter-engine:5.8.2')
-    testImplementation('org.powermock:powermock-core:2.0.9')
-    compileOnly('com.google.code.findbugs:jsr305:3.0.2')
-}
-
-java {
-    withSourcesJar()
-    toolchain.languageVersion = JavaLanguageVersion.of(8)
-}
-
 changelog {
     fromTag '0.4'
 }
 
+license {
+    header = file('LICENSE-header.txt')
+    newLine = false
+    exclude '**/*.properties'
+}
+
 publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-            pom {
-                name = 'SRG Utils'
-                description = 'Library for managing java obfuscation mappings in various formats.'
-                url = 'https://github.com/MinecraftForge/SrgUtils'
-                scm {
-                    url = 'https://github.com/MinecraftForge/SrgUtils'
-                    connection = 'scm:git:git://github.com/MinecraftForge/SrgUtils.git'
-                    developerConnection = 'scm:git:git@github.com:MinecraftForge/SrgUtils.git'
-                }
-                issueManagement {
-                    system = 'github'
-                    url = 'https://github.com/MinecraftForge/SrgUtils/issues'
-                }
+    publications.register('mavenJava', MavenPublication) {
+        from components.java
 
-                licenses {
-                    license {
-                        name = 'LGPLv2.1'
-                        url = 'https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt'
-                    }
-                }
+        artifactId = 'srgutils'
 
-                developers {
-                    developer {
-                        id = 'LexManos'
-                        name = 'LexManos'
-                    }
-                }
+        pom {
+            name = 'SRG Utils'
+            description = 'Library for managing java obfuscation mappings in various formats.'
+            url = 'https://github.com/MinecraftForge/SrgUtils'
+
+            PomUtils.setGitHubDetails(pom, 'SrgUtils')
+
+            license PomUtils.Licenses.LGPLv2_1
+
+            developers {
+                developer PomUtils.Developers.LexManos
             }
         }
     }
+
     repositories {
-        maven gradleutils.publishingForgeMaven
+        maven gradleutils.getPublishingForgeMaven()
     }
 }
 
@@ -92,4 +85,3 @@ dependencyUpdates.resolutionStrategy {
         }
     }
 }
-

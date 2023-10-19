@@ -2,21 +2,13 @@
  * Copyright (c) Forge Development LLC and contributors
  * SPDX-License-Identifier: LGPL-2.1-only
  */
-
 package net.minecraftforge.srgutils;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.stream.Stream;
@@ -31,10 +23,10 @@ import static net.minecraftforge.srgutils.InternalUtils.*;
 
 class NamedMappingFile implements INamedMappingFile, IMappingBuilder {
     private final List<String> names;
-    private Map<String, Package> packages = new HashMap<>();
-    private Map<String, Cls> classes = new HashMap<>();
-    private Map<String, String[]> classCache = new ConcurrentHashMap<>();
-    private Map<String, IMappingFile> mapCache = new ConcurrentHashMap<>(); //TODO: Weak?
+    private final Map<String, Package> packages = new HashMap<>();
+    private final Map<String, Cls> classes = new HashMap<>();
+    private final Map<String, String[]> classCache = new ConcurrentHashMap<>();
+    private final Map<String, IMappingFile> mapCache = new ConcurrentHashMap<>(); //TODO: Weak?
 
     NamedMappingFile(String... names) {
         if (names == null || names.length < 2)
@@ -107,11 +99,11 @@ class NamedMappingFile implements INamedMappingFile, IMappingBuilder {
             });
         });
 
-        lines.removeIf(e -> e == null);
+        lines.removeIf(Objects::isNull);
 
         if (!format.isOrdered()) {
             Comparator<String> linesort = (format == SRG || format == XSRG) ? InternalUtils::compareLines : (o1, o2) -> o1.compareTo(o2);
-            Collections.sort(lines, linesort);
+            lines.sort(linesort);
         }
 
         if (format == TINY1 || format == TINY) {
