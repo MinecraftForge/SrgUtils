@@ -2,7 +2,6 @@
  * Copyright (c) Forge Development LLC and contributors
  * SPDX-License-Identifier: LGPL-2.1-only
  */
-
 package net.minecraftforge.srgutils;
 
 import java.io.BufferedReader;
@@ -462,7 +461,7 @@ class InternalUtils {
 
             switch (parts[0]) {
                 case "c":
-                    if (stack.size() == 0) { // Class: c Name1 Name2 Name3
+                    if (stack.isEmpty()) { // Class: c Name1 Name2 Name3
                         if (parts.length != nameCount + 1)
                             throw tiny2Exception(x, line);
 

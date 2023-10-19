@@ -2,7 +2,6 @@
  * Copyright (c) Forge Development LLC and contributors
  * SPDX-License-Identifier: LGPL-2.1-only
  */
-
 package net.minecraftforge.srgutils.test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,7 +18,7 @@ public class VersionList {
 
     //Just copy pasted with a little resorting from Mojang's version manifest, https://launchermeta.mojang.com/mc/game/version_manifest.json
     //We can't read this file directly, because its in strict release date order, not target version order
-    private String[] versions = new String[] {
+    private final String[] versions = new String[] {
         "22w13oneblockatatime",
         "22w13a",
         "22w12a",
@@ -662,7 +661,7 @@ public class VersionList {
             mcvers.add(MinecraftVersion.from(ver));
         }
 
-        Collections.sort(mcvers, Collections.reverseOrder());
+        mcvers.sort(Collections.reverseOrder());
         mcvers.forEach(System.out::println);
         String[] sorted = mcvers.stream().map(MinecraftVersion::toString).toArray(String[]::new);
         assertArrayEquals(versions, sorted, "Invalid sort");

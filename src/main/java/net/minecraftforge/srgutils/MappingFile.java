@@ -2,7 +2,6 @@
  * Copyright (c) Forge Development LLC and contributors
  * SPDX-License-Identifier: LGPL-2.1-only
  */
-
 package net.minecraftforge.srgutils;
 
 import java.io.BufferedWriter;
@@ -16,6 +15,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,7 +30,7 @@ class MappingFile implements IMappingFile {
     private Collection<Package> packagesView = Collections.unmodifiableCollection(packages.values());
     private Map<String, Cls> classes = new HashMap<>();
     private Collection<Cls> classesView = Collections.unmodifiableCollection(classes.values());
-    private Map<String, String> cache = new ConcurrentHashMap<>();
+    private final Map<String, String> cache = new ConcurrentHashMap<>();
     static final Pattern DESC = Pattern.compile("L(?<cls>[^;]+);");
 
     MappingFile(){}
@@ -141,19 +141,23 @@ class MappingFile implements IMappingFile {
             });
         });
 
-        lines.removeIf(e -> e == null);
+        lines.removeIf(Objects::isNull);
 
         if (!format.isOrdered()) {
             Comparator<String> linesort = (format == Format.SRG || format == Format.XSRG) ? InternalUtils::compareLines : (o1, o2) -> o1.compareTo(o2);
-            Collections.sort(lines, linesort);
+            lines.sort(linesort);
         }
 
-        if (format == Format.TINY1) {
-            lines.add(0, "v1\tleft\tright");
-        } else if (format == Format.TINY) {
-            lines.add(0, "tiny\t2\t0\tleft\tright");
-        } else if (format == Format.TSRG2) {
-            lines.add(0, "tsrg2 left right");
+        switch (format) {
+            case TINY1:
+                lines.add(0, "v1\tleft\tright");
+                break;
+            case TINY:
+                lines.add(0, "tiny\t2\t0\tleft\tright");
+                break;
+            case TSRG2:
+                lines.add(0, "tsrg2 left right");
+                break;
         }
 
         Files.createDirectories(path.getParent());
@@ -168,13 +172,13 @@ class MappingFile implements IMappingFile {
     @Override
     public MappingFile reverse() {
         MappingFile ret = new MappingFile();
-        getPackages().stream().forEach(pkg -> ret.addPackage(pkg.getMapped(), pkg.getOriginal(), pkg.getMetadata()));
-        getClasses().stream().forEach(cls -> {
+        getPackages().forEach(pkg -> ret.addPackage(pkg.getMapped(), pkg.getOriginal(), pkg.getMetadata()));
+        getClasses().forEach(cls -> {
             Cls c = ret.addClass(cls.getMapped(), cls.getOriginal(), cls.getMetadata());
-            cls.getFields().stream().forEach(fld -> c.addField(fld.getMapped(), fld.getOriginal(), fld.getMappedDescriptor(), fld.getMetadata()));
-            cls.getMethods().stream().forEach(mtd -> {
+            cls.getFields().forEach(fld -> c.addField(fld.getMapped(), fld.getOriginal(), fld.getMappedDescriptor(), fld.getMetadata()));
+            cls.getMethods().forEach(mtd -> {
                 Cls.Method m = c.addMethod(mtd.getMapped(), mtd.getMappedDescriptor(), mtd.getOriginal(), mtd.getMetadata());
-                mtd.getParameters().stream().forEach(par -> m.addParameter(par.getIndex(), par.getMapped(), par.getOriginal(), par.getMetadata()));
+                mtd.getParameters().forEach(par -> m.addParameter(par.getIndex(), par.getMapped(), par.getOriginal(), par.getMetadata()));
             });
         });
         return ret;
@@ -183,13 +187,13 @@ class MappingFile implements IMappingFile {
     @Override
     public MappingFile rename(IRenamer renamer) {
         MappingFile ret = new MappingFile();
-        getPackages().stream().forEach(pkg -> ret.addPackage(pkg.getOriginal(), renamer.rename(pkg), pkg.getMetadata()));
-        getClasses().stream().forEach(cls -> {
+        getPackages().forEach(pkg -> ret.addPackage(pkg.getOriginal(), renamer.rename(pkg), pkg.getMetadata()));
+        getClasses().forEach(cls -> {
             Cls c = ret.addClass(cls.getOriginal(), renamer.rename(cls), cls.getMetadata());
-            cls.getFields().stream().forEach(fld -> c.addField(fld.getOriginal(), renamer.rename(fld), fld.getDescriptor(), fld.getMetadata()));
-            cls.getMethods().stream().forEach(mtd -> {
+            cls.getFields().forEach(fld -> c.addField(fld.getOriginal(), renamer.rename(fld), fld.getDescriptor(), fld.getMetadata()));
+            cls.getMethods().forEach(mtd -> {
                 Cls.Method m = c.addMethod(mtd.getOriginal(), mtd.getDescriptor(), renamer.rename(mtd), mtd.getMetadata());
-                mtd.getParameters().stream().forEach(par -> m.addParameter(par.getIndex(), par.getOriginal(), renamer.rename(par), par.getMetadata()));
+                mtd.getParameters().forEach(par -> m.addParameter(par.getIndex(), par.getOriginal(), renamer.rename(par), par.getMetadata()));
             });
         });
         return ret;
@@ -228,10 +232,10 @@ class MappingFile implements IMappingFile {
     @Override
     public MappingFile merge(IMappingFile other) {
         MappingFile ret = new MappingFile();
-        getPackages().stream().forEach(pkg -> ret.addPackage(pkg.getOriginal(), pkg.getMapped(), pkg.getMetadata()));
-        getClasses().stream().forEach(cls -> copyClass(ret, cls));
+        getPackages().forEach(pkg -> ret.addPackage(pkg.getOriginal(), pkg.getMapped(), pkg.getMetadata()));
+        getClasses().forEach(cls -> copyClass(ret, cls));
 
-        other.getPackages().stream().forEach(pkg -> {
+        other.getPackages().forEach(pkg -> {
             Package existingPkg = ret.getPackage(pkg.getOriginal());
             if (existingPkg == null) {
                 ret.addPackage(pkg.getOriginal(), pkg.getMapped(), pkg.getMetadata());
@@ -239,7 +243,7 @@ class MappingFile implements IMappingFile {
                 ret.addPackage(pkg.getOriginal(), existingPkg.getMapped(), mergeMetadata(existingPkg.getMetadata(), pkg.getMetadata()));
             }
         });
-        other.getClasses().stream().forEach(cls -> {
+        other.getClasses().forEach(cls -> {
             Cls existingCls = ret.getClass(cls.getOriginal());
             if (existingCls == null) {
                 copyClass(ret, cls);
@@ -249,7 +253,7 @@ class MappingFile implements IMappingFile {
             Cls newCls = ret.addClass(cls.getOriginal(), existingCls.getMapped(), mergeMetadata(existingCls.getMetadata(), cls.getMetadata()));
             newCls.methods.putAll(existingCls.methods);
             newCls.fields.putAll(existingCls.fields);
-            cls.getFields().stream().forEach(fld -> {
+            cls.getFields().forEach(fld -> {
                 IField existingFld = existingCls.getField(fld.getOriginal());
                 if (existingFld == null) {
                     newCls.addField(fld.getOriginal(), fld.getMapped(), fld.getDescriptor(), fld.getMetadata());
@@ -257,7 +261,7 @@ class MappingFile implements IMappingFile {
                     newCls.addField(fld.getOriginal(), existingFld.getMapped(), existingFld.getDescriptor(), mergeMetadata(existingFld.getMetadata(), fld.getMetadata()));
                 }
             });
-            cls.getMethods().stream().forEach(mtd -> {
+            cls.getMethods().forEach(mtd -> {
                 Cls.Method existingMtd = existingCls.getMethod(mtd.getOriginal(), mtd.getDescriptor());
                 if (existingMtd == null) {
                     copyMethod(newCls, mtd);
@@ -266,7 +270,7 @@ class MappingFile implements IMappingFile {
 
                 Cls.Method newMtd = newCls.addMethod(mtd.getOriginal(), existingMtd.getDescriptor(), existingMtd.getMapped(), mergeMetadata(existingMtd.getMetadata(), mtd.getMetadata()));
                 newMtd.params.putAll(existingMtd.params);
-                mtd.getParameters().stream().forEach(par -> {
+                mtd.getParameters().forEach(par -> {
                     IParameter existingPar = existingMtd.getParameter(par.getIndex());
                     if (existingPar == null) {
                         newMtd.addParameter(par.getIndex(), par.getOriginal(), par.getMapped(), par.getMetadata());
@@ -282,13 +286,13 @@ class MappingFile implements IMappingFile {
 
     private static void copyClass(MappingFile ret, IClass cls) {
         Cls c = ret.addClass(cls.getOriginal(), cls.getMapped(), cls.getMetadata());
-        cls.getFields().stream().forEach(fld -> c.addField(fld.getOriginal(), fld.getMapped(), fld.getDescriptor(), fld.getMetadata()));
-        cls.getMethods().stream().forEach(mtd -> copyMethod(c, mtd));
+        cls.getFields().forEach(fld -> c.addField(fld.getOriginal(), fld.getMapped(), fld.getDescriptor(), fld.getMetadata()));
+        cls.getMethods().forEach(mtd -> copyMethod(c, mtd));
     }
 
     private static void copyMethod(Cls c, IMethod mtd) {
         Cls.Method m = c.addMethod(mtd.getOriginal(), mtd.getDescriptor(), mtd.getMapped(), mtd.getMetadata());
-        mtd.getParameters().stream().forEach(par -> m.addParameter(par.getIndex(), par.getOriginal(), par.getMapped(), par.getMetadata()));
+        mtd.getParameters().forEach(par -> m.addParameter(par.getIndex(), par.getOriginal(), par.getMapped(), par.getMetadata()));
     }
 
     private static Map<String, String> mergeMetadata(Map<String, String> base, Map<String, String> extra) {
@@ -441,7 +445,7 @@ class MappingFile implements IMappingFile {
         }
 
         class Field extends Node implements IField {
-            private String desc;
+            private final String desc;
 
             private Field(String original, String mapped, String desc, Map<String, String> metadata) {
                 super(original, mapped, metadata);
