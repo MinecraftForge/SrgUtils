@@ -83,27 +83,22 @@ class NamedMappingFile implements INamedMappingFile, IMappingBuilder {
         List<String> lines = new ArrayList<>();
         Comparator<Named> sort = (a,b) -> a.getName(indexes[0]).compareTo(b.getName(indexes[0]));
 
-        getPackages().sorted(sort).forEachOrdered(pkg -> {
-            lines.add(pkg.write(format, indexes));
-            writeMeta(format, lines, PACKAGE, pkg.meta);
-        });
+        getPackages().sorted(sort).forEachOrdered(pkg ->
+            write(lines, format, indexes, PACKAGE, pkg.meta, pkg)
+        );
         getClasses().sorted(sort).forEachOrdered(cls -> {
-            lines.add(cls.write(format, indexes));
-            writeMeta(format, lines, CLASS, cls.meta);
+            write(lines, format, indexes, CLASS, cls.meta, cls);
 
-            cls.getFields().sorted(sort).forEachOrdered(fld -> {
-                lines.add(fld.write(format, indexes));
-                writeMeta(format, lines, FIELD, fld.meta);
-            });
+            cls.getFields().sorted(sort).forEachOrdered(fld ->
+                write(lines, format, indexes, FIELD, fld.meta, fld)
+            );
 
             cls.getMethods().sorted(sort).forEachOrdered(mtd -> {
-                lines.add(mtd.write(format, indexes));
-                writeMeta(format, lines, METHOD, mtd.meta);
+                write(lines, format, indexes, METHOD, mtd.meta, mtd);
 
-                mtd.getParameters().sorted((a,b) -> a.getIndex() - b.getIndex()).forEachOrdered(par -> {
-                    lines.add(par.write(format, indexes));
-                    writeMeta(format, lines, PARAMETER, par.meta);
-                });
+                mtd.getParameters().sorted((a,b) -> a.getIndex() - b.getIndex()).forEachOrdered(par ->
+                    write(lines, format, indexes, PARAMETER, par.meta, par)
+                );
             });
         });
 
@@ -134,6 +129,14 @@ class NamedMappingFile implements INamedMappingFile, IMappingBuilder {
                 writer.write(line);
                 writer.write('\n');
             }
+        }
+    }
+
+    private static void write(List<String> lines, Format format, int[] indexes, Element element, Map<String, String> meta, Named node) {
+        String line = node.write(format, indexes);
+        if (line != null) {
+            lines.add(line);
+            writeMeta(format, lines, element, meta);
         }
     }
 

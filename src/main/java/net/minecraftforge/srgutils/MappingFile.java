@@ -22,6 +22,8 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
+import net.minecraftforge.srgutils.InternalUtils.Element;
+
 import static net.minecraftforge.srgutils.InternalUtils.Element.*;
 import static net.minecraftforge.srgutils.InternalUtils.*;
 
@@ -117,27 +119,22 @@ class MappingFile implements IMappingFile {
         List<String> lines = new ArrayList<>();
         Comparator<INode> sort = reversed ? (a,b) -> a.getMapped().compareTo(b.getMapped()) : (a,b) -> a.getOriginal().compareTo(b.getOriginal());
 
-        getPackages().stream().sorted(sort).forEachOrdered(pkg -> {
-            lines.add(pkg.write(format, reversed));
-            writeMeta(format, lines, PACKAGE, pkg.getMetadata());
-        });
+        getPackages().stream().sorted(sort).forEachOrdered(pkg ->
+            write(lines, format, reversed, PACKAGE, pkg)
+        );
         getClasses().stream().sorted(sort).forEachOrdered(cls -> {
-            lines.add(cls.write(format, reversed));
-            writeMeta(format, lines, CLASS, cls.getMetadata());
+            write(lines, format, reversed, CLASS, cls);
 
-            cls.getFields().stream().sorted(sort).forEachOrdered(fld -> {
-                lines.add(fld.write(format, reversed));
-                writeMeta(format, lines, FIELD, fld.getMetadata());
-            });
+            cls.getFields().stream().sorted(sort).forEachOrdered(fld ->
+                write(lines, format, reversed, FIELD, fld)
+            );
 
             cls.getMethods().stream().sorted(sort).forEachOrdered(mtd -> {
-                lines.add(mtd.write(format, reversed));
-                writeMeta(format, lines, METHOD, mtd.getMetadata());
+                write(lines, format, reversed, METHOD, mtd);
 
-                mtd.getParameters().stream().sorted((a,b) -> a.getIndex() - b.getIndex()).forEachOrdered(par -> {
-                    lines.add(par.write(format, reversed));
-                    writeMeta(format, lines, PARAMETER, par.getMetadata());
-                });
+                mtd.getParameters().stream().sorted((a,b) -> a.getIndex() - b.getIndex()).forEachOrdered(par ->
+                    write(lines, format, reversed, PARAMETER, par)
+                );
             });
         });
 
@@ -158,6 +155,8 @@ class MappingFile implements IMappingFile {
             case TSRG2:
                 lines.add(0, "tsrg2 left right");
                 break;
+            default:
+                break;
         }
 
         Files.createDirectories(path.getParent());
@@ -166,6 +165,14 @@ class MappingFile implements IMappingFile {
                 writer.write(line);
                 writer.write('\n');
             }
+        }
+    }
+
+    private static void write(List<String> lines, Format format, boolean reversed, Element element, INode node) {
+        String line = node.write(format, reversed);
+        if (line != null) {
+            lines.add(line);
+            writeMeta(format, lines, element, node.getMetadata());
         }
     }
 

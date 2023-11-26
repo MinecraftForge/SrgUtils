@@ -6,10 +6,16 @@ package net.minecraftforge.srgutils.test;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
+import net.minecraftforge.srgutils.IMappingBuilder;
 import net.minecraftforge.srgutils.IMappingFile;
 import net.minecraftforge.srgutils.IMappingFile.Format;
 import net.minecraftforge.srgutils.INamedMappingFile;
@@ -17,7 +23,6 @@ import net.minecraftforge.srgutils.INamedMappingFile;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class MappingTest {
-
     InputStream getStream(String name) {
         return MappingTest.class.getClassLoader().getResourceAsStream(name);
     }
@@ -81,5 +86,27 @@ public class MappingTest {
         IMappingFile.IParameter par = mtd.getParameters().iterator().next();
         assertNotNull(par, "Missing Parameter");
         assertEquals("Param Comment", par.getMetadata().get("comment"));
+    }
+
+    @Test
+    void tinyV2PackageComments(@TempDir Path temp) throws IOException {
+        IMappingBuilder builder = IMappingBuilder.create("left", "right");
+        builder.addPackage("in/A", "out/A").meta("comment", "A Comment");
+        builder.addPackage("in/B", "out/B").meta("comment", "B comment");
+        builder.addClass("in/C", "out/C").meta("comment", "C Comment");
+        INamedMappingFile mappings = builder.build();
+        Path file = temp.resolve("tiny_v2.tiny");
+        mappings.write(file, IMappingFile.Format.TINY);
+        List<String> lines = Files.readAllLines(file, StandardCharsets.UTF_8);
+
+        assertArrayEquals(
+            new String[] {
+                "tiny\t2\t0\tleft\tright",
+                "c\tin/C\tout/C",
+                "\tc\tC Comment"
+            },
+            lines.toArray(new String[lines.size()]),
+            "Invalid comments"
+        );
     }
 }
