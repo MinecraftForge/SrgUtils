@@ -10,6 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -23,8 +24,32 @@ import net.minecraftforge.srgutils.INamedMappingFile;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class MappingTest {
+    private @TempDir Path temp;
+
     InputStream getStream(String name) {
         return MappingTest.class.getClassLoader().getResourceAsStream(name);
+    }
+
+    List<String> write(String name, IMappingFile map, Format format, boolean reverse) throws IOException {
+        return write(name, path -> map.write(path, format, reverse));
+    }
+
+    List<String> write(String name, INamedMappingFile map, Format format) throws IOException {
+        return write(name, path -> map.write(path, format));
+    }
+
+    List<String> write(String name, INamedMappingFile map, Format format, String... order) throws IOException {
+        return write(name, path -> map.write(path, format, order));
+    }
+
+    private interface ErroringConsumer<T> {
+        void accept(T param) throws IOException;
+    }
+
+    private List<String> write(String name, ErroringConsumer<Path> writer) throws IOException {
+        Path file = temp.resolve(name);
+        writer.accept(file);
+        return Files.readAllLines(file, StandardCharsets.UTF_8);
     }
 
     @Test
@@ -89,24 +114,48 @@ public class MappingTest {
     }
 
     @Test
-    void tinyV2PackageComments(@TempDir Path temp) throws IOException {
+    void tinyV2PackageComments() throws IOException {
         IMappingBuilder builder = IMappingBuilder.create("left", "right");
         builder.addPackage("in/A", "out/A").meta("comment", "A Comment");
         builder.addPackage("in/B", "out/B").meta("comment", "B comment");
         builder.addClass("in/C", "out/C").meta("comment", "C Comment");
         INamedMappingFile mappings = builder.build();
-        Path file = temp.resolve("tiny_v2.tiny");
-        mappings.write(file, IMappingFile.Format.TINY);
-        List<String> lines = Files.readAllLines(file, StandardCharsets.UTF_8);
+        List<String> lines = write("tiny_v2_package_comments.tiny", mappings, Format.TINY);
 
-        assertArrayEquals(
-            new String[] {
+        assertLinesMatch(
+            Arrays.asList(
                 "tiny\t2\t0\tleft\tright",
                 "c\tin/C\tout/C",
                 "\tc\tC Comment"
-            },
-            lines.toArray(new String[lines.size()]),
+            ),
+            lines,
             "Invalid comments"
+        );
+    }
+
+    @Test
+    void tinyV2NamedLoad() throws IOException {
+        INamedMappingFile map = INamedMappingFile.load(getStream("./tiny_v2_named.tiny"));
+        assertIterableEquals(Arrays.asList("A", "B", "C"), map.getNames());
+    }
+
+    @Test
+    void tsrg2NamedWriteReordered() throws IOException {
+        INamedMappingFile map = INamedMappingFile.load(getStream("./tiny_v2_named.tiny"));
+        assertIterableEquals(Arrays.asList("A", "B", "C"), map.getNames());
+
+        List<String> lines = write("tsrg2NamedWriteReordered.tsrg", map, Format.TSRG2, "B", "C");
+
+        assertLinesMatch(
+            Arrays.asList(
+                "tsrg2 B C",
+                "clsB clsC",
+                "\tfldB LclsB; fldC",
+                "\tmtdB ()LclsB; mtdC",
+                "\t\t1 parB parC"
+            ),
+            lines,
+            "Invalid ordering"
         );
     }
 }

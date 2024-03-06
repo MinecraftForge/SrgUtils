@@ -1,0 +1,9 @@
+tiny	2	0	A	B	C
+c	clsA	clsB	clsC
+	c	Class Comment
+	f	LclsA;	fldA	fldB	fldC
+		c	Field Comment
+	m	()LclsA;	mtdA	mtdB	mtdC
+		c	Method Comment
+		p	1	parA	parB	parC
+			c	Param Comment
