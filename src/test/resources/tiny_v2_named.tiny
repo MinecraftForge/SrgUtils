@@ -7,3 +7,5 @@ c	clsA	clsB	clsC
 		c	Method Comment
 		p	1	parA	parB	parC
 			c	Param Comment
+		v	1	1	1	varA	varB	varC
+			c	A varaible comment this would trigger https://github.com/MinecraftForge/SrgUtils/issues/21

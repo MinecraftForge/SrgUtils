@@ -19,6 +19,9 @@ import org.junit.jupiter.api.io.TempDir;
 import net.minecraftforge.srgutils.IMappingBuilder;
 import net.minecraftforge.srgutils.IMappingFile;
 import net.minecraftforge.srgutils.IMappingFile.Format;
+import net.minecraftforge.srgutils.IMappingFile.IClass;
+import net.minecraftforge.srgutils.IMappingFile.IField;
+import net.minecraftforge.srgutils.IMappingFile.IMethod;
 import net.minecraftforge.srgutils.INamedMappingFile;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -135,8 +138,37 @@ public class MappingTest {
 
     @Test
     void tinyV2NamedLoad() throws IOException {
-        INamedMappingFile map = INamedMappingFile.load(getStream("./tiny_v2_named.tiny"));
-        assertIterableEquals(Arrays.asList("A", "B", "C"), map.getNames());
+        INamedMappingFile named = INamedMappingFile.load(getStream("./tiny_v2_named.tiny"));
+        assertIterableEquals(Arrays.asList("A", "B", "C"), named.getNames());
+        tinyV2NamedTest(named, "A", "B");
+        tinyV2NamedTest(named, "A", "C");
+        tinyV2NamedTest(named, "B", "A");
+        tinyV2NamedTest(named, "B", "C");
+        tinyV2NamedTest(named, "C", "B");
+        tinyV2NamedTest(named, "C", "A");
+    }
+
+    void tinyV2NamedTest(INamedMappingFile named, String left, String right) {
+        IMappingFile map = named.getMap(left, right);
+        IClass cls = map.getClass("cls" + left);
+        assertNotNull(cls, "Could not find cls" + left + " in " + left + " -> " + right);
+        assertEquals("cls" + right, cls.getMapped());
+
+        IField fld = cls.getField("fld" + left);
+        assertNotNull(cls, "Could not find fld" + left + " in " + left + " -> " + right);
+        assertEquals("fld" + right, fld.getMapped());
+
+        IMethod mtd = cls.getMethod("mtd" + left, "()Lcls" + left + ';');
+        assertNotNull(cls, "Could not find mtd" + left + " in " + left + " -> " + right);
+        assertEquals("mtd" + right, mtd.getMapped());
+        assertEquals("()Lcls" + right + ';', mtd.getMappedDescriptor());
+    }
+
+    @Test
+    void tinyV2OptionalAndLVs() throws IOException {
+        INamedMappingFile named = INamedMappingFile.load(getStream("./tiny_v2_09_2024_edition.tiny"));
+        assertIterableEquals(Arrays.asList("source", "same", "rename"), named.getNames());
+
     }
 
     @Test

@@ -441,7 +441,7 @@ class InternalUtils {
             if (newdepth != 0)
                 line = line.substring(newdepth);
 
-            if (newdepth != stack.size()) {
+            if (newdepth <= stack.size()) {
                 while (stack.size() != newdepth) {
                     switch(stack.pop()) {
                         case CLASS:     cls    = null; break;
@@ -451,6 +451,8 @@ class InternalUtils {
                         default: break;
                     }
                 }
+            } else {
+                throw tiny2Exception(x, line);
             }
 
             String[] parts = line.split("\t");
@@ -486,6 +488,8 @@ class InternalUtils {
                                 if (param == null) throw tiny2Exception(x, line);
                                 param.meta("comment", comment);
                                 break;
+                            case VARIABLE:
+                                break; // TODO: [SRGUtils][LocalVariables] Support LocalVariable comments in Mapping files
                             default:
                                 throw tiny2Exception(x, line);
                         }
@@ -518,7 +522,8 @@ class InternalUtils {
 
                     break;
                 case "v": // Local Variable: v index start Name1 Name2 Name3?
-                    break; //TODO: Unsupported, is this used? Should we expose it?
+                    stack.push(TinyV2State.VARIABLE);
+                    break; // TODO: [SRGUtils][LocalVariables] Support LocalVariables in Mapping files
                 default:
                     throw tiny2Exception(x, line);
             }
@@ -526,9 +531,9 @@ class InternalUtils {
 
         return ret;
     }
-    enum TinyV2State { ROOT, CLASS, FIELD, METHOD, PARAMETER }
+    enum TinyV2State { ROOT, CLASS, FIELD, METHOD, PARAMETER, VARIABLE }
     private static IOException tiny2Exception(int line, String data) {
-        return new IOException("Invalid Tiny v2 line: #" + line + ": " + data);
+        return new IOException("Invalid Tiny v2 line: #" + (line + 1) + ": " + data);
     }
 
     /* <escaped-string> is a string that must not contain <eol> and escapes
@@ -565,8 +570,7 @@ class InternalUtils {
         if (type.equals("double"))  return "D";
         if (type.equals("float"))   return "F";
         if (type.equals("long"))    return "J";
-        if (type.contains("/"))     return "L" + type + ";";
-        throw new RuntimeException("Invalid toDesc input: " + type);
+        return "L" + type + ";";
     }
 
     static String toSource(String desc) {
