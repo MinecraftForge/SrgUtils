@@ -47,6 +47,14 @@ license {
     exclude '**/*.properties'
 }
 
+tasks.named('jar', Jar) {
+    manifest {
+        attributes([
+            'Automatic-Module-Name': 'net.minecraftforge.srgutils'
+        ])
+    }
+}
+
 publishing {
     publications.register('mavenJava', MavenPublication) {
         from components.java
