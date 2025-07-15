@@ -206,6 +206,11 @@ class MappingFile implements IMappingFile {
     }
 
     @Override
+    public IMappingFile rename(IMappingNames names) {
+        return rename(names.renamer());
+    }
+
+    @Override
     public MappingFile chain(final IMappingFile link) {
         return rename(new IRenamer() {
             public String rename(IPackage value) {

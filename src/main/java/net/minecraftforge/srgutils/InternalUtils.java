@@ -5,6 +5,7 @@
 package net.minecraftforge.srgutils;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -14,12 +15,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
+import de.siegmar.fastcsv.reader.NamedCsvReader;
+import de.siegmar.fastcsv.reader.NamedCsvRow;
 import net.minecraftforge.srgutils.IMappingFile.Format;
 
 class InternalUtils {
@@ -55,6 +62,38 @@ class InternalUtils {
             return loadTSrg2(filter(lines)).build();
         else // TSRG/CSRG
             return loadSlimSRG(filter(lines)).build();
+    }
+
+    static IMappingNames loadNamesCsv(File data) throws IOException {
+        Map<String, String> names = new HashMap<>();
+        Map<String, String> docs = new HashMap<>();
+        try (ZipFile zip = new ZipFile(data)) {
+            // Iterate over the enumeration instead of using a Stream, it's cleaner this way imo
+            Enumeration<? extends ZipEntry> entries = zip.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = entries.nextElement();
+
+                // Not a CSV file? Skip.
+                if (!entry.getName().endsWith(".csv")) continue;
+
+                try (NamedCsvReader reader = NamedCsvReader.builder().build(new InputStreamReader(zip.getInputStream(entry)))) {
+                    Set<String> header = reader.getHeader();
+                    String obf = header.contains("searge") ? "searge" : "param";
+                    boolean containsDesc = header.contains("desc");
+                    for (NamedCsvRow row : reader) {
+                        String searge = row.getField(obf);
+                        names.put(searge, row.getField("name"));
+                        if (containsDesc) {
+                            String desc = row.getField("desc");
+                            if (!desc.isEmpty())
+                                docs.put(searge, desc);
+                        }
+                    }
+                }
+            }
+        }
+
+        return new MappingNames(names, docs);
     }
 
     private static List<String> filter(List<String> lines) {

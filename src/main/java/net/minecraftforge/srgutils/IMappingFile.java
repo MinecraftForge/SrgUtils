@@ -82,6 +82,7 @@ public interface IMappingFile {
 
     IMappingFile reverse();
     IMappingFile rename(IRenamer renamer);
+    IMappingFile rename(IMappingNames names);
 
     /**
      * Chains this mapping file with another.

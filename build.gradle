@@ -1,3 +1,4 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     id 'java'
@@ -6,6 +7,7 @@ plugins {
     id 'maven-publish'
     alias libs.plugins.licenser
     alias libs.plugins.gradleutils
+    alias libs.plugins.shadow
     alias libs.plugins.versions
 }
 
@@ -25,6 +27,8 @@ java {
 }
 
 dependencies {
+    implementation libs.fastcsv
+
     //region Static Analysis
     compileOnly libs.nulls
     compileOnly libs.jsr305
@@ -64,6 +68,8 @@ tasks.named('jar', Jar) {
             'Implementation-Version': project.version
         ], 'net/minecraftforge/srgutils')
     }
+
+    archiveClassifier = 'slim'
 }
 
 tasks.named('shadowJar', ShadowJar) {
@@ -80,29 +86,31 @@ publishing {
     publications.register('mavenJava', MavenPublication) {
         from components.java
 
-        artifactId = 'srgutils'
+        artifactId = projectArtifactId
 
-        pom {
-            name = 'SRG Utils'
-            description = 'Library for managing java obfuscation mappings in various formats.'
-            url = 'https://github.com/MinecraftForge/SrgUtils'
+        pom { pom ->
+            name = projectDisplayName
+            description = project.description
 
-            PomUtils.setGitHubDetails(pom, 'SrgUtils')
+            gradleutils.pom.setGitHubDetails pom
 
-            license PomUtils.Licenses.LGPLv2_1
+            licenses {
+                license gradleutils.pom.licenses.LGPLv2_1
+            }
 
             developers {
-                developer PomUtils.Developers.LexManos
+                developer gradleutils.pom.developers.LexManos
             }
         }
     }
 
     repositories {
-        maven gradleutils.getPublishingForgeMaven()
+        maven gradleutils.publishingForgeMaven
     }
 }
 
-dependencyUpdates.resolutionStrategy {
+// TODO [SrgUtils] What is this?
+dependencyUpdates.resolutionStrategy = {
     componentSelection { rules ->
         rules.all { ComponentSelection selection ->
             boolean rejected = ['alpha', 'beta', 'rc', 'cr', 'm', 'preview'].any { qualifier ->
@@ -114,3 +122,5 @@ dependencyUpdates.resolutionStrategy {
         }
     }
 }
+
+idea.module { downloadSources = downloadJavadoc = true }
