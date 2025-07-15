@@ -21,9 +21,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.stream.Stream;
 
-import javax.annotation.Nullable;
-
 import net.minecraftforge.srgutils.IMappingFile.Format;
+import org.jetbrains.annotations.Nullable;
 
 import static net.minecraftforge.srgutils.IMappingFile.Format.*;
 import static net.minecraftforge.srgutils.InternalUtils.Element.*;

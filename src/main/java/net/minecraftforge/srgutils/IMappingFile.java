@@ -4,6 +4,8 @@
  */
 package net.minecraftforge.srgutils;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -12,8 +14,6 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
-
-import javax.annotation.Nullable;
 
 public interface IMappingFile {
     public static IMappingFile load(File path) throws IOException {

@@ -17,6 +17,7 @@ dependencyResolutionManagement {
         plugin 'versions',    'com.github.ben-manes.versions'      version '0.52.0'
 
         //region Static Analysis
+        library 'nulls',  'org.jetbrains',            'annotations' version '26.0.2'
         library 'jsr305', 'com.google.code.findbugs', 'jsr305'      version '3.0.2'
         //endregion
 
