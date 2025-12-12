@@ -20,9 +20,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.annotation.Nullable;
-
 import net.minecraftforge.srgutils.InternalUtils.Element;
+import org.jetbrains.annotations.Nullable;
 
 import static net.minecraftforge.srgutils.InternalUtils.Element.*;
 import static net.minecraftforge.srgutils.InternalUtils.*;

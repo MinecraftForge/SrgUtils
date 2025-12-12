@@ -1,36 +1,39 @@
-import net.minecraftforge.gradleutils.PomUtils
 
 plugins {
     id 'java'
+    id 'idea'
     id 'eclipse'
     id 'maven-publish'
-    id 'org.cadixdev.licenser' version '0.6.1'
-    id 'net.minecraftforge.gradleutils' version '[2.3,2.4)'
-    id 'com.github.ben-manes.versions' version '0.50.0'
+    alias libs.plugins.licenser
+    alias libs.plugins.gradleutils
+    alias libs.plugins.versions
 }
 
-group 'net.minecraftforge'
-version = gradleutils.getTagOffsetVersion()
+final projectDisplayName = 'SRG Utils'
+final projectArtifactId = base.archivesName = 'srgutils'
+final projectVendor = 'Forge Development LLC'
+description = 'Library for managing java obfuscation mappings in various formats.'
+group = 'net.minecraftforge'
+version = gitversion.tagOffset
+
 println "Version: $version"
 
 java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(8)
-    }
+    toolchain.languageVersion = JavaLanguageVersion.of(8)
+
     withSourcesJar()
 }
 
-repositories {
-    mavenLocal()
-    maven gradleutils.forgeMaven
-    mavenCentral()
-}
-
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
-    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.10.1'
-    testImplementation 'org.powermock:powermock-core:2.0.9'
-    compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
+    //region Static Analysis
+    compileOnly libs.nulls
+    compileOnly libs.jsr305
+    //endregion
+
+    //region Testing
+    testImplementation libs.bundles.junit
+    testImplementation libs.powermock
+    //endregion
 }
 
 test {
@@ -42,7 +45,7 @@ changelog {
 }
 
 license {
-    header = file('LICENSE-header.txt')
+    header = rootProject.file('LICENSE-header.txt')
     newLine = false
     exclude '**/*.properties'
 }
@@ -52,7 +55,25 @@ tasks.named('jar', Jar) {
         attributes([
             'Automatic-Module-Name': 'net.minecraftforge.srgutils'
         ])
+        attributes([
+            'Specification-Title'   : projectDisplayName,
+            'Specification-Vendor'  : projectVendor,
+            'Specification-Version' : gitversion.info.tag,
+            'Implementation-Title'  : projectDisplayName,
+            'Implementation-Vendor' : projectVendor,
+            'Implementation-Version': project.version
+        ], 'net/minecraftforge/srgutils')
     }
+}
+
+tasks.named('shadowJar', ShadowJar) {
+    archiveClassifier = ''
+    enableRelocation = true
+    relocationPrefix = 'net.minecraftforge.srgutils.shadow'
+}
+
+artifacts {
+    archives shadowJar
 }
 
 publishing {

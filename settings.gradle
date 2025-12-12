@@ -1,15 +1,34 @@
-pluginManagement {
-    repositories {
-        gradlePluginPortal()
-        maven {
-            name = 'MinecraftForge'
-            url = 'https://maven.minecraftforge.net/'
-        }
-    }
-}
-
 plugins {
-    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.7.0'
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.10.0'
 }
 
 rootProject.name = 'SrgUtils'
+
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+        maven { url = 'https://maven.minecraftforge.net/' }
+    }
+
+    //@formatter:off
+    versionCatalogs.register('libs') {
+        plugin 'licenser',    'net.minecraftforge.licenser'        version '1.2.0'
+        plugin 'gradleutils', 'net.minecraftforge.gradleutils'     version '2.6.0'
+        plugin 'versions',    'com.github.ben-manes.versions'      version '0.52.0'
+
+        //region Static Analysis
+        library 'nulls',  'org.jetbrains',            'annotations' version '26.0.2'
+        library 'jsr305', 'com.google.code.findbugs', 'jsr305'      version '3.0.2'
+        //endregion
+
+        //region Testing
+        version 'junit', '5.10.1'
+        library 'junit',        'org.junit.jupiter', 'junit-jupiter'        versionRef 'junit'
+        library 'junit-engine', 'org.junit.jupiter', 'junit-jupiter-engine' versionRef 'junit'
+        bundle 'junit', ['junit', 'junit-engine']
+
+        library 'powermock', 'org.powermock', 'powermock-core' version '2.0.9'
+        //endregion
+    }
+    //@formatter:on
+}
