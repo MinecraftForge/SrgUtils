@@ -66,17 +66,11 @@ tasks.named('jar', Jar) {
     }
 }
 
-tasks.named('shadowJar', ShadowJar) {
-    archiveClassifier = ''
-    enableRelocation = true
-    relocationPrefix = 'net.minecraftforge.srgutils.shadow'
-}
-
-artifacts {
-    archives shadowJar
-}
-
 publishing {
+    repositories {
+        maven gradleutils.publishingForgeMaven
+    }
+
     publications.register('mavenJava', MavenPublication) {
         from components.java
 
@@ -87,29 +81,12 @@ publishing {
             description = 'Library for managing java obfuscation mappings in various formats.'
             url = 'https://github.com/MinecraftForge/SrgUtils'
 
-            PomUtils.setGitHubDetails(pom, 'SrgUtils')
+            gradleutils.pom.setGitHubDetails(pom, 'SrgUtils')
 
-            license PomUtils.Licenses.LGPLv2_1
+            license gradleutils.pom.licenses.LGPLv2_1
 
             developers {
-                developer PomUtils.Developers.LexManos
-            }
-        }
-    }
-
-    repositories {
-        maven gradleutils.getPublishingForgeMaven()
-    }
-}
-
-dependencyUpdates.resolutionStrategy {
-    componentSelection { rules ->
-        rules.all { ComponentSelection selection ->
-            boolean rejected = ['alpha', 'beta', 'rc', 'cr', 'm', 'preview'].any { qualifier ->
-                selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
-            }
-            if (rejected) {
-                selection.reject('Release candidate')
+                developer gradleutils.pom.developers.LexManos
             }
         }
     }

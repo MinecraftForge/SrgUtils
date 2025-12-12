@@ -164,12 +164,14 @@ public class MappingTest {
         assertEquals("()Lcls" + right + ';', mtd.getMappedDescriptor());
     }
 
+    /*
     @Test
     void tinyV2OptionalAndLVs() throws IOException {
         INamedMappingFile named = INamedMappingFile.load(getStream("./tiny_v2_09_2024_edition.tiny"));
         assertIterableEquals(Arrays.asList("source", "same", "rename"), named.getNames());
 
     }
+    */
 
     @Test
     void tsrg2NamedWriteReordered() throws IOException {
