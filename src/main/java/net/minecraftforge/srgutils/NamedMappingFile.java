@@ -6,6 +6,9 @@ package net.minecraftforge.srgutils;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -20,6 +23,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.stream.Stream;
+import java.util.zip.GZIPOutputStream;
 
 import net.minecraftforge.srgutils.IMappingFile.Format;
 import org.jetbrains.annotations.Nullable;
@@ -123,10 +127,15 @@ class NamedMappingFile implements INamedMappingFile, IMappingBuilder {
         }
 
         Files.createDirectories(path.getParent());
-        try (BufferedWriter writer = Files.newBufferedWriter(path)) {
-            for (String line : lines) {
-                writer.write(line);
-                writer.write('\n');
+        try (OutputStream fos = Files.newOutputStream(path)) {
+            OutputStream out = fos;
+            if (path.getFileName().toString().endsWith(".gz"))
+                out = new GZIPOutputStream(out);
+            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8))) {
+                for (String line : lines) {
+                    writer.write(line);
+                    writer.write('\n');
+                }
             }
         }
     }

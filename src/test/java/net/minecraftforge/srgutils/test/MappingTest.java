@@ -4,6 +4,7 @@
  */
 package net.minecraftforge.srgutils.test;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -169,7 +170,6 @@ public class MappingTest {
     void tinyV2OptionalAndLVs() throws IOException {
         INamedMappingFile named = INamedMappingFile.load(getStream("./tiny_v2_09_2024_edition.tiny"));
         assertIterableEquals(Arrays.asList("source", "same", "rename"), named.getNames());
-
     }
     */
 
@@ -191,5 +191,46 @@ public class MappingTest {
             lines,
             "Invalid ordering"
         );
+    }
+
+    @Test
+    void testCompression() throws IOException {
+        final String compressable = "easilyCompressableAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+        byte[] stringData = ("cls " + compressable).getBytes(StandardCharsets.UTF_8);
+
+        IMappingFile map = IMappingFile.load(new ByteArrayInputStream(stringData));
+
+        Path path = temp.resolve("map.tsrg.gz");
+        map.write(path, Format.TSRG2, false);
+
+        byte[] fileData = Files.readAllBytes(path);
+        assertTrue(fileData.length < stringData.length, "Expected the file data to be compressed, was not");
+
+        IMappingFile read = IMappingFile.load(path.toFile());
+        IMappingFile.IClass cls = read.getClass("cls");
+        assertNotNull(cls, "Expected to find \"cls\" mapping");
+
+        assertEquals(compressable, cls.getMapped());
+    }
+
+    @Test
+    void testNamedCompression() throws IOException {
+        final String compressable = "easilyCompressableAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+        byte[] stringData = ("cls " + compressable).getBytes(StandardCharsets.UTF_8);
+
+        INamedMappingFile map = INamedMappingFile.load(new ByteArrayInputStream(stringData));
+
+        Path path = temp.resolve("map.tsrg.gz");
+        map.write(path, Format.TSRG2, "left", "right");
+
+        byte[] fileData = Files.readAllBytes(path);
+        assertTrue(fileData.length < stringData.length, "Expected the file data to be compressed, was not");
+
+        INamedMappingFile named = INamedMappingFile.load(path.toFile());
+        IMappingFile read = named.getMap("left", "right");
+        IMappingFile.IClass cls = read.getClass("cls");
+        assertNotNull(cls, "Expected to find \"cls\" mapping");
+
+        assertEquals(compressable, cls.getMapped());
     }
 }

@@ -10,12 +10,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.zip.GZIPInputStream;
 
 import net.minecraftforge.srgutils.IMappingFile.Format;
 
 public interface INamedMappingFile {
     public static INamedMappingFile load(File path) throws IOException {
         try (InputStream in = new FileInputStream(path)) {
+            if (path.getName().endsWith(".gz"))
+                return load(new GZIPInputStream(in));
             return load(in);
         }
     }

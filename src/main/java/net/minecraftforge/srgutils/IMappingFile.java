@@ -14,10 +14,13 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
 
 public interface IMappingFile {
     public static IMappingFile load(File path) throws IOException {
         try (InputStream in = new FileInputStream(path)) {
+            if (path.getName().endsWith(".gz"))
+                return load(new GZIPInputStream(in));
             return load(in);
         }
     }

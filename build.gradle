@@ -31,7 +31,8 @@ dependencies {
     //endregion
 
     //region Testing
-    testImplementation libs.bundles.junit
+    testImplementation libs.junit.api
+    testRuntimeOnly libs.bundles.junit.runtime
     testImplementation libs.powermock
     //endregion
 }
