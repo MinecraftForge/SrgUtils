@@ -153,8 +153,8 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
             // The new versioning system https://www.minecraft.net/en-us/article/minecraft-new-version-numbering-system
             // They did not specify pre-release or release candidate naming system.
             if (version.contains("-snapshot-")) {
-                String[] pts = version.split("-snapshot-");
-                return new MinecraftVersion(Type.SNAPSHOT, version, Integer.parseInt(pts[1]), -1, 0, null, splitDots(pts[0]));
+                String[] pts = version.split("-snapshot-", 2);
+                return new MinecraftVersion(Type.SNAPSHOT, version, Integer.parseInt(pts[1]), -1, 0, "", splitDots(pts[0]));
             } else if (version.contains("-pre-")) { // New Numbering system pre-releases have {version}-pre-{number}
                 String[] pts = version.split("-pre-");
                 pre = Integer.parseInt(pts[1]);
